@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Purchase successful — Minyt</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--brand:#1D9E75;--brand-light:#E1F5EE;--brand-dark:#0F6E56;--text:#1a1a1a;--muted:#6b7280;--border:#e5e5e3;--radius:10px;--radius-lg:14px}
+body{font-family:'DM Sans',sans-serif;color:var(--text);background:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;text-align:center}
+.logo{font-family:'Fraunces',serif;font-size:1.4rem;font-weight:500;color:var(--brand);margin-bottom:3rem;cursor:pointer}
+.icon{width:72px;height:72px;border-radius:50%;background:var(--brand-light);display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem}
+.icon svg{width:36px;height:36px;stroke:var(--brand)}
+h1{font-family:'Fraunces',serif;font-size:2rem;font-weight:400;margin-bottom:0.75rem}
+.sub{font-size:1rem;color:var(--muted);line-height:1.6;max-width:420px;margin:0 auto 2rem}
+.access-box{background:var(--brand-light);border:1px solid #9FE1CB;border-radius:var(--radius-lg);padding:1.5rem;max-width:460px;width:100%;margin:0 auto 1.5rem;text-align:left}
+.access-label{font-size:11px;font-weight:500;color:var(--brand-dark);text-transform:uppercase;letter-spacing:1px;margin-bottom:0.75rem}
+.access-btn{display:flex;align-items:center;justify-content:space-between;width:100%;padding:12px 16px;background:var(--brand);color:#fff;border:none;border-radius:var(--radius);font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none}
+.access-btn:hover{background:var(--brand-dark)}
+.access-btn svg{width:16px;height:16px;stroke:#fff;flex-shrink:0}
+.no-access{font-size:13px;color:#085041}
+.account-box{background:var(--surface,#f9f9f7);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;max-width:460px;width:100%;margin:0 auto 2rem;text-align:left}
+.account-label{font-size:14px;font-weight:500;margin-bottom:0.4rem}
+.account-sub{font-size:13px;color:var(--muted);margin-bottom:1rem;line-height:1.5}
+.account-btn{display:inline-block;padding:10px 22px;background:#fff;color:var(--brand);border:1.5px solid var(--brand);border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none}
+.account-btn:hover{background:var(--brand-light)}
+.browse-btn{display:inline-block;padding:12px 28px;background:var(--brand);color:#fff;border:none;border-radius:var(--radius);font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none}
+.browse-btn:hover{background:var(--brand-dark)}
+.loading{font-size:13px;color:var(--muted);font-style:italic}
+</style>
+</head>
+<body>
+<div class="logo" onclick="window.location.href='https://getminyt.com'">minyt</div>
+
+<div class="icon">
+  <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="20 6 9 17 4 12"/>
+  </svg>
+</div>
+
+<h1>You're all set.</h1>
+<p class="sub">Your purchase was successful. Access your content below and check your email for a receipt.</p>
+
+<!-- DELIVERY LINK -->
+<div class="access-box" id="access-box">
+  <div class="access-label">Your access link</div>
+  <div class="loading" id="access-loading">Loading your access link...</div>
+  <a class="access-btn hidden" id="access-btn" href="#" target="_blank">
+    Access your purchase
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+  </a>
+  <p class="no-access hidden" id="no-access">Your seller will send your access link shortly via email.</p>
+</div>
+
+<!-- CREATE ACCOUNT PROMPT -->
+<div class="account-box">
+  <div class="account-label">Save your purchase history</div>
+  <div class="account-sub">Create a free account to view your purchases, leave a verified review, and access your links anytime.</div>
+  <a class="account-btn" href="https://getminyt.com/account.html">Create account →</a>
+</div>
+
+<a class="browse-btn" href="https://getminyt.com">Browse more listings</a>
+
+<script>
+var SURL='https://qoigwxwkhpcgisprkozg.supabase.co';
+var SKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFvaWd3eHdraHBjZ2lzcHJrb3pnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3NDAzOTUsImV4cCI6MjA5MjMxNjM5NX0.Si-GOt97FF4Wt49E_Yf7CsgyvU2-5dHbStQu1wwQ6Ik';
+
+var params=new URLSearchParams(window.location.search);
+var listingId=params.get('listing_id');
+
+if(listingId){
+  var s=document.createElement('script');
+  s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';
+  s.onload=function(){
+    var sb=window.supabase.createClient(SURL,SKEY);
+    sb.from('listings').select('title,delivery_link').eq('id',listingId).single().then(function(res){
+      document.getElementById('access-loading').classList.add('hidden');
+      if(res.data&&res.data.delivery_link){
+        var btn=document.getElementById('access-btn');
+        btn.href=res.data.delivery_link;
+        btn.classList.remove('hidden');
+      } else {
+        document.getElementById('no-access').classList.remove('hidden');
+      }
+    });
+  };
+  document.head.appendChild(s);
+} else {
+  document.getElementById('access-loading').classList.add('hidden');
+  document.getElementById('no-access').classList.remove('hidden');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Minyt Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--brand:#1D9E75;--brand-light:#E1F5EE;--brand-dark:#0F6E56;--text:#1a1a1a;--muted:#6b7280;--surface:#f9f9f7;--border:#e5e5e3;--radius:10px;--radius-lg:14px;--danger:#E24B4A;--danger-light:#FCEBEB}
+body{font-family:'DM Sans',sans-serif;color:var(--text);background:var(--surface);min-height:100vh}
+
+/* LOGIN */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem}
+.login-box{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:2.5rem;width:100%;max-width:380px;text-align:center}
+.login-logo{font-family:'Fraunces',serif;font-size:1.75rem;font-weight:500;color:var(--brand);margin-bottom:0.25rem}
+.login-sub{font-size:13px;color:var(--muted);margin-bottom:2rem}
+.login-box input{width:100%;padding:11px 14px;border:1px solid var(--border);border-radius:var(--radius);font-size:14px;font-family:'DM Sans',sans-serif;color:var(--text);background:#fff;margin-bottom:1rem}
+.login-box input:focus{outline:none;border-color:var(--brand)}
+.login-btn{width:100%;padding:12px;background:var(--brand);color:#fff;border:none;border-radius:var(--radius);font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif}
+.login-btn:hover{background:var(--brand-dark)}
+.login-error{font-size:13px;color:var(--danger);margin-top:0.75rem;display:none}
+
+/* ADMIN */
+.admin-wrap{display:none}
+nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;border-bottom:1px solid var(--border);background:#fff;position:sticky;top:0;z-index:100}
+.nav-logo{font-family:'Fraunces',serif;font-size:1.25rem;font-weight:500;color:var(--brand)}
+.nav-right{display:flex;align-items:center;gap:1rem}
+.nav-tag{font-size:12px;background:var(--brand-light);color:var(--brand-dark);padding:4px 10px;border-radius:50px;font-weight:500}
+.logout-btn{font-size:13px;color:var(--muted);cursor:pointer;background:none;border:none;font-family:'DM Sans',sans-serif}
+.logout-btn:hover{color:var(--text)}
+
+.admin-body{max-width:1100px;margin:0 auto;padding:2rem}
+.admin-header{margin-bottom:2rem}
+.admin-title{font-family:'Fraunces',serif;font-size:1.5rem;font-weight:400;margin-bottom:0.25rem}
+.admin-sub{font-size:13px;color:var(--muted)}
+
+/* TABS */
+.tabs{display:flex;gap:8px;margin-bottom:1.5rem}
+.tab{padding:8px 18px;border:1px solid var(--border);border-radius:50px;font-size:13px;cursor:pointer;color:var(--muted);background:#fff;font-family:'DM Sans',sans-serif}
+.tab.active{background:var(--brand);color:#fff;border-color:var(--brand)}
+
+/* STATS ROW */
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem}
+.stat-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem}
+.stat-card-num{font-family:'Fraunces',serif;font-size:1.75rem;font-weight:500;color:var(--brand)}
+.stat-card-label{font-size:12px;color:var(--muted);margin-top:2px}
+
+/* LISTING CARDS */
+.listings-grid{display:flex;flex-direction:column;gap:1rem}
+.listing-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.listing-card.pending{border-left:3px solid #BA7517}
+.listing-card.approved{border-left:3px solid var(--brand)}
+.listing-card.denied{border-left:3px solid var(--danger)}
+.lc-top{display:grid;grid-template-columns:120px 1fr auto;gap:1rem;padding:1.25rem}
+.lc-banner{width:120px;height:80px;object-fit:cover;border-radius:var(--radius);background:var(--surface);flex-shrink:0}
+.lc-banner-ph{width:120px;height:80px;border-radius:var(--radius);background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--muted)}
+.lc-info{}
+.lc-title{font-weight:500;font-size:15px;margin-bottom:4px}
+.lc-meta{font-size:12px;color:var(--muted);margin-bottom:8px}
+.lc-desc{font-size:13px;color:var(--muted);line-height:1.4}
+.lc-actions{display:flex;flex-direction:column;gap:8px;align-items:flex-end;justify-content:center}
+.lc-price{font-family:'Fraunces',serif;font-size:1.25rem;font-weight:400;margin-bottom:8px;text-align:right}
+.approve-btn{padding:8px 20px;background:var(--brand);color:#fff;border:none;border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap}
+.approve-btn:hover{background:var(--brand-dark)}
+.deny-btn{padding:8px 20px;background:transparent;color:var(--danger);border:1px solid var(--danger);border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap}
+.deny-btn:hover{background:var(--danger-light)}
+.lc-footer{padding:0.75rem 1.25rem;background:var(--surface);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--muted)}
+.status-badge{padding:2px 10px;border-radius:50px;font-size:11px;font-weight:500}
+.status-pending{background:#FAEEDA;color:#412402}
+.status-approved{background:var(--brand-light);color:var(--brand-dark)}
+.status-denied{background:var(--danger-light);color:#A32D2D}
+.empty-state{text-align:center;padding:4rem 2rem;color:var(--muted);font-size:14px}
+.empty-state div{font-family:'Fraunces',serif;font-size:1.25rem;font-weight:400;margin-bottom:0.5rem;color:var(--text)}
+.loading-state{text-align:center;padding:3rem;color:var(--muted);font-size:14px;font-style:italic}
+
+/* TOAST */
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--text);color:#fff;padding:0.875rem 1.25rem;border-radius:var(--radius);font-size:13px;z-index:999;display:none;animation:fadeIn 0.2s ease}
+.toast.show{display:block}
+.toast.success{background:var(--brand)}
+.toast.error{background:var(--danger)}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+@media(max-width:700px){
+  .stat-row{grid-template-columns:repeat(2,1fr)}
+  .lc-top{grid-template-columns:1fr;gap:0.75rem}
+  .lc-banner,.lc-banner-ph{width:100%;height:140px}
+  .lc-actions{flex-direction:row;align-items:center}
+  nav{padding:0.875rem 1rem}
+  .admin-body{padding:1rem}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-wrap" id="login-wrap">
+  <div class="login-box">
+    <div class="login-logo">minyt</div>
+    <div class="login-sub">Admin panel</div>
+    <input type="password" id="pw-input" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()"/>
+    <button class="login-btn" onclick="doLogin()">Sign in</button>
+    <div class="login-error" id="login-error">Incorrect password. Try again.</div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div class="admin-wrap" id="admin-wrap">
+  <nav>
+    <div class="nav-logo">minyt</div>
+    <div class="nav-right">
+      <span class="nav-tag">Admin</span>
+      <button class="logout-btn" onclick="doLogout()">Sign out</button>
+    </div>
+  </nav>
+
+  <div class="admin-body">
+    <div class="admin-header">
+      <div class="admin-title">Listing management</div>
+      <div class="admin-sub">Review, approve or deny submitted listings.</div>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat-card"><div class="stat-card-num" id="s-pending">—</div><div class="stat-card-label">Pending review</div></div>
+      <div class="stat-card"><div class="stat-card-num" id="s-approved">—</div><div class="stat-card-label">Approved listings</div></div>
+      <div class="stat-card"><div class="stat-card-num" id="s-denied">—</div><div class="stat-card-label">Denied</div></div>
+      <div class="stat-card"><div class="stat-card-num" id="s-total">—</div><div class="stat-card-label">Total submissions</div></div>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('pending',this)">Pending</div>
+      <div class="tab" onclick="switchTab('approved',this)">Approved</div>
+      <div class="tab" onclick="switchTab('denied',this)">Denied</div>
+      <div class="tab" onclick="switchTab('all',this)">All</div>
+    </div>
+
+    <div class="listings-grid" id="listings-grid">
+      <div class="loading-state">Loading listings...</div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var PASS = 'minytadmin123';
+var SURL = 'https://qoigwxwkhpcgisprkozg.supabase.co';
+var SKEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFvaWd3eHdraHBjZ2lzcHJrb3pnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3NDAzOTUsImV4cCI6MjA5MjMxNjM5NX0.Si-GOt97FF4Wt49E_Yf7CsgyvU2-5dHbStQu1wwQ6Ik';
+var sb = null;
+var allListings = [];
+var currentTab = 'pending';
+
+// ── AUTH ──
+function doLogin() {
+  var pw = document.getElementById('pw-input').value;
+  if(pw === PASS) {
+    sessionStorage.setItem('minyt_admin', '1');
+    document.getElementById('login-wrap').style.display = 'none';
+    document.getElementById('admin-wrap').style.display = 'block';
+    initAdmin();
+  } else {
+    document.getElementById('login-error').style.display = 'block';
+    document.getElementById('pw-input').value = '';
+  }
+}
+
+function doLogout() {
+  sessionStorage.removeItem('minyt_admin');
+  document.getElementById('login-wrap').style.display = 'flex';
+  document.getElementById('admin-wrap').style.display = 'none';
+}
+
+// Check if already logged in
+if(sessionStorage.getItem('minyt_admin') === '1') {
+  document.getElementById('login-wrap').style.display = 'none';
+  document.getElementById('admin-wrap').style.display = 'block';
+  initAdmin();
+}
+
+// ── INIT ──
+function initAdmin() {
+  var s = document.createElement('script');
+  s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';
+  s.onload = function() {
+    sb = window.supabase.createClient(SURL, SKEY);
+    loadListings();
+  };
+  s.onerror = function() {
+    showToast('Failed to connect to database.', 'error');
+  };
+  document.head.appendChild(s);
+}
+
+// ── LOAD ──
+function loadListings() {
+  document.getElementById('listings-grid').innerHTML = '<div class="loading-state">Loading listings...</div>';
+  sb.from('listings').select('*').order('created_at', {ascending:false}).then(function(res) {
+    if(res.error) { showToast('Error loading listings.', 'error'); return; }
+    allListings = res.data || [];
+    updateStats();
+    renderListings();
+  });
+}
+
+function updateStats() {
+  var pending = allListings.filter(function(l){return !l.approved && !l.denied;}).length;
+  var approved = allListings.filter(function(l){return l.approved;}).length;
+  var denied = allListings.filter(function(l){return l.denied;}).length;
+  document.getElementById('s-pending').textContent = pending;
+  document.getElementById('s-approved').textContent = approved;
+  document.getElementById('s-denied').textContent = denied;
+  document.getElementById('s-total').textContent = allListings.length;
+}
+
+// ── RENDER ──
+function switchTab(tab, el) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
+  el.classList.add('active');
+  renderListings();
+}
+
+function renderListings() {
+  var filtered = allListings;
+  if(currentTab === 'pending') filtered = allListings.filter(function(l){return !l.approved && !l.denied;});
+  else if(currentTab === 'approved') filtered = allListings.filter(function(l){return l.approved;});
+  else if(currentTab === 'denied') filtered = allListings.filter(function(l){return l.denied;});
+
+  var grid = document.getElementById('listings-grid');
+  if(!filtered.length) {
+    var label = currentTab === 'pending' ? 'No pending listings' : currentTab === 'approved' ? 'No approved listings yet' : currentTab === 'denied' ? 'No denied listings' : 'No listings yet';
+    grid.innerHTML = '<div class="empty-state"><div>'+label+'</div>Listings will appear here once sellers submit them.</div>';
+    return;
+  }
+
+  grid.innerHTML = filtered.map(function(l) {
+    var status = l.approved ? 'approved' : l.denied ? 'denied' : 'pending';
+    var statusLabel = l.approved ? 'Approved' : l.denied ? 'Denied' : 'Pending review';
+    var statusClass = 'status-'+status;
+    var bn = l.banner_url
+      ? '<img class="lc-banner" src="'+l.banner_url+'" alt="" onerror="this.style.display=\'none\'">'
+      : '<div class="lc-banner-ph">No banner</div>';
+    var date = l.created_at ? new Date(l.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : 'Unknown date';
+    var actions = '';
+    if(!l.approved && !l.denied) {
+      actions = '<button class="approve-btn" onclick="approveListing(\''+l.id+'\')">Approve</button>'
+               +'<button class="deny-btn" onclick="denyListing(\''+l.id+'\')">Deny</button>';
+    } else if(l.approved) {
+      actions = '<button class="deny-btn" onclick="denyListing(\''+l.id+'\')">Revoke</button>';
+    } else {
+      actions = '<button class="approve-btn" onclick="approveListing(\''+l.id+'\')">Re-approve</button>';
+    }
+    return '<div class="listing-card '+status+'" id="lc-'+l.id+'">'
+      +'<div class="lc-top">'
+      +bn
+      +'<div class="lc-info">'
+      +'<div class="lc-title">'+(l.title||'Untitled listing')+'</div>'
+      +'<div class="lc-meta">'+l.offer_type+' &nbsp;·&nbsp; '+(l.category||'uncategorized')+' &nbsp;·&nbsp; '+l.email+'</div>'
+      +'<div class="lc-desc">'+(l.description||'No description provided.')+'</div>'
+      +'</div>'
+      +'<div class="lc-actions">'
+      +'<div class="lc-price">$'+l.price+' <span style="font-size:12px;color:var(--muted);font-family:\'DM Sans\',sans-serif">'+(l.billing_unit||'one-time')+'</span></div>'
+      +actions
+      +'</div>'
+      +'</div>'
+      +'<div class="lc-footer">'
+      +'<span>Submitted '+date+'</span>'
+      +'<span class="status-badge '+statusClass+'">'+statusLabel+'</span>'
+      +'</div>'
+      +'</div>';
+  }).join('');
+}
+
+// ── APPROVE / DENY ──
+function approveListing(id) {
+  sb.from('listings').update({approved:true, denied:false, name: getSellerName(id)}).eq('id', id).then(function(res) {
+    if(res.error) { showToast('Error approving listing.', 'error'); return; }
+    var l = allListings.find(function(x){return x.id===id;});
+    if(l) { l.approved=true; l.denied=false; }
+    updateStats();
+    renderListings();
+    showToast('Listing approved.', 'success');
+  });
+}
+
+function denyListing(id) {
+  if(!confirm('Are you sure you want to deny this listing?')) return;
+  sb.from('listings').update({approved:false, denied:true}).eq('id', id).then(function(res) {
+    if(res.error) { showToast('Error denying listing.', 'error'); return; }
+    var l = allListings.find(function(x){return x.id===id;});
+    if(l) { l.approved=false; l.denied=true; }
+    updateStats();
+    renderListings();
+    showToast('Listing denied.', 'error');
+  });
+}
+
+function getSellerName(id) {
+  var l = allListings.find(function(x){return x.id===id;});
+  if(!l) return 'Approved seller';
+  var email = l.email || '';
+  return email.split('@')[0] || 'Approved seller';
+}
+
+// ── TOAST ──
+function showToast(msg, type) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + (type||'');
+  setTimeout(function(){t.className='toast';}, 3000);
+}
+</script>
+</body>
+</html>
