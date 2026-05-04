@@ -1,5 +1,3 @@
-import Stripe from 'stripe';
-
 export async function onRequestPost(context) {
   const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -15,24 +13,48 @@ export async function onRequestPost(context) {
       return new Response(JSON.stringify({ error: 'Missing seller_id or email' }), { status: 400, headers: corsHeaders });
     }
 
-    const stripe = new Stripe(context.env.STRIPE_SECRET_KEY);
+    const accountParams = new URLSearchParams();
+    accountParams.append('type', 'express');
+    accountParams.append('email', email);
+    accountParams.append('capabilities[card_payments][requested]', 'true');
+    accountParams.append('capabilities[transfers][requested]', 'true');
+    accountParams.append('metadata[mentigo_seller_id]', seller_id);
 
-    const account = await stripe.accounts.create({
-      type: 'express',
-      email,
-      capabilities: {
-        card_payments: { requested: true },
-        transfers: { requested: true }
+    const accountRes = await fetch('https://api.stripe.com/v1/accounts', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${context.env.STRIPE_SECRET_KEY}`,
+        'Content-Type': 'application/x-www-form-urlencoded'
       },
-      metadata: { mentigo_seller_id: seller_id }
+      body: accountParams.toString()
     });
 
-    const accountLink = await stripe.accountLinks.create({
-      account: account.id,
-      refresh_url: 'https://getminyt.com/account.html?reauth=true',
-      return_url: 'https://getminyt.com/account.html?connected=true',
-      type: 'account_onboarding'
+    const account = await accountRes.json();
+
+    if (account.error) {
+      return new Response(JSON.stringify({ error: account.error.message }), { status: 400, headers: corsHeaders });
+    }
+
+    const linkParams = new URLSearchParams();
+    linkParams.append('account', account.id);
+    linkParams.append('refresh_url', 'https://getminyt.com/account.html?reauth=true');
+    linkParams.append('return_url', 'https://getminyt.com/account.html?connected=true');
+    linkParams.append('type', 'account_onboarding');
+
+    const linkRes = await fetch('https://api.stripe.com/v1/account_links', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${context.env.STRIPE_SECRET_KEY}`,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: linkParams.toString()
     });
+
+    const accountLink = await linkRes.json();
+
+    if (accountLink.error) {
+      return new Response(JSON.stringify({ error: accountLink.error.message }), { status: 400, headers: corsHeaders });
+    }
 
     return new Response(JSON.stringify({ account_id: account.id, onboarding_url: accountLink.url }), { status: 200, headers: corsHeaders });
 
