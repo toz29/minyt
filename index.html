@@ -14,13 +14,13 @@
 <meta property="og:description" content="Learn any skill from someone who's actually done it. Discover mentors, courses and coaching across every niche.">
 <meta property="og:url" content="https://getminyt.com">
 <meta name="robots" content="index, follow">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--brand:#1D9E75;--brand-light:#E1F5EE;--brand-dark:#0F6E56;--text:#1a1a1a;--muted:#6b7280;--bg:#fff;--surface:#f9f9f7;--border:#e5e5e3;--radius:10px;--radius-lg:14px}
+:root{--brand:#6366F1;--brand-light:#EEF2FF;--brand-dark:#4338CA;--text:#1a1a1a;--muted:#6b7280;--bg:#fff;--surface:#f9f9f7;--border:#e5e5e3;--radius:10px;--radius-lg:14px}
 body{font-family:'DM Sans',sans-serif;color:var(--text);background:#fff;min-height:100vh}
 nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;border-bottom:1px solid var(--border);position:sticky;top:0;background:#fff;z-index:100}
-.nav-logo{font-family:'Fraunces',serif;font-size:1.4rem;font-weight:500;color:var(--brand);cursor:pointer}
+.nav-logo{font-family:'Space Grotesk',sans-serif;font-size:1.4rem;font-weight:500;color:var(--brand);cursor:pointer}
 .nav-links{display:flex;gap:1.5rem;align-items:center}
 .nav-link{font-size:14px;color:var(--muted);cursor:pointer}
 .nav-link:hover{color:var(--text)}
@@ -28,7 +28,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 .nav-btn:hover{background:var(--brand-dark)}
 .hero{padding:4rem 2rem 2.5rem;text-align:center;max-width:680px;margin:0 auto}
 .hero-eyebrow{font-size:12px;font-weight:500;color:var(--brand);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:1rem}
-.hero h1{font-family:'Fraunces',serif;font-size:2.6rem;font-weight:400;line-height:1.15;margin-bottom:1rem}
+.hero h1{font-family:'Space Grotesk',sans-serif;font-size:2.6rem;font-weight:400;line-height:1.15;margin-bottom:1rem}
 .hero h1 em{font-style:italic;color:var(--brand)}
 .hero p{font-size:1rem;color:var(--muted);margin-bottom:2rem;line-height:1.6}
 .search-wrap{display:flex;gap:8px;max-width:500px;margin:0 auto 1.75rem}
@@ -36,22 +36,22 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 .search-wrap input:focus{outline:none;border-color:var(--brand)}
 .search-wrap button{padding:12px 22px;background:var(--brand);color:#fff;border:none;border-radius:var(--radius);font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap}
 .search-wrap button:hover{background:var(--brand-dark)}
-.cat-nav{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding:0 2rem 2rem}
+.cat-nav{display:none}
 .cat-pill{padding:7px 16px;border:1px solid var(--border);border-radius:50px;font-size:13px;cursor:pointer;color:var(--muted);background:#fff;transition:all 0.15s;font-family:'DM Sans',sans-serif}
 .cat-pill:hover,.cat-pill.active{background:var(--brand-light);border-color:var(--brand);color:var(--brand-dark)}
-.stats{display:flex;border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:var(--surface)}
+.stats{display:none}
 .stat{flex:1;text-align:center;padding:1.25rem 1rem;border-right:1px solid var(--border)}
 .stat:last-child{border-right:none}
-.stat-num{font-family:'Fraunces',serif;font-size:1.75rem;font-weight:500;color:var(--brand)}
+.stat-num{font-family:'Space Grotesk',sans-serif;font-size:1.75rem;font-weight:500;color:var(--brand)}
 .stat-label{font-size:12px;color:var(--muted);margin-top:2px}
-.banner{background:var(--brand-light);border-bottom:1px solid #9FE1CB;padding:1rem 2rem;display:flex;align-items:center;gap:10px;font-size:13px;color:#085041}
+.banner{background:var(--brand-light);border-bottom:1px solid #C7D2FE;padding:1rem 2rem;display:flex;align-items:center;gap:10px;font-size:13px;color:#312E81}
 .banner-dot{width:8px;height:8px;border-radius:50%;background:var(--brand);flex-shrink:0}
 .banner-btn{padding:8px 18px;background:var(--brand);color:#fff;border:none;border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap}
 .banner-btn:hover{background:var(--brand-dark)}
 .categories-wrap{padding:1rem 0 2rem}
 .cat-row{margin-bottom:0.5rem}
 .cat-row-header{display:flex;align-items:center;justify-content:space-between;padding:1.25rem 2rem 0.75rem}
-.cat-row-title{font-family:'Fraunces',serif;font-size:1.2rem;font-weight:400;display:flex;align-items:center;gap:8px}
+.cat-row-title{font-family:'Space Grotesk',sans-serif;font-size:1.2rem;font-weight:400;display:flex;align-items:center;gap:8px}
 .cat-row-icon{width:18px;height:18px;opacity:0.6;flex-shrink:0}
 .cat-row-see{font-size:13px;color:var(--brand);cursor:pointer}
 .scroll-wrap{position:relative}
@@ -68,7 +68,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 .card-banner-ph{width:100%;height:120px;display:flex;align-items:center;justify-content:center}
 .card-body{padding:0.875rem 1rem 1rem}
 .card-profile{display:flex;align-items:center;gap:10px;margin-top:-26px;margin-bottom:8px}
-.avatar{width:44px;height:44px;border-radius:50%;border:3px solid #fff;display:flex;align-items:center;justify-content:center;font-weight:500;font-size:12px;flex-shrink:0;overflow:hidden;background:#9FE1CB;color:#085041}
+.avatar{width:44px;height:44px;border-radius:50%;border:3px solid #fff;display:flex;align-items:center;justify-content:center;font-weight:500;font-size:12px;flex-shrink:0;overflow:hidden;background:#C7D2FE;color:#312E81}
 .avatar img{width:100%;height:100%;object-fit:cover}
 .card-name{font-weight:500;font-size:13px;margin-bottom:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .card-handle{font-size:11px;color:var(--muted)}
@@ -82,26 +82,26 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 .badge-new{padding:2px 8px;border-radius:50px;font-size:10px;font-weight:500;background:#FAEEDA;color:#412402}
 .badge-featured{padding:2px 8px;border-radius:50px;font-size:10px;font-weight:500;background:#CECBF6;color:#26215C}
 .badge-sample{padding:2px 8px;border-radius:50px;font-size:10px;font-weight:500;background:#F1EFE8;color:#5F5E5A;border:1px solid #D3D1C7}
-.price{font-family:'Fraunces',serif;font-size:1rem;font-weight:400}
+.price{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:400}
 .price span{font-size:10px;color:var(--muted);font-family:'DM Sans',sans-serif}
 .search-section{padding:2rem;max-width:1200px;margin:0 auto}
 .search-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.25rem}
 .tiers-wrap{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:3rem 2rem}
 .tiers-inner{max-width:900px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center}
 .tiers-eyebrow{font-size:11px;font-weight:500;color:var(--brand);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:0.75rem}
-.tiers-title{font-family:'Fraunces',serif;font-size:1.75rem;font-weight:400;line-height:1.2;margin-bottom:1rem}
+.tiers-title{font-family:'Space Grotesk',sans-serif;font-size:1.75rem;font-weight:400;line-height:1.2;margin-bottom:1rem}
 .tiers-sub{font-size:14px;color:var(--muted);line-height:1.6}
 .tiers-right{display:flex;flex-direction:column;gap:10px}
 .tier{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between}
 .tier-range{font-size:14px;font-weight:500;margin-bottom:2px}
 .tier-label{font-size:12px;color:var(--muted)}
-.tier-pct{font-family:'Fraunces',serif;font-size:1.75rem;font-weight:500;color:var(--muted)}
-.tier-mid .tier-pct{color:var(--brand-dark)}
-.tier-top{border-color:#9FE1CB;background:var(--brand-light)}
-.tier-top .tier-range{color:var(--brand-dark)}
+.tier-pct{font-family:'Space Grotesk',sans-serif;font-size:1.75rem;font-weight:500;color:var(--brand)}
+.tier-mid .tier-pct{color:var(--brand)}
+.tier-top{border-color:var(--border);background:#fff}
+.tier-top .tier-range{color:var(--text)}
 .tier-pct-top{color:var(--brand)}
-.cta{background:var(--brand-light);padding:3rem 2rem;text-align:center;border-top:1px solid #9FE1CB}
-.cta h2{font-family:'Fraunces',serif;font-size:1.8rem;font-weight:400;margin-bottom:0.4rem}
+.cta{background:var(--brand-light);padding:3rem 2rem;text-align:center;border-top:1px solid #C7D2FE}
+.cta h2{font-family:'Space Grotesk',sans-serif;font-size:1.8rem;font-weight:400;margin-bottom:0.4rem}
 .cta-motto{font-size:15px;color:var(--brand-dark);font-weight:500;margin-bottom:0.75rem}
 .cta p{font-size:14px;color:var(--muted);margin-bottom:1.5rem}
 .cta-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
@@ -109,12 +109,12 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 .btn-primary:hover{background:var(--brand-dark)}
 .btn-outline{padding:12px 26px;background:transparent;color:var(--brand);border:1.5px solid var(--brand);border-radius:var(--radius);font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif}
 footer{padding:1.5rem 2rem;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--muted)}
-.footer-logo{font-family:'Fraunces',serif;font-size:1rem;color:var(--brand)}
+.footer-logo{font-family:'Space Grotesk',sans-serif;font-size:1rem;color:var(--brand)}
 .form-outer{display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;max-width:1000px;margin:0 auto;padding:2.5rem 2rem;align-items:start}
 .form-left{position:sticky;top:80px}
 .back-link{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);cursor:pointer;margin-bottom:1.5rem}
 .back-link:hover{color:var(--text)}
-.form-title{font-family:'Fraunces',serif;font-size:1.5rem;font-weight:400;margin-bottom:0.25rem}
+.form-title{font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:400;margin-bottom:0.25rem}
 .form-sub{font-size:13px;color:var(--muted);margin-bottom:1.75rem;line-height:1.5}
 .progress-bar{display:flex;gap:6px;margin-bottom:1.75rem}
 .prog-step{flex:1;height:3px;border-radius:2px;background:var(--border);transition:background 0.3s}
@@ -132,7 +132,7 @@ footer{padding:1.5rem 2rem;border-top:1px solid var(--border);display:flex;align
 .upload-prev{width:100%;height:100px;object-fit:cover;border-radius:var(--radius);margin-top:8px;display:none}
 .av-prev{width:52px;height:52px;border-radius:50%;object-fit:cover;margin-top:8px;display:none;border:2px solid var(--brand)}
 .price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1rem}
-.price-opt{padding:10px 8px;border:1px solid var(--border);border-radius:var(--radius);font-size:14px;font-weight:500;text-align:center;cursor:pointer;transition:all 0.15s;font-family:'Fraunces',serif}
+.price-opt{padding:10px 8px;border:1px solid var(--border);border-radius:var(--radius);font-size:14px;font-weight:500;text-align:center;cursor:pointer;transition:all 0.15s;font-family:'Space Grotesk',sans-serif}
 .price-opt:hover,.price-opt.sel{border-color:var(--brand);background:var(--brand-light);color:var(--brand-dark)}
 .step-nav{display:flex;gap:8px;margin-top:1.25rem}
 .btn-next{flex:1;padding:12px;background:var(--brand);color:#fff;border:none;border-radius:var(--radius);font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif}
@@ -146,17 +146,17 @@ footer{padding:1.5rem 2rem;border-top:1px solid var(--border);display:flex;align
 .prev-banner{width:100%;height:120px;background:var(--surface)}
 .prev-body{padding:0.875rem 1rem 1rem}
 .prev-profile{display:flex;align-items:center;gap:10px;margin-top:-24px;margin-bottom:8px}
-.prev-av{width:44px;height:44px;border-radius:50%;border:3px solid #fff;background:#9FE1CB;display:flex;align-items:center;justify-content:center;font-weight:500;font-size:12px;color:#085041;overflow:hidden;flex-shrink:0}
+.prev-av{width:44px;height:44px;border-radius:50%;border:3px solid #fff;background:#C7D2FE;display:flex;align-items:center;justify-content:center;font-weight:500;font-size:12px;color:#312E81;overflow:hidden;flex-shrink:0}
 .prev-av img{width:100%;height:100%;object-fit:cover}
 .prev-name{font-weight:500;font-size:13px;padding-top:14px;color:var(--border)}
 .prev-title{font-size:13px;font-weight:500;margin:6px 0 3px;color:var(--border)}
 .prev-desc{font-size:11px;color:var(--border);margin-bottom:10px;line-height:1.4}
 .prev-footer{display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);padding-top:8px}
-.prev-price{font-family:'Fraunces',serif;font-size:1rem;color:var(--border)}
-.success-box{background:var(--brand-light);border:1px solid #9FE1CB;border-radius:var(--radius-lg);padding:2rem;text-align:center}
+.prev-price{font-family:'Space Grotesk',sans-serif;font-size:1rem;color:var(--border)}
+.success-box{background:var(--brand-light);border:1px solid #C7D2FE;border-radius:var(--radius-lg);padding:2rem;text-align:center}
 .success-icon{width:48px;height:48px;border-radius:50%;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;margin:0 auto 1rem}
-.success-box h3{font-family:'Fraunces',serif;font-weight:400;font-size:1.25rem;margin-bottom:0.5rem}
-.success-box p{font-size:13px;color:#085041}
+.success-box h3{font-family:'Space Grotesk',sans-serif;font-weight:400;font-size:1.25rem;margin-bottom:0.5rem}
+.success-box p{font-size:13px;color:#312E81}
 /* MODAL */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.55);backdrop-filter:blur(5px);z-index:200;display:none;align-items:center;justify-content:center;padding:1.5rem}
 .overlay.show{display:flex}
@@ -167,19 +167,19 @@ footer{padding:1.5rem 2rem;border-top:1px solid var(--border);display:flex;align
 .modal-banner-ph{width:100%;height:180px;border-radius:var(--radius-lg) var(--radius-lg) 0 0;display:flex;align-items:center;justify-content:center}
 .modal-body{padding:1.5rem}
 .modal-profile{display:flex;align-items:flex-start;gap:14px;margin-top:-36px;margin-bottom:1.25rem}
-.modal-av{width:64px;height:64px;border-radius:50%;border:4px solid #fff;display:flex;align-items:center;justify-content:center;font-weight:500;font-size:16px;flex-shrink:0;overflow:hidden;background:#9FE1CB;color:#085041;cursor:pointer}
+.modal-av{width:64px;height:64px;border-radius:50%;border:4px solid #fff;display:flex;align-items:center;justify-content:center;font-weight:500;font-size:16px;flex-shrink:0;overflow:hidden;background:#C7D2FE;color:#312E81;cursor:pointer}
 .modal-av:hover{opacity:0.85}
 .modal-av img{width:100%;height:100%;object-fit:cover}
 .modal-identity{padding-top:24px}
 .modal-name{font-weight:500;font-size:15px;cursor:pointer;color:var(--text)}
 .modal-name:hover{color:var(--brand);text-decoration:underline}
 .modal-handle{font-size:13px;color:var(--muted)}
-.modal-title{font-family:'Fraunces',serif;font-size:1.4rem;font-weight:400;margin-bottom:0.5rem;line-height:1.3}
+.modal-title{font-family:'Space Grotesk',sans-serif;font-size:1.4rem;font-weight:400;margin-bottom:0.5rem;line-height:1.3}
 .modal-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:0.875rem}
 .modal-stars{font-size:13px;color:#BA7517;margin-bottom:1rem}
 .modal-desc{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:1.5rem}
 .modal-price-row{display:flex;align-items:center;justify-content:space-between;padding:1.25rem;background:var(--surface);border-radius:var(--radius);margin-bottom:1rem}
-.modal-price-num{font-family:'Fraunces',serif;font-size:2rem;font-weight:400}
+.modal-price-num{font-family:'Space Grotesk',sans-serif;font-size:2rem;font-weight:400}
 .modal-price-unit{font-size:13px;color:var(--muted);margin-top:2px}
 .modal-buy-btn{padding:13px 28px;background:var(--brand);color:#fff;border:none;border-radius:var(--radius);font-size:15px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif}
 .modal-buy-btn:hover{background:var(--brand-dark)}
@@ -193,9 +193,9 @@ footer{padding:1.5rem 2rem;border-top:1px solid var(--border);display:flex;align
 .p-modal{background:#fff;border-radius:var(--radius-lg);max-width:700px;width:100%;max-height:90vh;overflow-y:auto;-ms-overflow-style:none;scrollbar-width:none;animation:slideUp 0.2s ease}
 .p-modal::-webkit-scrollbar{display:none}
 .p-header{padding:2rem 2rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:16px;position:relative}
-.p-av{width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:500;font-size:20px;flex-shrink:0;overflow:hidden;background:#9FE1CB;color:#085041}
+.p-av{width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:500;font-size:20px;flex-shrink:0;overflow:hidden;background:#C7D2FE;color:#312E81}
 .p-av img{width:100%;height:100%;object-fit:cover}
-.p-name{font-family:'Fraunces',serif;font-size:1.4rem;font-weight:400}
+.p-name{font-family:'Space Grotesk',sans-serif;font-size:1.4rem;font-weight:400}
 .p-handle{font-size:14px;color:var(--muted);margin-top:2px}
 .p-listings{padding:1.25rem 2rem 2rem}
 .p-listings-label{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:1rem}
@@ -203,6 +203,8 @@ footer{padding:1.5rem 2rem;border-top:1px solid var(--border);display:flex;align
 .p-close{position:absolute;top:14px;right:14px;width:32px;height:32px;border-radius:50%;background:var(--surface);color:var(--text);border:1px solid var(--border);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .p-close:hover{border-color:var(--text)}
 
+.nav-create{padding:7px 14px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;font-weight:500;color:var(--text);cursor:pointer;transition:all 0.2s;text-decoration:none}
+.nav-create:hover{border-color:var(--brand);color:var(--brand);box-shadow:0 0 12px rgba(99,102,241,0.25)}
 .nav-account{position:relative}
 .nav-account-btn{width:34px;height:34px;border-radius:50%;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s;flex-shrink:0}
 .nav-account-btn:hover{border-color:var(--brand)}
@@ -215,6 +217,12 @@ footer{padding:1.5rem 2rem;border-top:1px solid var(--border);display:flex;align
 .dropdown-item{display:block;width:100%;padding:9px 10px;font-size:13px;color:var(--text);cursor:pointer;border:none;background:none;font-family:'DM Sans',sans-serif;text-align:left;border-radius:var(--radius);text-decoration:none}
 .dropdown-item:hover{background:var(--surface);color:var(--brand)}
 .dropdown-divider{height:1px;background:var(--border);margin:4px 0}
+
+.ticker-bar{background:var(--brand);overflow:hidden;padding:8px 0;white-space:nowrap;position:relative}
+.ticker-track{display:inline-flex;animation:tickerScroll 20s linear infinite}
+.ticker-item{display:inline-flex;align-items:center;gap:6px;padding:0 2rem;font-size:13px;font-weight:500;color:#fff;letter-spacing:0.2px}
+.ticker-dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,0.4);flex-shrink:0}
+@keyframes tickerScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 .hidden{display:none}
 @media(max-width:700px){
   nav{padding:0.875rem 1rem}
@@ -238,27 +246,40 @@ footer{padding:1.5rem 2rem;border-top:1px solid var(--border);display:flex;align
 </head>
 <body>
 
+<div class="ticker-bar">
+  <div class="ticker-track">
+    <span class="ticker-item">Create for free</span><span class="ticker-dot"></span>
+    <span class="ticker-item">10/8/6% commission</span><span class="ticker-dot"></span>
+    <span class="ticker-item">Verified reviews only</span><span class="ticker-dot"></span>
+    <span class="ticker-item">5 launch partner spots left</span><span class="ticker-dot"></span>
+    <span class="ticker-item">Create for free</span><span class="ticker-dot"></span>
+    <span class="ticker-item">10/8/6% commission</span><span class="ticker-dot"></span>
+    <span class="ticker-item">Verified reviews only</span><span class="ticker-dot"></span>
+    <span class="ticker-item">5 launch partner spots left</span><span class="ticker-dot"></span>
+  </div>
+</div>
 <nav>
   <div class="nav-logo" onclick="showBrowse()">minyt</div>
   <div class="nav-links">
-    <span class="nav-link" onclick="showBrowse()">Browse</span>
-    <span class="nav-link" onclick="window.location.href='https://getminyt.com/create-listing.html'">List your offer</span>
-    <button class="nav-btn" onclick="window.location.href='https://getminyt.com/account.html'">Get started</button>
+    
+    <span class="nav-create" onclick="window.location.href='https://getminyt.com/create-listing.html'">Create offer</span>
+    
     <div class="nav-account">
       <div class="nav-account-btn" id="nav-acct-btn" onclick="toggleAccountMenu()" title="Account">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
       </div>
       <div class="account-dropdown" id="account-dropdown">
         <div id="dropdown-loggedout">
-          <div class="dropdown-label">Join Minyt</div>
-          <a class="dropdown-item" href="https://getminyt.com/account.html">My account</a>
-          <a class="dropdown-item" href="https://getminyt.com/create-listing.html">Create listing</a>
+          <a class="dropdown-item" href="https://getminyt.com/account.html">Sign up</a>
+          <a class="dropdown-item" href="https://getminyt.com/account.html">Log in</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="https://getminyt.com/create-listing.html">Create offer</a>
         </div>
         <div id="dropdown-loggedin" style="display:none">
           <div class="dropdown-label" id="dropdown-email" style="color:var(--text);font-size:12px;text-transform:none;letter-spacing:0"></div>
           <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="https://getminyt.com/seller-dashboard.html">My dashboard</a>
-          <a class="dropdown-item" href="https://getminyt.com/buyer-portal.html">My purchases</a>
+          <a class="dropdown-item" href="https://getminyt.com/account.html">My account</a>
+          <a class="dropdown-item" href="https://getminyt.com/create-listing.html">Create offer</a>
           <div class="dropdown-divider"></div>
           <div class="dropdown-item" onclick="signOutAll()" style="color:var(--muted)">Sign out</div>
         </div>
@@ -270,9 +291,8 @@ footer{padding:1.5rem 2rem;border-top:1px solid var(--border);display:flex;align
 <!-- BROWSE VIEW -->
 <div id="view-browse">
   <div class="hero">
-    <div class="hero-eyebrow">Make money together.</div>
-    <h1>Learn any skill from someone who's <em>actually done it</em></h1>
-    <p>Courses, coaching calls, communities and programs from real mentors across every niche. Discover people you'd never find otherwise.</p>
+    <h1>Learn from someone who's<br>actually done it.</h1>
+    <p style="color:var(--brand);font-size:1.1rem;font-weight:500">Or teach what you know.</p>
     <div class="search-wrap">
       <input type="text" id="search-input" placeholder="Search Amazon FBA, real estate, coding..." oninput="handleSearch()"/>
       <button onclick="handleSearch()">Search</button>
@@ -289,7 +309,7 @@ footer{padding:1.5rem 2rem;border-top:1px solid var(--border);display:flex;align
   </div>
 
   <div class="stats">
-    <div class="stat"><div class="stat-num" id="stat-listings">10+</div><div class="stat-label">Active listings</div></div>
+    <div class="stat"><div class="stat-num" id="stat-listings">10+</div><div class="stat-label">Active offers</div></div>
     <div class="stat"><div class="stat-num" id="stat-creators">10+</div><div class="stat-label">Creators</div></div>
     <div class="stat" style="display:flex;align-items:center;justify-content:center"><button class="banner-btn" onclick="window.location.href='https://getminyt.com/create-listing.html'">List your offer — it's free</button></div>
     <div class="stat"><div class="stat-num">10%</div><div class="stat-label">Starting commission</div></div>
@@ -303,7 +323,7 @@ footer{padding:1.5rem 2rem;border-top:1px solid var(--border);display:flex;align
   <!-- SEARCH RESULTS -->
   <div id="search-results" class="search-section hidden">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;padding:0 2rem">
-      <div style="font-family:'Fraunces',serif;font-size:1.2rem;font-weight:400" id="search-label">Results</div>
+      <div style="font-family:'Space Grotesk',sans-serif;font-size:1.2rem;font-weight:400" id="search-label">Results</div>
       <span style="font-size:13px;color:var(--brand);cursor:pointer" onclick="clearSearch()">Clear search</span>
     </div>
     <div class="search-grid" id="search-grid" style="padding:0 2rem 2rem"></div>
@@ -315,7 +335,7 @@ footer{padding:1.5rem 2rem;border-top:1px solid var(--border);display:flex;align
       <div class="cat-row-header">
         <div class="cat-row-title">
           <svg class="cat-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-          Featured sellers
+          Featured creators
         </div>
         <span class="cat-row-see" style="font-size:12px;color:var(--muted)">Ranked by sales and verified reviews</span>
       </div>
@@ -352,33 +372,31 @@ footer{padding:1.5rem 2rem;border-top:1px solid var(--border);display:flex;align
       <div>
         <div class="tiers-eyebrow">Commission structure</div>
         <div class="tiers-title">A commission structure that rewards you.</div>
-        <p class="tiers-sub">Your rate drops automatically as your revenue grows, based on dollars earned not number of sales. High ticket or low ticket, the reward is the same.</p>
+        <p class="tiers-sub">Your rate drops automatically as your revenue grows, based on total dollars earned.</p>
         <p class="tiers-sub" style="margin-top:0.75rem;padding-top:0.75rem;border-top:1px solid var(--border);font-size:13px">The more you earn, the more you keep.</p>
       </div>
       <div class="tiers-right">
         <div class="tier"><div><div class="tier-range">$0 — $50,000 in sales</div><div class="tier-label">Getting started</div></div><div class="tier-pct">10%</div></div>
         <div class="tier tier-mid"><div><div class="tier-range">$50,000 — $100,000 in sales</div><div class="tier-label">Growing</div></div><div class="tier-pct">8%</div></div>
         <div class="tier tier-top"><div><div class="tier-range">$100,000+ in sales</div><div class="tier-label">Top performer</div></div><div class="tier-pct tier-pct-top">6%</div></div>
-        <p style="font-size:11px;color:var(--muted);margin-top:0.5rem;line-height:1.5">*Commission rates apply to sale amount only. Stripe processing fees and taxes are the seller's responsibility.</p>
+        <p style="font-size:11px;color:var(--muted);margin-top:0.5rem;line-height:1.5">*Commission rates apply to sale amount only. Stripe processing fees and taxes are the creator's responsibility.</p>
       </div>
     </div>
   </div>
 
   <div class="cta">
-    <h2>Make money together.</h2>
-    <p class="cta-motto">Free to list. We only earn when you do.</p>
-    <p>Reach buyers who wouldn't have found you otherwise. Commission drops automatically as you scale.</p>
+    <h2>Ready to get started?</h2>
+    <p class="cta-motto">Learn a new skill or share what you know.</p>
     <div class="cta-btns">
-      <button class="btn-primary" onclick="window.location.href='https://getminyt.com/create-listing.html'">Post a listing — it's free</button>
-      <button class="btn-outline" onclick="document.getElementById('tiers').scrollIntoView({behavior:'smooth'})">See commission tiers</button>
+      <button class="btn-primary" onclick="window.scrollTo({top:0,behavior:'smooth'})">Start learning</button>
+      <button class="btn-outline" onclick="window.location.href='https://getminyt.com/create-listing.html'">Create offer</button>
+    </div>
+    <div style="margin-top:2.5rem;padding-top:1.5rem;border-top:1px solid #C7D2FE;display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--muted)">
+      <div class="footer-logo">minyt</div>
+      <div>© 2025 Minyt</div>
+      <div>hello@getminyt.com</div>
     </div>
   </div>
-
-  <footer>
-    <div class="footer-logo">minyt</div>
-    <div>© 2025 Minyt · Make money together.</div>
-    <div>hello@minyt.com</div>
-  </footer>
 </div>
 
 <!-- LIST VIEW -->
@@ -397,9 +415,9 @@ footer{padding:1.5rem 2rem;border-top:1px solid var(--border);display:flex;align
         <div class="success-box">
           <div class="success-icon">✓</div>
           <h3>You're on the list!</h3>
-          <p>We'll review your listing and get you live within 24 hours.</p>
+          <p>We'll review your offer and get you live within 24 hours.</p>
         </div>
-        <div style="text-align:center;margin-top:1.5rem"><button class="btn-primary" onclick="showBrowse()">Browse listings</button></div>
+        <div style="text-align:center;margin-top:1.5rem"><button class="btn-primary" onclick="showBrowse()">Browse offers</button></div>
       </div>
       <div id="step1">
         <div class="step-label">Step 1 of 3 — Visuals</div>
@@ -462,8 +480,8 @@ footer{padding:1.5rem 2rem;border-top:1px solid var(--border);display:flex;align
           <div style="font-size:11px;color:var(--muted);margin-top:5px">Buyers receive this link after purchase. Can be a Discord server, booking page, course link or anything else.</div>
         </div>
         <div class="field"><label>Your email (for listing approval)</label><input type="email" id="femail" placeholder="you@example.com"/></div>
-        <div class="step-nav"><button class="btn-back-s" onclick="goStep(2)">← Back</button><button class="btn-next" id="sbtn" onclick="submitListing()">Submit listing</button></div>
-        <div class="form-note">By submitting you agree to Minyt's seller terms. Commission starts at 10% and drops as you scale.</div>
+        <div class="step-nav"><button class="btn-back-s" onclick="goStep(2)">← Back</button><button class="btn-next" id="sbtn" onclick="submitListing()">Submit offer</button></div>
+        <div class="form-note">By submitting you agree to Minyt's creator terms. Commission starts at 10% and drops as you scale.</div>
       </div>
     </div>
     <div>
@@ -477,12 +495,12 @@ footer{padding:1.5rem 2rem;border-top:1px solid var(--border);display:flex;align
           </div>
           <div style="display:flex;gap:4px;margin-bottom:5px"><span class="badge-verified">✓ Verified reviews</span></div>
           <div style="font-size:11px;color:#BA7517;margin-bottom:5px">☆☆☆☆☆ (0 verified)</div>
-          <div class="prev-title" id="prev-title">Your listing title</div>
+          <div class="prev-title" id="prev-title">Your offer title</div>
           <div class="prev-desc" id="prev-desc">Your description will appear here...</div>
           <div class="prev-footer"><span class="badge" id="prev-type">Offer type</span><div class="prev-price" id="prev-price">$—</div></div>
         </div>
       </div>
-      <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:10px">This is exactly how your listing will appear to buyers</p>
+      <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:10px">This is exactly how your offer will appear to buyers</p>
     </div>
   </div>
 </div>
@@ -543,7 +561,7 @@ function fScore(l){return(Math.min((l.revenue||0)/500000,1)*70)+(((l.stars||0)/5
 function buildCard(l, badge, inProfile) {
   badge = badge || '';
   inProfile = inProfile || false;
-  if(l.isSample) badge = '<span class="badge-sample">Sample listing</span>' + badge;
+  if(l.isSample) badge = '<span class="badge-sample">Sample offer</span>' + badge;
   var bn = l.banner_url
     ? '<img class="card-banner-img" src="'+l.banner_url+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">'
     : '<div class="card-banner-ph" style="background:'+catColor(l.category)+'"></div>';
@@ -575,8 +593,8 @@ function renderSpecial(data) {
   var newS = data.filter(function(l){return (l.review_count||0)<5;}).slice(0,8);
   var fr = document.getElementById('row-featured');
   var nr = document.getElementById('row-new');
-  fr.innerHTML = feat.length ? feat.map(function(l){return buildCard(l,'<span class="badge-featured">✦ Featured</span>');}).join('') : '<div style="padding:1rem 0;font-size:13px;color:var(--muted)">Featured sellers appear here once they have 5+ verified sales.</div>';
-  nr.innerHTML = newS.length ? newS.map(function(l){return buildCard(l,'<span class="badge-new">New</span>');}).join('') : '<div style="padding:1rem 0;font-size:13px;color:var(--muted)">New sellers will appear here as they join.</div>';
+  fr.innerHTML = feat.length ? feat.map(function(l){return buildCard(l,'<span class="badge-featured">✦ Featured</span>');}).join('') : '<div style="padding:1rem 0;font-size:13px;color:var(--muted)">Featured creators appear here once they have 5+ verified sales.</div>';
+  nr.innerHTML = newS.length ? newS.map(function(l){return buildCard(l,'<span class="badge-new">New</span>');}).join('') : '<div style="padding:1rem 0;font-size:13px;color:var(--muted)">New creators will appear here as they join.</div>';
 }
 
 function renderCategories(data) {
@@ -687,7 +705,7 @@ function openModal(id) {
   var av = l.avatar_url ? '<img src="'+l.avatar_url+'" alt="">' : ini(l.name);
   var sampleNote = l.isSample ? '<div class="modal-sample-note">This is a sample listing for demonstration purposes only.</div>' : '';
   var buyBtn = l.isSample
-    ? '<button class="modal-buy-btn" onclick="alert(\'This is a sample listing. Real listings will have a purchase button here.\')">Sample listing</button>'
+    ? '<button class="modal-buy-btn" onclick="alert(\'This is a sample listing. Real listings will have a purchase button here.\')">Sample offer</button>'
     : '<button class="modal-buy-btn" id="buy-btn-' + l.id + '" onclick="startCheckout(\'' + l.id + '\')" >Get access — $' + l.price + '</button>';
   document.getElementById('modal-inner').innerHTML =
     '<button class="modal-close" onclick="closeModal()">✕</button>'
@@ -699,7 +717,7 @@ function openModal(id) {
     +'</div>'
     +sampleNote
     +'<div class="modal-title">'+l.title+'</div>'
-    +'<div class="modal-badges"><span class="badge">'+l.offer_type+'</span><span class="badge-verified">✓ Verified reviews</span>'+(l.isSample?'<span class="badge-sample">Sample listing</span>':'')+'</div>'
+    +'<div class="modal-badges"><span class="badge">'+l.offer_type+'</span><span class="badge-verified">✓ Verified reviews</span>'+(l.isSample?'<span class="badge-sample">Sample offer</span>':'')+'</div>'
     +'<div class="modal-stars">'+stars+' '+(l.stars||0)+' ('+(l.review_count||0)+' verified reviews)</div>'
     +'<div class="modal-desc">'+(l.description||'No description provided.')+'</div>'
     +'<div class="modal-divider"></div>'
@@ -786,7 +804,7 @@ function updPrev() {
   var pd=document.getElementById('prev-desc');
   var pp=document.getElementById('prev-price');
   var pty=document.getElementById('prev-type');
-  if(pt){pt.textContent=t||'Your listing title';pt.style.color=t?'var(--text)':'var(--border)';}
+  if(pt){pt.textContent=t||'Your offer title';pt.style.color=t?'var(--text)':'var(--border)';}
   if(pd){pd.textContent=d||'Your description will appear here...';pd.style.color=d?'var(--muted)':'var(--border)';}
   if(pp){pp.textContent=FS.price?'$'+FS.price:'$—';pp.style.color=FS.price?'var(--text)':'var(--border)';}
   if(pty) pty.textContent=ty;
@@ -800,7 +818,7 @@ function submitListing() {
   var cat=document.getElementById('fcat').value||'';
   var unit=document.getElementById('funit').value||'one-time';
   var delivery=document.getElementById('fdelivery').value.trim();
-  if(!title){alert('Please add a listing title in step 2.');goStep(2);return;}
+  if(!title){alert('Please add an offer title in step 2.');goStep(2);return;}
   if(!FS.price){alert('Please select or enter a price.');return;}
   if(!email){alert('Please add your email.');return;}
   var btn=document.getElementById('sbtn');
@@ -832,10 +850,10 @@ function submitListing() {
       }).then(function(res){
         if(res.error) throw res.error;
         showSuccess();
-      }).catch(function(e){alert('Something went wrong. Please try again.');btn.disabled=false;btn.textContent='Submit listing';});
-    }catch(e){alert('Something went wrong. Please try again.');btn.disabled=false;btn.textContent='Submit listing';}
+      }).catch(function(e){alert('Something went wrong. Please try again.');btn.disabled=false;btn.textContent='Submit offer';});
+    }catch(e){alert('Something went wrong. Please try again.');btn.disabled=false;btn.textContent='Submit offer';}
   };
-  s.onerror=function(){alert('Connection error. Please check your internet and try again.');btn.disabled=false;btn.textContent='Submit listing';};
+  s.onerror=function(){alert('Connection error. Please check your internet and try again.');btn.disabled=false;btn.textContent='Submit offer';};
   if(window.supabase&&window.supabase.createClient){s.onload();} else {document.head.appendChild(s);}
 }
 
@@ -856,7 +874,7 @@ async function startCheckout(listingId) {
   if(btn) { btn.disabled = true; btn.textContent = 'Loading...'; }
 
   try {
-    var res = await fetch('/.netlify/functions/create-checkout', {
+    var res = await fetch('/functions/create-checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
