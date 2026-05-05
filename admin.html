@@ -4,16 +4,16 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Minyt Admin</title>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--brand:#1D9E75;--brand-light:#E1F5EE;--brand-dark:#0F6E56;--text:#1a1a1a;--muted:#6b7280;--surface:#f9f9f7;--border:#e5e5e3;--radius:10px;--radius-lg:14px;--danger:#E24B4A;--danger-light:#FCEBEB}
+:root{--brand:#6366F1;--brand-light:#EEF2FF;--brand-dark:#4338CA;--text:#1a1a1a;--muted:#6b7280;--surface:#f9f9f7;--border:#e5e5e3;--radius:10px;--radius-lg:14px;--danger:#E24B4A;--danger-light:#FCEBEB}
 body{font-family:'DM Sans',sans-serif;color:var(--text);background:var(--surface);min-height:100vh}
 
 /* LOGIN */
 .login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem}
 .login-box{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:2.5rem;width:100%;max-width:380px;text-align:center}
-.login-logo{font-family:'Fraunces',serif;font-size:1.75rem;font-weight:500;color:var(--brand);margin-bottom:0.25rem}
+.login-logo{font-family:'Space Grotesk',sans-serif;font-size:1.75rem;font-weight:500;color:var(--brand);margin-bottom:0.25rem}
 .login-sub{font-size:13px;color:var(--muted);margin-bottom:2rem}
 .login-box input{width:100%;padding:11px 14px;border:1px solid var(--border);border-radius:var(--radius);font-size:14px;font-family:'DM Sans',sans-serif;color:var(--text);background:#fff;margin-bottom:1rem}
 .login-box input:focus{outline:none;border-color:var(--brand)}
@@ -24,7 +24,7 @@ body{font-family:'DM Sans',sans-serif;color:var(--text);background:var(--surface
 /* ADMIN */
 .admin-wrap{display:none}
 nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;border-bottom:1px solid var(--border);background:#fff;position:sticky;top:0;z-index:100}
-.nav-logo{font-family:'Fraunces',serif;font-size:1.25rem;font-weight:500;color:var(--brand)}
+.nav-logo{font-family:'Space Grotesk',sans-serif;font-size:1.25rem;font-weight:500;color:var(--brand)}
 .nav-right{display:flex;align-items:center;gap:1rem}
 .nav-tag{font-size:12px;background:var(--brand-light);color:var(--brand-dark);padding:4px 10px;border-radius:50px;font-weight:500}
 .logout-btn{font-size:13px;color:var(--muted);cursor:pointer;background:none;border:none;font-family:'DM Sans',sans-serif}
@@ -32,7 +32,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 
 .admin-body{max-width:1100px;margin:0 auto;padding:2rem}
 .admin-header{margin-bottom:2rem}
-.admin-title{font-family:'Fraunces',serif;font-size:1.5rem;font-weight:400;margin-bottom:0.25rem}
+.admin-title{font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:400;margin-bottom:0.25rem}
 .admin-sub{font-size:13px;color:var(--muted)}
 
 /* TABS */
@@ -43,7 +43,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 /* STATS ROW */
 .stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem}
 .stat-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem}
-.stat-card-num{font-family:'Fraunces',serif;font-size:1.75rem;font-weight:500;color:var(--brand)}
+.stat-card-num{font-family:'Space Grotesk',sans-serif;font-size:1.75rem;font-weight:500;color:var(--brand)}
 .stat-card-label{font-size:12px;color:var(--muted);margin-top:2px}
 
 /* LISTING CARDS */
@@ -60,7 +60,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 .lc-meta{font-size:12px;color:var(--muted);margin-bottom:8px}
 .lc-desc{font-size:13px;color:var(--muted);line-height:1.4}
 .lc-actions{display:flex;flex-direction:column;gap:8px;align-items:flex-end;justify-content:center}
-.lc-price{font-family:'Fraunces',serif;font-size:1.25rem;font-weight:400;margin-bottom:8px;text-align:right}
+.lc-price{font-family:'Space Grotesk',sans-serif;font-size:1.25rem;font-weight:400;margin-bottom:8px;text-align:right}
 .approve-btn{padding:8px 20px;background:var(--brand);color:#fff;border:none;border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap}
 .approve-btn:hover{background:var(--brand-dark)}
 .deny-btn{padding:8px 20px;background:transparent;color:var(--danger);border:1px solid var(--danger);border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap}
@@ -71,7 +71,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 .status-approved{background:var(--brand-light);color:var(--brand-dark)}
 .status-denied{background:var(--danger-light);color:#A32D2D}
 .empty-state{text-align:center;padding:4rem 2rem;color:var(--muted);font-size:14px}
-.empty-state div{font-family:'Fraunces',serif;font-size:1.25rem;font-weight:400;margin-bottom:0.5rem;color:var(--text)}
+.empty-state div{font-family:'Space Grotesk',sans-serif;font-size:1.25rem;font-weight:400;margin-bottom:0.5rem;color:var(--text)}
 .loading-state{text-align:center;padding:3rem;color:var(--muted);font-size:14px;font-style:italic}
 
 /* TOAST */
@@ -116,13 +116,13 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 
   <div class="admin-body">
     <div class="admin-header">
-      <div class="admin-title">Listing management</div>
-      <div class="admin-sub">Review, approve or deny submitted listings.</div>
+      <div class="admin-title">Offer management</div>
+      <div class="admin-sub">Review, approve or deny submitted offers.</div>
     </div>
 
     <div class="stat-row">
       <div class="stat-card"><div class="stat-card-num" id="s-pending">—</div><div class="stat-card-label">Pending review</div></div>
-      <div class="stat-card"><div class="stat-card-num" id="s-approved">—</div><div class="stat-card-label">Approved listings</div></div>
+      <div class="stat-card"><div class="stat-card-num" id="s-approved">—</div><div class="stat-card-label">Approved offers</div></div>
       <div class="stat-card"><div class="stat-card-num" id="s-denied">—</div><div class="stat-card-label">Denied</div></div>
       <div class="stat-card"><div class="stat-card-num" id="s-total">—</div><div class="stat-card-label">Total submissions</div></div>
     </div>
@@ -228,8 +228,8 @@ function renderListings() {
 
   var grid = document.getElementById('listings-grid');
   if(!filtered.length) {
-    var label = currentTab === 'pending' ? 'No pending listings' : currentTab === 'approved' ? 'No approved listings yet' : currentTab === 'denied' ? 'No denied listings' : 'No listings yet';
-    grid.innerHTML = '<div class="empty-state"><div>'+label+'</div>Listings will appear here once sellers submit them.</div>';
+    var label = currentTab === 'pending' ? 'No pending offers' : currentTab === 'approved' ? 'No approved offers yet' : currentTab === 'denied' ? 'No denied offers' : 'No offers yet';
+    grid.innerHTML = '<div class="empty-state"><div>'+label+'</div>Offers will appear here once creators submit them.</div>';
     return;
   }
 
@@ -273,13 +273,13 @@ function renderListings() {
 
 // ── APPROVE / DENY ──
 function approveListing(id) {
-  sb.from('listings').update({approved:true, denied:false, name: getSellerName(id)}).eq('id', id).then(function(res) {
+  sb.from('listings').update({approved:true, denied:false, name: getCreatorName(id)}).eq('id', id).then(function(res) {
     if(res.error) { showToast('Error approving listing.', 'error'); return; }
     var l = allListings.find(function(x){return x.id===id;});
     if(l) { l.approved=true; l.denied=false; }
     updateStats();
     renderListings();
-    showToast('Listing approved.', 'success');
+    showToast('Offer approved.', 'success');
   });
 }
 
@@ -291,15 +291,15 @@ function denyListing(id) {
     if(l) { l.approved=false; l.denied=true; }
     updateStats();
     renderListings();
-    showToast('Listing denied.', 'error');
+    showToast('Offer denied.', 'error');
   });
 }
 
-function getSellerName(id) {
+function getCreatorName(id) {
   var l = allListings.find(function(x){return x.id===id;});
-  if(!l) return 'Approved seller';
+  if(!l) return 'Approved creator';
   var email = l.email || '';
-  return email.split('@')[0] || 'Approved seller';
+  return email.split('@')[0] || 'Approved creator';
 }
 
 // ── TOAST ──
