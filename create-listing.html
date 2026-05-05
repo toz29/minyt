@@ -3,19 +3,19 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Create listing — Minyt</title>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
+<title>Create offer — Minyt</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--brand:#1D9E75;--brand-light:#E1F5EE;--brand-dark:#0F6E56;--text:#1a1a1a;--muted:#6b7280;--surface:#f9f9f7;--border:#e5e5e3;--radius:10px;--radius-lg:14px;--danger:#E24B4A}
+:root{--brand:#6366F1;--brand-light:#EEF2FF;--brand-dark:#4338CA;--text:#1a1a1a;--muted:#6b7280;--surface:#f9f9f7;--border:#e5e5e3;--radius:10px;--radius-lg:14px;--danger:#E24B4A}
 body{font-family:'DM Sans',sans-serif;color:var(--text);background:var(--surface);min-height:100vh}
 nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;border-bottom:1px solid var(--border);background:#fff;position:sticky;top:0;z-index:100}
-.nav-logo{font-family:'Fraunces',serif;font-size:1.25rem;font-weight:500;color:var(--brand);cursor:pointer}
+.nav-logo{font-family:'Space Grotesk',sans-serif;font-size:1.25rem;font-weight:500;color:var(--brand);cursor:pointer}
 .nav-back{font-size:13px;color:var(--muted);cursor:pointer;text-decoration:none}
 .nav-back:hover{color:var(--text)}
 .outer{display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;max-width:1000px;margin:0 auto;padding:2.5rem 2rem;align-items:start}
 .form-side{position:sticky;top:80px}
-.form-title{font-family:'Fraunces',serif;font-size:1.5rem;font-weight:400;margin-bottom:0.25rem}
+.form-title{font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:400;margin-bottom:0.25rem}
 .form-sub{font-size:13px;color:var(--muted);margin-bottom:1.75rem;line-height:1.5}
 .progress-bar{display:flex;gap:6px;margin-bottom:1.75rem}
 .prog{flex:1;height:3px;border-radius:2px;background:var(--border);transition:background 0.3s}
@@ -34,7 +34,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 .upload-prev{width:100%;height:100px;object-fit:cover;border-radius:var(--radius);margin-top:8px;display:none}
 .av-prev{width:52px;height:52px;border-radius:50%;object-fit:cover;margin-top:8px;display:none;border:2px solid var(--brand)}
 .price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1rem}
-.price-opt{padding:10px 8px;border:1px solid var(--border);border-radius:var(--radius);font-size:14px;font-weight:500;text-align:center;cursor:pointer;transition:all 0.15s;font-family:'Fraunces',serif}
+.price-opt{padding:10px 8px;border:1px solid var(--border);border-radius:var(--radius);font-size:14px;font-weight:500;text-align:center;cursor:pointer;transition:all 0.15s;font-family:'Space Grotesk',sans-serif}
 .price-opt:hover,.price-opt.sel{border-color:var(--brand);background:var(--brand-light);color:var(--brand-dark)}
 .step-nav{display:flex;gap:8px;margin-top:1.25rem}
 .btn-next{flex:1;padding:12px;background:var(--brand);color:#fff;border:none;border-radius:var(--radius);font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif}
@@ -48,18 +48,18 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 .prev-banner{width:100%;height:120px;background:var(--surface)}
 .prev-body{padding:0.875rem 1rem 1rem}
 .prev-profile{display:flex;align-items:center;gap:10px;margin-top:-24px;margin-bottom:8px}
-.prev-av{width:44px;height:44px;border-radius:50%;border:3px solid #fff;background:#9FE1CB;display:flex;align-items:center;justify-content:center;font-weight:500;font-size:12px;color:#085041;overflow:hidden;flex-shrink:0}
+.prev-av{width:44px;height:44px;border-radius:50%;border:3px solid #fff;background:#C7D2FE;display:flex;align-items:center;justify-content:center;font-weight:500;font-size:12px;color:#312E81;overflow:hidden;flex-shrink:0}
 .prev-av img{width:100%;height:100%;object-fit:cover}
 .prev-name{font-weight:500;font-size:13px;padding-top:14px;color:var(--border)}
 .prev-title{font-size:13px;font-weight:500;margin:6px 0 3px;color:var(--border)}
 .prev-desc{font-size:11px;color:var(--border);margin-bottom:10px;line-height:1.4}
 .prev-footer{display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);padding-top:8px}
-.prev-price{font-family:'Fraunces',serif;font-size:1rem;color:var(--border)}
+.prev-price{font-family:'Space Grotesk',sans-serif;font-size:1rem;color:var(--border)}
 .badge{padding:2px 8px;border-radius:50px;font-size:10px;font-weight:500;background:var(--brand-light);color:var(--brand-dark)}
 .success-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;text-align:center;flex-direction:column}
 .success-icon{width:72px;height:72px;border-radius:50%;background:var(--brand-light);display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem}
 .success-icon svg{width:36px;height:36px;stroke:var(--brand)}
-.success-title{font-family:'Fraunces',serif;font-size:2rem;font-weight:400;margin-bottom:0.75rem}
+.success-title{font-family:'Space Grotesk',sans-serif;font-size:2rem;font-weight:400;margin-bottom:0.75rem}
 .success-sub{font-size:1rem;color:var(--muted);line-height:1.6;max-width:420px;margin:0 auto 2rem}
 .btn-primary{padding:12px 26px;background:var(--brand);color:#fff;border:none;border-radius:var(--radius);font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;display:inline-block}
 .btn-primary:hover{background:var(--brand-dark)}
@@ -83,7 +83,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 <div id="view-form">
   <div class="outer">
     <div class="form-side">
-      <div class="form-title">Create a listing</div>
+      <div class="form-title">Create an offer</div>
       <div class="form-sub">Free to list. 10% commission only when you make a sale, dropping automatically as you scale.</div>
       <div class="progress-bar">
         <div class="prog done" id="p1"></div>
@@ -169,8 +169,8 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
             <option value="/ week">Weekly</option>
           </select>
         </div>
-        <div class="step-nav"><button class="btn-back-s" onclick="goStep(2)">← Back</button><button class="btn-next" id="sbtn" onclick="submitListing()">Submit listing</button></div>
-        <div class="form-note">By submitting you agree to Minyt's seller terms. Commission starts at 10% and drops as you scale.</div>
+        <div class="step-nav"><button class="btn-back-s" onclick="goStep(2)">← Back</button><button class="btn-next" id="sbtn" onclick="submitListing()">Submit offer</button></div>
+        <div class="form-note">By submitting you agree to Minyt's creator terms. Commission starts at 10% and drops as you scale.</div>
       </div>
     </div>
 
@@ -186,12 +186,12 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
           </div>
           <div style="display:flex;gap:4px;margin-bottom:5px"><span class="badge" style="background:#E6F1FB;color:#042C53">✓ Verified reviews</span></div>
           <div style="font-size:11px;color:#BA7517;margin-bottom:5px">☆☆☆☆☆ (0 verified)</div>
-          <div class="prev-title" id="prev-title">Your listing title</div>
+          <div class="prev-title" id="prev-title">Your offer title</div>
           <div class="prev-desc" id="prev-desc">Your description will appear here...</div>
           <div class="prev-footer"><span class="badge" id="prev-type">Offer type</span><div class="prev-price" id="prev-price">$—</div></div>
         </div>
       </div>
-      <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:10px">This is exactly how your listing will appear to buyers</p>
+      <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:10px">This is exactly how your offer will appear to buyers</p>
     </div>
   </div>
 </div>
@@ -201,8 +201,8 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
   <div class="success-icon">
     <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
   </div>
-  <div class="success-title">Listing submitted.</div>
-  <p class="success-sub">We'll review your listing and get it live within 24 hours. You'll be able to see it in your account dashboard once approved.</p>
+  <div class="success-title">Offer submitted.</div>
+  <p class="success-sub">We'll review your offer and get it live within 24 hours. You'll be able to see it in your account dashboard once approved.</p>
   <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center">
     <a class="btn-primary" href="https://getminyt.com/account.html">My account</a>
     <a class="btn-primary" href="https://getminyt.com/create-listing.html" style="background:transparent;color:var(--brand);border:1.5px solid var(--brand)">Submit another</a>
@@ -226,11 +226,13 @@ function initSB(cb){
 
 initSB(function(){
   sb.auth.getSession().then(function(res){
-    if(res.data.session) {
+    if(res.data.session && res.data.session.user.email_confirmed_at) {
       currentUser=res.data.session.user;
       var name=currentUser.user_metadata?.name||currentUser.email.split('@')[0];
       document.getElementById('prev-name').textContent=name;
       document.getElementById('prev-name').style.color='var(--text)';
+    } else {
+      window.location.href='https://getminyt.com/account.html?redirect=create-listing';
     }
   });
 });
@@ -286,7 +288,7 @@ function updPrev(){
   var pd=document.getElementById('prev-desc');
   var pp=document.getElementById('prev-price');
   var pty=document.getElementById('prev-type');
-  if(pt){pt.textContent=t||'Your listing title';pt.style.color=t?'var(--text)':'var(--border)';}
+  if(pt){pt.textContent=t||'Your offer title';pt.style.color=t?'var(--text)':'var(--border)';}
   if(pd){pd.textContent=d||'Your description will appear here...';pd.style.color=d?'var(--muted)':'var(--border)';}
   if(pp){pp.textContent=FS.price?'$'+FS.price:'$—';pp.style.color=FS.price?'var(--text)':'var(--border)';}
   if(pty) pty.textContent=ty;
@@ -299,7 +301,7 @@ async function submitListing(){
   var cat=document.getElementById('fcat').value||'';
   var unit=document.getElementById('funit').value||'one-time';
   var delivery=(document.getElementById('fdelivery').value||'').trim();
-  if(!title){alert('Please add a listing title in step 2.');goStep(2);return;}
+  if(!title){alert('Please add an offer title in step 2.');goStep(2);return;}
   if(!FS.price){alert('Please select or enter a price.');return;}
   var btn=document.getElementById('sbtn');
   btn.disabled=true;btn.textContent='Submitting...';
@@ -335,7 +337,7 @@ async function submitListing(){
       document.getElementById('view-success').classList.remove('hidden');
     }catch(e){
       alert('Something went wrong. Please try again.');
-      btn.disabled=false;btn.textContent='Submit listing';
+      btn.disabled=false;btn.textContent='Submit offer';
     }
   });
 }
