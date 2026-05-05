@@ -4,16 +4,16 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>My Account — Minyt</title>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--brand:#1D9E75;--brand-light:#E1F5EE;--brand-dark:#0F6E56;--text:#1a1a1a;--muted:#6b7280;--surface:#f9f9f7;--border:#e5e5e3;--radius:10px;--radius-lg:14px;--danger:#E24B4A;--danger-light:#FCEBEB}
+:root{--brand:#6366F1;--brand-light:#EEF2FF;--brand-dark:#4338CA;--text:#1a1a1a;--muted:#6b7280;--surface:#f9f9f7;--border:#e5e5e3;--radius:10px;--radius-lg:14px;--danger:#E24B4A;--danger-light:#FCEBEB}
 body{font-family:'DM Sans',sans-serif;color:var(--text);background:var(--surface);min-height:100vh}
 .auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem}
 .auth-box{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:2.5rem;width:100%;max-width:400px}
-.auth-logo{font-family:'Fraunces',serif;font-size:1.5rem;font-weight:500;color:var(--brand);margin-bottom:0.25rem;cursor:pointer}
+.auth-logo{font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:500;color:var(--brand);margin-bottom:0.25rem;cursor:pointer}
 .auth-sub{font-size:13px;color:var(--muted);margin-bottom:2rem}
-.auth-title{font-family:'Fraunces',serif;font-size:1.25rem;font-weight:400;margin-bottom:1.5rem}
+.auth-title{font-family:'Space Grotesk',sans-serif;font-size:1.25rem;font-weight:400;margin-bottom:1.5rem}
 .field{margin-bottom:1rem}
 .field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:500}
 .field input{width:100%;padding:11px 14px;border:1px solid var(--border);border-radius:var(--radius);font-size:14px;font-family:'DM Sans',sans-serif;color:var(--text);background:#fff}
@@ -32,7 +32,7 @@ body{font-family:'DM Sans',sans-serif;color:var(--text);background:var(--surface
 .verify-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem}
 .verify-box{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:2.5rem;width:100%;max-width:400px;text-align:center}
 nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;border-bottom:1px solid var(--border);background:#fff;position:sticky;top:0;z-index:100}
-.nav-logo{font-family:'Fraunces',serif;font-size:1.25rem;font-weight:500;color:var(--brand);cursor:pointer}
+.nav-logo{font-family:'Space Grotesk',sans-serif;font-size:1.25rem;font-weight:500;color:var(--brand);cursor:pointer}
 .nav-right{display:flex;align-items:center;gap:1rem}
 .nav-account{position:relative}
 .nav-account-btn{width:34px;height:34px;border-radius:50%;background:var(--brand-light);border:1px solid var(--brand);display:flex;align-items:center;justify-content:center;cursor:pointer}
@@ -48,23 +48,23 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 .dropdown-divider{height:1px;background:var(--border);margin:4px 0}
 .dash-body{max-width:1000px;margin:0 auto;padding:2rem}
 .dash-header{margin-bottom:2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
-.dash-title{font-family:'Fraunces',serif;font-size:1.5rem;font-weight:400}
+.dash-title{font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:400}
 .connect-stripe-btn{padding:10px 20px;background:var(--brand);color:#fff;border:none;border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif}
 .connect-stripe-btn:hover{background:var(--brand-dark)}
 .stripe-connected{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--brand-dark);background:var(--brand-light);padding:8px 14px;border-radius:50px;font-weight:500}
 .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem}
 .stat-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem}
-.stat-num{font-family:'Fraunces',serif;font-size:1.75rem;font-weight:500;color:var(--brand)}
+.stat-num{font-family:'Space Grotesk',sans-serif;font-size:1.75rem;font-weight:500;color:var(--brand)}
 .stat-label{font-size:12px;color:var(--muted);margin-top:2px}
 .tier-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;margin-bottom:1.5rem}
 .tier-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem}
 .tier-title{font-size:14px;font-weight:500}
-.tier-pct{font-family:'Fraunces',serif;font-size:1.5rem;font-weight:400;color:var(--brand)}
+.tier-pct{font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:400;color:var(--brand)}
 .tier-bar-wrap{height:6px;background:var(--border);border-radius:3px;margin-bottom:0.5rem;overflow:hidden}
 .tier-bar{height:100%;background:var(--brand);border-radius:3px;transition:width 0.5s ease}
 .tier-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
 .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;margin-top:2rem}
-.section-title{font-family:'Fraunces',serif;font-size:1.2rem;font-weight:400}
+.section-title{font-family:'Space Grotesk',sans-serif;font-size:1.2rem;font-weight:400}
 .new-listing-btn{padding:9px 18px;background:var(--brand);color:#fff;border:none;border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;display:inline-block}
 .new-listing-btn:hover{background:var(--brand-dark)}
 .listing-item{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem}
@@ -82,7 +82,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 .pc-banner-ph{width:70px;height:46px;border-radius:6px;background:var(--surface)}
 .pc-title{font-size:14px;font-weight:500;margin-bottom:2px}
 .pc-meta{font-size:12px;color:var(--muted)}
-.pc-price{font-family:'Fraunces',serif;font-size:1rem;text-align:right;white-space:nowrap}
+.pc-price{font-family:'Space Grotesk',sans-serif;font-size:1rem;text-align:right;white-space:nowrap}
 .pc-actions{padding:0.75rem 1.1rem;background:var(--surface);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
 .access-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:var(--brand);color:#fff;border:none;border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none}
 .access-btn:hover{background:var(--brand-dark)}
@@ -95,7 +95,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 .overlay.show{display:flex}
 .review-modal{background:#fff;border-radius:var(--radius-lg);max-width:480px;width:100%;padding:2rem;animation:slideUp 0.2s ease}
 @keyframes slideUp{from{transform:translateY(12px);opacity:0}to{transform:translateY(0);opacity:1}}
-.review-modal-title{font-family:'Fraunces',serif;font-size:1.25rem;font-weight:400;margin-bottom:0.25rem}
+.review-modal-title{font-family:'Space Grotesk',sans-serif;font-size:1.25rem;font-weight:400;margin-bottom:0.25rem}
 .review-modal-sub{font-size:13px;color:var(--muted);margin-bottom:1.5rem}
 .star-row{display:flex;gap:6px;margin-bottom:1.25rem}
 .star{font-size:2rem;cursor:pointer;color:var(--border);transition:color 0.1s;line-height:1}
@@ -181,7 +181,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
     <div style="width:64px;height:64px;border-radius:50%;background:var(--brand-light);display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem">
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1D9E75" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
     </div>
-    <div style="font-family:'Fraunces',serif;font-size:1.25rem;font-weight:400;margin-bottom:0.5rem">Check your inbox</div>
+    <div style="font-family:'Space Grotesk',sans-serif;font-size:1.25rem;font-weight:400;margin-bottom:0.5rem">Check your inbox</div>
     <p style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:1.5rem">We sent a confirmation link to <strong id="verify-email"></strong>. Click it to verify your email and access your account.</p>
     <button class="auth-btn" onclick="resendVerification()" id="resend-btn">Resend confirmation email</button>
     <div class="auth-success" id="resend-success" style="margin-top:0.75rem">Confirmation email resent.</div>
@@ -194,7 +194,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
   <nav>
     <div class="nav-logo" onclick="window.location.href='https://getminyt.com'">minyt</div>
     <div class="nav-right">
-      <a href="https://getminyt.com/create-listing.html" style="font-size:13px;font-weight:500;color:var(--brand);text-decoration:none;border:1px solid var(--brand);padding:7px 14px;border-radius:var(--radius)">+ New listing</a>
+      <a href="https://getminyt.com/create-listing.html" style="font-size:13px;font-weight:500;color:var(--brand);text-decoration:none;border:1px solid var(--brand);padding:7px 14px;border-radius:var(--radius)">+ New offer</a>
       <div class="nav-account">
         <div class="nav-account-btn" onclick="toggleAccountMenu()" style="position:relative">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -210,7 +210,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
           </div>
           <div class="dropdown-divider"></div>
           <a class="dropdown-item" href="https://getminyt.com">Browse marketplace</a>
-          <a class="dropdown-item" href="https://getminyt.com/create-listing.html">Create listing</a>
+          <a class="dropdown-item" href="https://getminyt.com/create-listing.html">Create offer</a>
           <div class="dropdown-divider"></div>
           <div class="dropdown-item" onclick="doSignOut()" style="color:var(--muted)">Sign out</div>
         </div>
@@ -239,8 +239,8 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 
     <!-- LISTINGS -->
     <div class="section-header">
-      <div class="section-title">My listings</div>
-      <a class="new-listing-btn" href="https://getminyt.com/create-listing.html">+ New listing</a>
+      <div class="section-title">My offers</div>
+      <a class="new-listing-btn" href="https://getminyt.com/create-listing.html">+ New offer</a>
     </div>
     <div id="listings-list"></div>
 
@@ -256,7 +256,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 <div class="overlay" id="review-overlay" onclick="if(event.target===this)closeReview()">
   <div class="review-modal">
     <div class="review-modal-title" id="review-title">Leave a review</div>
-    <div class="review-modal-sub">Your review is verified and will appear on the listing.</div>
+    <div class="review-modal-sub">Your review is verified and will appear on the offer.</div>
     <div class="star-row" id="star-row">
       <span class="star" onclick="setStar(1)">★</span>
       <span class="star" onclick="setStar(2)">★</span>
@@ -424,6 +424,12 @@ document.addEventListener('click',function(e){
 });
 
 async function showDashboard(){
+  // Check if redirected from create-listing
+  var params=new URLSearchParams(window.location.search);
+  if(params.get('redirect')==='create-listing'){
+    window.location.href='https://getminyt.com/create-listing.html';
+    return;
+  }
   document.getElementById('view-login').classList.add('hidden');
   document.getElementById('view-verify').classList.add('hidden');
   document.getElementById('view-dashboard').classList.remove('hidden');
@@ -492,7 +498,7 @@ async function showDashboard(){
   // Render listings
   var ll=document.getElementById('listings-list');
   if(!activeListing.length){
-    ll.innerHTML='<div class="empty-card">No listings yet. <a href="https://getminyt.com/create-listing.html" style="color:var(--brand);font-weight:500">Submit your first listing →</a></div>';
+    ll.innerHTML='<div class="empty-card">No offers yet. <a href="https://getminyt.com/create-listing.html" style="color:var(--brand);font-weight:500">Submit your first offer →</a></div>';
   } else {
     ll.innerHTML=activeListing.map(function(l){
       var bn=l.banner_url?'<img class="listing-banner" src="'+l.banner_url+'" alt="">'
@@ -509,7 +515,7 @@ async function showDashboard(){
   // Render purchases
   var pl=document.getElementById('purchases-list');
   if(!orders.length){
-    pl.innerHTML='<div class="empty-card">No purchases yet. <a href="https://getminyt.com" style="color:var(--brand);font-weight:500">Browse listings →</a></div>';
+    pl.innerHTML='<div class="empty-card">No purchases yet. <a href="https://getminyt.com" style="color:var(--brand);font-weight:500">Browse offers →</a></div>';
   } else {
     pl.innerHTML=orders.map(function(o){
       var l=o.listings||{};
@@ -537,7 +543,7 @@ async function connectStripe(){
   var btn=document.getElementById('connect-stripe-btn');
   btn.disabled=true;btn.textContent='Connecting...';
   try{
-    var res=await fetch('/.netlify/functions/connect-seller',{
+    var res=await fetch('/functions/connect-seller',{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({seller_id:currentUser.id,email:currentUser.email})
     });
