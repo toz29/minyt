@@ -276,7 +276,14 @@ function approveListing(id) {
   sb.from('listings').update({approved:true, denied:false, name: getCreatorName(id)}).eq('id', id).then(function(res) {
     if(res.error) { showToast('Error approving listing.', 'error'); return; }
     var l = allListings.find(function(x){return x.id===id;});
-    if(l) { l.approved=true; l.denied=false; }
+    if(l) {
+      l.approved=true; l.denied=false;
+      fetch('/functions/send-email', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({type:'approved', to:l.email, title:l.title})
+      });
+    }
     updateStats();
     renderListings();
     showToast('Offer approved.', 'success');
@@ -288,7 +295,14 @@ function denyListing(id) {
   sb.from('listings').update({approved:false, denied:true}).eq('id', id).then(function(res) {
     if(res.error) { showToast('Error denying listing.', 'error'); return; }
     var l = allListings.find(function(x){return x.id===id;});
-    if(l) { l.approved=false; l.denied=true; }
+    if(l) {
+      l.approved=false; l.denied=true;
+      fetch('/functions/send-email', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({type:'denied', to:l.email, title:l.title})
+      });
+    }
     updateStats();
     renderListings();
     showToast('Offer denied.', 'error');
