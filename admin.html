@@ -278,7 +278,7 @@ function approveListing(id) {
     var l = allListings.find(function(x){return x.id===id;});
     if(l) {
       l.approved=true; l.denied=false;
-      fetch('/functions/send-email', {
+      fetch('/send-email', {
         method:'POST',
         headers:{'Content-Type':'application/json'},
         body:JSON.stringify({type:'approved', to:l.email, title:l.title})
@@ -297,7 +297,7 @@ function denyListing(id) {
     var l = allListings.find(function(x){return x.id===id;});
     if(l) {
       l.approved=false; l.denied=true;
-      fetch('/functions/send-email', {
+      fetch('/send-email', {
         method:'POST',
         headers:{'Content-Type':'application/json'},
         body:JSON.stringify({type:'denied', to:l.email, title:l.title})
