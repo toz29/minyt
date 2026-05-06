@@ -884,7 +884,7 @@ async function startCheckout(listingId) {
   if(btn) { btn.disabled = true; btn.textContent = 'Loading...'; }
 
   try {
-    var res = await fetch('/functions/create-checkout', {
+    var res = await fetch('/create-checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
