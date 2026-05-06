@@ -549,7 +549,7 @@ async function connectStripe(){
   var btn=document.getElementById('connect-stripe-btn');
   btn.disabled=true;btn.textContent='Connecting...';
   try{
-    var res=await fetch('/functions/connect-seller',{
+    var res=await fetch('/connect-seller',{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({seller_id:currentUser.id,email:currentUser.email})
     });
