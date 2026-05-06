@@ -342,7 +342,13 @@ async function doSignUp(){
   btn.disabled=true;btn.textContent='Creating account...';
   var res=await sb.auth.signUp({email,password,options:{data:{name}}});
   if(res.error){showErr('su-error',res.error.message);btn.disabled=false;btn.textContent='Create account';}
-  else{document.getElementById('su-success').style.display='block';btn.disabled=false;btn.textContent='Create account';}
+  else{
+    currentUser={email:email};
+    document.getElementById('verify-email').textContent=email;
+    document.getElementById('view-login').classList.add('hidden');
+    document.getElementById('view-verify').classList.remove('hidden');
+    btn.disabled=false;btn.textContent='Create account';
+  }
 }
 
 async function doReset(){
