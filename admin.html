@@ -291,21 +291,24 @@ function approveListing(id) {
 }
 
 function denyListing(id) {
-  if(!confirm('Are you sure you want to deny this listing?')) return;
+  var l = allListings.find(function(x){return x.id===id;});
+  var wasApproved = l && l.approved;
+  var confirmMsg = wasApproved ? 'Are you sure you want to revoke this offer?' : 'Are you sure you want to deny this offer?';
+  if(!confirm(confirmMsg)) return;
   sb.from('listings').update({approved:false, denied:true}).eq('id', id).then(function(res) {
-    if(res.error) { showToast('Error denying listing.', 'error'); return; }
-    var l = allListings.find(function(x){return x.id===id;});
+    if(res.error) { showToast('Error updating offer.', 'error'); return; }
     if(l) {
+      var emailType = wasApproved ? 'revoked' : 'denied';
       l.approved=false; l.denied=true;
       fetch('/send-email', {
         method:'POST',
         headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({type:'denied', to:l.email, title:l.title})
+        body:JSON.stringify({type:emailType, to:l.email, title:l.title})
       });
     }
     updateStats();
     renderListings();
-    showToast('Offer denied.', 'error');
+    showToast(wasApproved ? 'Offer revoked.' : 'Offer denied.', 'error');
   });
 }
 
