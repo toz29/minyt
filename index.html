@@ -395,11 +395,9 @@ footer{padding:1.5rem 2rem;border-top:1px solid var(--border);display:flex;align
   </div>
 
   <div class="cta">
-    <h2>Ready to get started?</h2>
-    <p class="cta-motto">Learn a new skill or share what you know.</p>
-    <div class="cta-btns">
-      <button class="btn-primary" onclick="window.scrollTo({top:0,behavior:'smooth'})">Start learning</button>
-      <button class="btn-outline" onclick="window.location.href='https://getminyt.com/create-listing.html'">Create offer</button>
+    <div class="cta-btns" style="flex-direction:column;max-width:320px;margin:0 auto;gap:12px">
+      <button class="btn-primary" onclick="window.scrollTo({top:0,behavior:'smooth'})" style="padding:16px 28px;font-size:16px;width:100%">Start learning</button>
+      <button class="btn-outline" onclick="window.location.href='https://getminyt.com/create-listing.html'" style="padding:16px 28px;font-size:16px;width:100%">Create offer</button>
     </div>
     <div style="margin-top:2.5rem;padding-top:1.5rem;border-top:1px solid #C7D2FE;display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--muted)">
       <div class="footer-logo">minyt</div>
@@ -670,14 +668,33 @@ function showList() {
 }
 
 // ── SEARCH ──
+var SYNONYMS = {
+  'ecom':['ecommerce','e-commerce','amazon','fba','shopify','dropshipping','online store','product','brand'],
+  'realestate':['real estate','property','flipping','flip','wholesale','wholesaling','rental','renting','landlord','housing','mortgage','investment property','airbnb'],
+  'coding':['coding','programming','software','developer','web dev','javascript','python','app','tech','saas','ai','machine learning'],
+  'fitness':['fitness','gym','workout','training','health','nutrition','diet','weight loss','muscle','bodybuilding','yoga','personal trainer'],
+  'finance':['finance','investing','stocks','crypto','trading','money','budgeting','wealth','retirement','portfolio','financial'],
+  'marketing':['marketing','social media','ads','advertising','seo','content','branding','growth','tiktok','instagram','youtube','email marketing','copywriting']
+};
+
 function handleSearch() {
   var q = document.getElementById('search-input').value.toLowerCase().trim();
   if(!q){clearSearch();return;}
+  var words = q.split(/\s+/);
+  var matchedCats = [];
+  Object.keys(SYNONYMS).forEach(function(cat){
+    SYNONYMS[cat].forEach(function(syn){
+      if(q.indexOf(syn)!==-1 || syn.indexOf(q)!==-1) matchedCats.push(cat);
+    });
+  });
   var res = ALL.filter(function(l){
-    return [l.title,l.name,l.description,l.handle,l.offer_type].some(function(v){return (v||'').toLowerCase().indexOf(q)!==-1;});
+    var fields = [l.title,l.name,l.description,l.handle,l.offer_type,l.category].map(function(v){return (v||'').toLowerCase();}).join(' ');
+    var textMatch = words.every(function(w){return fields.indexOf(w)!==-1;});
+    var catMatch = matchedCats.indexOf(l.category)!==-1;
+    return textMatch || catMatch;
   });
   document.getElementById('search-label').textContent = res.length+' result'+(res.length!==1?'s':'')+' for "'+q+'"';
-  document.getElementById('search-grid').innerHTML = res.length ? res.map(function(l){return buildCard(l);}).join('') : '<div style="color:var(--muted);font-size:14px">No listings found.</div>';
+  document.getElementById('search-grid').innerHTML = res.length ? res.map(function(l){return buildCard(l);}).join('') : '<div style="color:var(--muted);font-size:14px">No offers found. Try a different search.</div>';
   document.getElementById('search-results').classList.remove('hidden');
   document.getElementById('category-rows').classList.add('hidden');
   document.getElementById('special-rows').classList.add('hidden');
