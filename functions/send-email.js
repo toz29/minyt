@@ -38,6 +38,18 @@ export async function onRequestPost(context) {
           <p style="color:#9ca3af;font-size:12px;margin-top:2rem">— The Minyt team</p>
         </div>
       `;
+    } else if (type === 'revoked') {
+      subject = 'Your Minyt offer has been revoked';
+      html = `
+        <div style="font-family:sans-serif;max-width:500px;margin:0 auto;padding:2rem">
+          <div style="font-size:1.25rem;font-weight:600;color:#6366F1;margin-bottom:1.5rem">minyt</div>
+          <h2 style="font-size:1.25rem;font-weight:500;margin-bottom:0.75rem">Your offer has been revoked</h2>
+          <p style="color:#6b7280;line-height:1.6;margin-bottom:1rem">"${title}" has been removed from Minyt. This may be due to a policy violation, buyer complaints, or content that no longer meets our guidelines.</p>
+          <p style="color:#6b7280;line-height:1.6;margin-bottom:1rem">If you believe this was a mistake reply to this email and we'll review it.</p>
+          <a href="https://getminyt.com/account.html" style="display:inline-block;padding:10px 22px;background:#6366F1;color:#fff;text-decoration:none;border-radius:8px;font-size:14px;font-weight:500">View your account</a>
+          <p style="color:#9ca3af;font-size:12px;margin-top:2rem">— The Minyt team</p>
+        </div>
+      `;
     } else if (type === 'purchase') {
       subject = 'Your Minyt purchase is confirmed';
       html = `
