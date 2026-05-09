@@ -734,6 +734,7 @@ function openModal(id) {
   var buyBtn = l.isSample
     ? '<button class="modal-buy-btn" onclick="alert(\'This is a sample listing. Real listings will have a purchase button here.\')">Sample offer</button>'
     : '<button class="modal-buy-btn" id="buy-btn-' + l.id + '" onclick="startCheckout(\'' + l.id + '\')" >Get access — $' + l.price + '</button>';
+    var viewLink = '<div style="display:flex;gap:1rem;margin-top:0.75rem;font-size:12px"><a href="https://getminyt.com/offer.html?id='+l.id+'" style="color:var(--brand);text-decoration:none">View full page ↗</a><span style="color:var(--brand);cursor:pointer" onclick="copyOfferLink(\''+l.id+'\')" >Copy link</span></div>';
   document.getElementById('modal-inner').innerHTML =
     '<button class="modal-close" onclick="closeModal()">✕</button>'
     +bn
@@ -928,6 +929,12 @@ async function startCheckout(listingId) {
 }
 
 // ── ACCOUNT DROPDOWN ──
+function copyOfferLink(id){
+  navigator.clipboard.writeText('https://getminyt.com/offer.html?id='+id).then(function(){
+    alert('Link copied!');
+  });
+}
+
 function toggleAccountMenu(){
   var dd=document.getElementById('account-dropdown');
   dd.classList.toggle('open');
