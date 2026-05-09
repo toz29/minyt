@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Minyt | Offer</title>
+<title>Offer - Minyt</title>
 <meta name="description" content="View this offer on Minyt — learn from someone who's actually done it."/>
 <meta property="og:title" content="Minyt | Offer"/>
 <meta property="og:description" content="Courses, coaching calls and communities from real creators."/>
@@ -111,7 +111,7 @@ if(!offerId){
       var l=res.data;
       
       // Update page title and meta
-      document.title='Minyt | '+l.title;
+      document.title=l.title+' - Minyt';
       document.querySelector('meta[name="description"]').content=l.description||'View this offer on Minyt.';
       document.querySelector('meta[property="og:title"]').content=l.title+' | Minyt';
       document.querySelector('meta[property="og:description"]').content=l.description||'Courses, coaching calls and communities from real creators.';
