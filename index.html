@@ -226,6 +226,21 @@ footer{padding:1.5rem 2rem;border-top:1px solid var(--border);display:flex;align
 .ticker-item{display:inline-flex;align-items:center;gap:6px;padding:0 2rem;font-size:13px;font-weight:500;color:#fff;letter-spacing:0.2px}
 .ticker-dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,0.4);flex-shrink:0}
 @keyframes tickerScroll{0%{transform:translateX(0)}100%{transform:translateX(-25%)}}
+
+.hamburger{display:flex;flex-direction:column;gap:4px;cursor:pointer;padding:6px;z-index:101}
+.hamburger span{width:18px;height:2px;background:var(--text);border-radius:1px;transition:all 0.2s}
+.hamburger:hover span{background:var(--brand)}
+.side-menu{position:fixed;top:0;left:-280px;width:260px;height:100vh;background:#fff;border-right:1px solid var(--border);z-index:300;transition:left 0.25s ease;padding:1.5rem;display:flex;flex-direction:column}
+.side-menu.open{left:0}
+.side-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.3);backdrop-filter:blur(2px);z-index:299;display:none}
+.side-overlay.open{display:block}
+.side-logo{font-family:'Space Grotesk',sans-serif;font-size:1.25rem;font-weight:500;color:var(--brand);margin-bottom:2rem;display:flex;align-items:center;justify-content:space-between}
+.side-close{font-size:18px;color:var(--muted);cursor:pointer;background:none;border:none;padding:4px 8px}
+.side-close:hover{color:var(--text)}
+.side-item{display:block;padding:11px 12px;font-size:14px;color:var(--text);text-decoration:none;border-radius:var(--radius);font-family:'DM Sans',sans-serif;transition:background 0.15s;cursor:pointer;border:none;background:none;width:100%;text-align:left}
+.side-item:hover{background:var(--surface);color:var(--brand)}
+.side-divider{height:1px;background:var(--border);margin:8px 0}
+.side-section{font-size:11px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:0.5px;padding:8px 12px 4px}
 .hidden{display:none}
 @media(max-width:700px){
   nav{padding:0.875rem 1rem}
@@ -249,6 +264,19 @@ footer{padding:1.5rem 2rem;border-top:1px solid var(--border);display:flex;align
 </style>
 </head>
 <body>
+<div class="side-overlay" id="side-overlay" onclick="closeSideMenu()"></div>
+<div class="side-menu" id="side-menu">
+  <div class="side-logo">
+    <span>minyt</span>
+    <button class="side-close" onclick="closeSideMenu()">✕</button>
+  </div>
+  <a class="side-item" href="https://getminyt.com">Browse</a>
+  <a class="side-item" href="https://getminyt.com/create-listing.html">Create</a>
+  <div class="side-divider"></div>
+  <a class="side-item" href="mailto:hello@getminyt.com?subject=Feedback">Feedback</a>
+  <a class="side-item" href="https://getminyt.com/terms.html">Terms of service</a>
+</div>
+
 
 <div class="ticker-bar">
   <div class="ticker-track">
@@ -271,7 +299,7 @@ footer{padding:1.5rem 2rem;border-top:1px solid var(--border);display:flex;align
   </div>
 </div>
 <nav>
-  <div class="nav-logo" onclick="showBrowse()">minyt</div>
+  <div style="display:flex;align-items:center;gap:12px"><div class="hamburger" onclick="openSideMenu()"><span></span><span></span><span></span></div><div class="nav-logo" onclick="showBrowse()">minyt</div></div>
   <div class="nav-links">
     
     <span class="nav-create" onclick="window.location.href='https://getminyt.com/create-listing.html'">Create offer</span>
@@ -932,6 +960,17 @@ function copyOfferLink(id){
   navigator.clipboard.writeText('https://getminyt.com/offer.html?id='+id).then(function(){
     alert('Link copied!');
   });
+}
+
+function openSideMenu(){
+  document.getElementById('side-menu').classList.add('open');
+  document.getElementById('side-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeSideMenu(){
+  document.getElementById('side-menu').classList.remove('open');
+  document.getElementById('side-overlay').classList.remove('open');
+  document.body.style.overflow='';
 }
 
 function toggleAccountMenu(){
