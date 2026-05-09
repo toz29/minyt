@@ -284,8 +284,6 @@ footer{padding:1.5rem 2rem;border-top:1px solid var(--border);display:flex;align
         <div id="dropdown-loggedout">
           <a class="dropdown-item" href="https://getminyt.com/account.html">Sign up</a>
           <a class="dropdown-item" href="https://getminyt.com/account.html">Log in</a>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="https://getminyt.com/create-listing.html">Create offer</a>
         </div>
         <div id="dropdown-loggedin" style="display:none">
           <div class="dropdown-label" id="dropdown-email" style="color:var(--text);font-size:12px;text-transform:none;letter-spacing:0"></div>
@@ -590,7 +588,7 @@ function buildCard(l, badge, inProfile) {
     +'<div class="stars">'+stars+' '+(l.stars||0)+' <span style="color:var(--muted)">('+( l.review_count||0)+')</span></div>'
     +'<div class="card-title">'+l.title+'</div>'
     +'<div class="card-desc">'+(l.description||'')+'</div>'
-    +'<div class="card-footer"><span class="badge">'+l.offer_type+'</span><div class="price">$'+l.price+' <span>'+(l.billing_unit||'one-time')+'</span></div></div>'
+    +'<div class="card-footer"><span class="badge">'+l.offer_type+'</span><div class="price">'+(l.price==0?'Free':'$'+Number(l.price).toLocaleString())+' <span>'+(l.price==0?'':(l.billing_unit||'one-time'))+'</span></div></div>'
     +'</div></div>';
 }
 
@@ -733,7 +731,7 @@ function openModal(id) {
   var sampleNote = l.isSample ? '<div class="modal-sample-note">This is a sample listing for demonstration purposes only.</div>' : '';
   var buyBtn = l.isSample
     ? '<button class="modal-buy-btn" onclick="alert(\'This is a sample listing. Real listings will have a purchase button here.\')">Sample offer</button>'
-    : '<button class="modal-buy-btn" id="buy-btn-' + l.id + '" onclick="startCheckout(\'' + l.id + '\')" >Get access — $' + l.price + '</button>';
+    : '<button class="modal-buy-btn" id="buy-btn-' + l.id + '" onclick="startCheckout(\'' + l.id + '\')" >Get access' + (l.price==0?' — Free':' — $'+l.price) + '</button>';
     var viewLink = '<div style="display:flex;gap:1rem;margin-top:0.75rem;font-size:12px"><a href="https://getminyt.com/offer.html?id='+l.id+'" style="color:var(--brand);text-decoration:none">View full page ↗</a><span style="color:var(--brand);cursor:pointer" onclick="copyOfferLink(\''+l.id+'\')" >Copy link</span></div>';
   document.getElementById('modal-inner').innerHTML =
     '<button class="modal-close" onclick="closeModal()">✕</button>'
@@ -749,8 +747,9 @@ function openModal(id) {
     +'<div class="modal-stars">'+stars+' '+(l.stars||0)+' ('+(l.review_count||0)+' verified reviews)</div>'
     +'<div class="modal-desc">'+(l.description||'No description provided.')+'</div>'
     +'<div class="modal-divider"></div>'
-    +'<div class="modal-price-row"><div><div class="modal-price-num">$'+l.price+'</div><div class="modal-price-unit">'+(l.billing_unit||'one-time')+'</div></div>'+buyBtn+'</div>'
-    +'<div style="font-size:12px;color:var(--muted);text-align:center"><span class="badge-verified" style="display:inline-flex">✓ Verified reviews only</span></div>'
+    +'<div class="modal-price-row"><div><div class="modal-price-num">'+(l.price==0?'Free':'$'+Number(l.price).toLocaleString())+'</div><div class="modal-price-unit">'+(l.billing_unit||'one-time')+'</div></div>'+buyBtn+'</div>'
+    +(l.isSample?'':'<div style="display:flex;gap:1rem;margin-top:0.75rem;justify-content:center;font-size:12px"><a href="https://getminyt.com/offer.html?id='+l.id+'" style="color:var(--brand);text-decoration:none">View full page ↗</a><span style="color:var(--brand);cursor:pointer" onclick="copyOfferLink(\''+l.id+'\')" >Copy link</span></div>')
+    +'<div style="font-size:12px;color:var(--muted);text-align:center;margin-top:0.5rem"><span class="badge-verified" style="display:inline-flex">✓ Verified reviews only</span></div>'
     +'</div>';
   document.getElementById('listing-overlay').classList.add('show');
   document.body.style.overflow = 'hidden';
