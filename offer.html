@@ -67,9 +67,22 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 </style>
 </head>
 <body>
+<div class="side-overlay" id="side-overlay" onclick="closeSideMenu()"></div>
+<div class="side-menu" id="side-menu">
+  <div class="side-logo">
+    <span>minyt<sup style="font-size:9px;color:var(--muted);vertical-align:super;margin-left:1px">™</sup></span>
+    <button class="side-close" onclick="closeSideMenu()">✕</button>
+  </div>
+  <a class="side-item" href="https://getminyt.com">Browse</a>
+  <a class="side-item" href="https://getminyt.com/create-listing.html">Create</a>
+  <div class="side-divider"></div>
+  <a class="side-item" href="mailto:hello@getminyt.com?subject=Feedback">Feedback</a>
+  <a class="side-item" href="https://getminyt.com/terms.html">Terms of service</a>
+</div>
+
 
 <nav>
-  <a class="nav-logo" href="https://getminyt.com">minyt</a>
+  <div style="display:flex;align-items:center;gap:12px"><div class="hamburger" onclick="openSideMenu()"><span></span><span></span><span></span></div><a class="nav-logo" href="https://getminyt.com">minyt<sup style="font-size:9px;color:var(--muted);vertical-align:super;margin-left:1px">™</sup></a></div>
   <a class="nav-back" href="https://getminyt.com">← Browse offers</a>
 </nav>
 
@@ -219,6 +232,16 @@ async function startCheckout(listingId){
     alert('Something went wrong. Please try again.');
     if(btn){btn.disabled=false;btn.textContent='Get access — $'+listings[0].price;}
   }
+}
+function openSideMenu(){
+  document.getElementById('side-menu').classList.add('open');
+  document.getElementById('side-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeSideMenu(){
+  document.getElementById('side-menu').classList.remove('open');
+  document.getElementById('side-overlay').classList.remove('open');
+  document.body.style.overflow='';
 }
 </script>
 </body>
