@@ -111,6 +111,20 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 .toast.show{display:block}
 .toast.success{background:var(--brand)}
 .toast.error{background:var(--danger)}
+
+.hamburger{display:flex;flex-direction:column;gap:4px;cursor:pointer;padding:6px;z-index:101}
+.hamburger span{width:18px;height:2px;background:var(--text);border-radius:1px;transition:all 0.2s}
+.hamburger:hover span{background:var(--brand)}
+.side-menu{position:fixed;top:0;left:-280px;width:260px;height:100vh;background:#fff;border-right:1px solid var(--border);z-index:300;transition:left 0.25s ease;padding:1.5rem;display:flex;flex-direction:column}
+.side-menu.open{left:0}
+.side-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.3);backdrop-filter:blur(2px);z-index:299;display:none}
+.side-overlay.open{display:block}
+.side-logo{font-family:'Space Grotesk',sans-serif;font-size:1.25rem;font-weight:500;color:var(--brand);margin-bottom:2rem;display:flex;align-items:center;justify-content:space-between}
+.side-close{font-size:18px;color:var(--muted);cursor:pointer;background:none;border:none;padding:4px 8px}
+.side-close:hover{color:var(--text)}
+.side-item{display:block;padding:11px 12px;font-size:14px;color:var(--text);text-decoration:none;border-radius:var(--radius);font-family:'DM Sans',sans-serif;transition:background 0.15s;cursor:pointer;border:none;background:none;width:100%;text-align:left}
+.side-item:hover{background:var(--surface);color:var(--brand)}
+.side-divider{height:1px;background:var(--border);margin:8px 0}
 .hidden{display:none}
 @media(max-width:700px){
   nav{padding:0.875rem 1rem}
@@ -122,11 +136,24 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 </style>
 </head>
 <body>
+<div class="side-overlay" id="side-overlay" onclick="closeSideMenu()"></div>
+<div class="side-menu" id="side-menu">
+  <div class="side-logo">
+    <span>minyt<sup style="font-size:9px;color:var(--muted);vertical-align:super;margin-left:1px">™</sup></span>
+    <button class="side-close" onclick="closeSideMenu()">✕</button>
+  </div>
+  <a class="side-item" href="https://getminyt.com">Browse</a>
+  <a class="side-item" href="https://getminyt.com/create-listing.html">Create</a>
+  <div class="side-divider"></div>
+  <a class="side-item" href="mailto:hello@getminyt.com?subject=Feedback">Feedback</a>
+  <a class="side-item" href="https://getminyt.com/terms.html">Terms of service</a>
+</div>
+
 
 <!-- LOGIN -->
 <div id="view-login" class="auth-wrap">
   <div class="auth-box">
-    <div class="auth-logo" onclick="window.location.href='https://getminyt.com'">minyt</div>
+    <div class="auth-logo" onclick="window.location.href='https://getminyt.com'">minyt<sup style="font-size:9px;color:var(--muted);vertical-align:super;margin-left:1px">™</sup></div>
     <div class="auth-sub">Sign in or create an account</div>
     <div id="signin-form">
       <div class="auth-title">Sign in</div>
@@ -177,7 +204,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 <!-- VERIFY -->
 <div id="view-verify" class="verify-wrap hidden">
   <div class="verify-box">
-    <div class="auth-logo" onclick="window.location.href='https://getminyt.com'" style="text-align:center;display:block;margin-bottom:1.5rem">minyt</div>
+    <div class="auth-logo" onclick="window.location.href='https://getminyt.com'" style="text-align:center;display:block;margin-bottom:1.5rem">minyt<sup style="font-size:9px;color:var(--muted);vertical-align:super;margin-left:1px">™</sup></div>
     <div style="width:64px;height:64px;border-radius:50%;background:var(--brand-light);display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem">
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1D9E75" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
     </div>
@@ -192,7 +219,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 <!-- DASHBOARD -->
 <div id="view-dashboard" class="hidden">
   <nav>
-    <div class="nav-logo" onclick="window.location.href='https://getminyt.com'">minyt</div>
+    <div style="display:flex;align-items:center;gap:12px"><div class="hamburger" onclick="openSideMenu()"><span></span><span></span><span></span></div><div class="nav-logo" onclick="window.location.href='https://getminyt.com'">minyt<sup style="font-size:9px;color:var(--muted);vertical-align:super;margin-left:1px">™</sup></div></div>
     <div class="nav-right">
       <a href="https://getminyt.com/create-listing.html" style="font-size:13px;font-weight:500;color:var(--brand);text-decoration:none;border:1px solid var(--border);padding:7px 14px;border-radius:var(--radius);transition:all 0.2s" onmouseover="this.style.borderColor='var(--brand)';this.style.boxShadow='0 0 12px rgba(99,102,241,0.25)'" onmouseout="this.style.borderColor='var(--border)';this.style.boxShadow='none'">+ New offer</a>
       <div class="nav-account">
@@ -421,6 +448,16 @@ function dismissNotif(i){
   }
 }
 
+function openSideMenu(){
+  document.getElementById('side-menu').classList.add('open');
+  document.getElementById('side-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeSideMenu(){
+  document.getElementById('side-menu').classList.remove('open');
+  document.getElementById('side-overlay').classList.remove('open');
+  document.body.style.overflow='';
+}
 function toggleAccountMenu(){
   document.getElementById('account-dropdown').classList.toggle('open');
 }
