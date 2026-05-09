@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Minyt | Offer</title>
+<meta name="description" content="View this offer on Minyt — learn from someone who's actually done it."/>
+<meta property="og:title" content="Minyt | Offer"/>
+<meta property="og:description" content="Courses, coaching calls and communities from real creators."/>
+<meta property="og:url" content="https://getminyt.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--brand:#6366F1;--brand-light:#EEF2FF;--brand-dark:#4338CA;--text:#1a1a1a;--muted:#6b7280;--surface:#f9f9f7;--border:#e5e5e3;--radius:10px;--radius-lg:14px;--danger:#E24B4A}
+body{font-family:'DM Sans',sans-serif;color:var(--text);background:var(--surface);min-height:100vh}
+nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;border-bottom:1px solid var(--border);background:#fff;position:sticky;top:0;z-index:100}
+.nav-logo{font-family:'Space Grotesk',sans-serif;font-size:1.25rem;font-weight:500;color:var(--brand);cursor:pointer;text-decoration:none}
+.nav-back{font-size:13px;color:var(--muted);text-decoration:none}
+.nav-back:hover{color:var(--text)}
+.offer-wrap{max-width:900px;margin:0 auto;padding:2rem}
+.offer-banner{width:100%;height:280px;object-fit:cover;border-radius:var(--radius-lg);background:var(--surface);margin-bottom:1.5rem}
+.offer-banner-ph{width:100%;height:280px;border-radius:var(--radius-lg);background:var(--border);margin-bottom:1.5rem}
+.offer-top{display:grid;grid-template-columns:1fr 320px;gap:2rem;align-items:start}
+.offer-main{}
+.offer-profile{display:flex;align-items:center;gap:12px;margin-bottom:1.25rem}
+.offer-avatar{width:48px;height:48px;border-radius:50%;background:var(--brand-light);display:flex;align-items:center;justify-content:center;font-weight:500;font-size:14px;color:var(--brand-dark);overflow:hidden;flex-shrink:0}
+.offer-avatar img{width:100%;height:100%;object-fit:cover}
+.offer-creator-name{font-weight:500;font-size:15px}
+.offer-creator-handle{font-size:12px;color:var(--muted)}
+.offer-title{font-family:'Space Grotesk',sans-serif;font-size:1.75rem;font-weight:500;margin-bottom:0.5rem;line-height:1.3}
+.offer-type-badge{display:inline-block;padding:4px 12px;border-radius:50px;font-size:12px;font-weight:500;background:var(--brand-light);color:var(--brand-dark);margin-bottom:1rem}
+.offer-desc{font-size:15px;color:var(--muted);line-height:1.7;margin-bottom:2rem;white-space:pre-wrap}
+.offer-reviews-title{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:500;margin-bottom:1rem}
+.review-item{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:1rem 1.25rem;margin-bottom:0.75rem}
+.review-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem}
+.review-stars{color:#BA7517;font-size:14px}
+.review-email{font-size:12px;color:var(--muted)}
+.review-date{font-size:11px;color:var(--muted)}
+.review-comment{font-size:14px;color:var(--text);line-height:1.5}
+.review-verified{font-size:11px;color:var(--brand-dark);background:var(--brand-light);padding:2px 8px;border-radius:50px;margin-left:8px}
+.no-reviews{font-size:13px;color:var(--muted);padding:1rem 0}
+.offer-sidebar{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;position:sticky;top:80px}
+.offer-price{font-family:'Space Grotesk',sans-serif;font-size:2rem;font-weight:500;color:var(--text);margin-bottom:0.25rem}
+.offer-billing{font-size:13px;color:var(--muted);margin-bottom:1.25rem}
+.offer-buy-btn{width:100%;padding:14px;background:var(--brand);color:#fff;border:none;border-radius:var(--radius);font-size:15px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;margin-bottom:0.75rem}
+.offer-buy-btn:hover{background:var(--brand-dark)}
+.offer-buy-btn:disabled{background:var(--muted);cursor:not-allowed}
+.offer-meta{font-size:12px;color:var(--muted);line-height:1.6}
+.offer-meta div{padding:6px 0;border-bottom:1px solid var(--border)}
+.offer-meta div:last-child{border:none}
+.offer-rating{display:flex;align-items:center;gap:6px;margin-bottom:1rem}
+.offer-rating-stars{color:#BA7517;font-size:15px}
+.offer-rating-text{font-size:13px;color:var(--muted)}
+.loading{text-align:center;padding:4rem 2rem;color:var(--muted);font-size:14px;font-style:italic}
+.not-found{text-align:center;padding:4rem 2rem}
+.not-found h2{font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:500;margin-bottom:0.5rem}
+.not-found p{color:var(--muted);margin-bottom:1.5rem}
+.not-found a{display:inline-block;padding:10px 22px;background:var(--brand);color:#fff;text-decoration:none;border-radius:var(--radius);font-size:14px;font-weight:500}
+.sample-badge{display:inline-block;padding:3px 10px;border-radius:50px;font-size:11px;font-weight:500;background:#FAEEDA;color:#412402;margin-bottom:1rem}
+@media(max-width:700px){
+  .offer-top{grid-template-columns:1fr}
+  .offer-sidebar{position:static}
+  .offer-wrap{padding:1rem}
+  .offer-banner{height:180px}
+  nav{padding:0.875rem 1rem}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="https://getminyt.com">minyt</a>
+  <a class="nav-back" href="https://getminyt.com">← Browse offers</a>
+</nav>
+
+<div class="offer-wrap">
+  <div class="loading" id="loading">Loading offer...</div>
+  <div id="offer-content" style="display:none"></div>
+  <div id="not-found" class="not-found" style="display:none">
+    <h2>Offer not found</h2>
+    <p>This offer may have been removed or the link is incorrect.</p>
+    <a href="https://getminyt.com">Browse all offers</a>
+  </div>
+</div>
+
+<script>
+var SURL='https://qoigwxwkhpcgisprkozg.supabase.co';
+var SKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFvaWd3eHdraHBjZ2lzcHJrb3pnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3NDAzOTUsImV4cCI6MjA5MjMxNjM5NX0.Si-GOt97FF4Wt49E_Yf7CsgyvU2-5dHbStQu1wwQ6Ik';
+
+var params=new URLSearchParams(window.location.search);
+var offerId=params.get('id');
+
+if(!offerId){
+  document.getElementById('loading').style.display='none';
+  document.getElementById('not-found').style.display='block';
+} else {
+  var s=document.createElement('script');
+  s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';
+  s.onload=function(){
+    var sb=window.supabase.createClient(SURL,SKEY);
+    
+    // Load offer
+    sb.from('listings').select('*').eq('id',offerId).eq('approved',true).single().then(function(res){
+      document.getElementById('loading').style.display='none';
+      
+      if(res.error||!res.data){
+        document.getElementById('not-found').style.display='block';
+        return;
+      }
+      
+      var l=res.data;
+      
+      // Update page title and meta
+      document.title='Minyt | '+l.title;
+      document.querySelector('meta[name="description"]').content=l.description||'View this offer on Minyt.';
+      document.querySelector('meta[property="og:title"]').content=l.title+' | Minyt';
+      document.querySelector('meta[property="og:description"]').content=l.description||'Courses, coaching calls and communities from real creators.';
+      
+      // Load reviews
+      sb.from('reviews').select('*').eq('listing_id',offerId).order('created_at',{ascending:false}).then(function(revRes){
+        var reviews=revRes.data||[];
+        var avgRating=reviews.length?reviews.reduce(function(s,r){return s+r.rating;},0)/reviews.length:0;
+        
+        var banner=l.banner_url
+          ?'<img class="offer-banner" src="'+l.banner_url+'" alt="'+l.title+'">'
+          :'<div class="offer-banner-ph"></div>';
+        
+        var avatar=l.avatar_url
+          ?'<div class="offer-avatar"><img src="'+l.avatar_url+'" alt=""></div>'
+          :'<div class="offer-avatar">'+(l.name||'?').substring(0,2).toUpperCase()+'</div>';
+        
+        var starsHtml='';
+        for(var i=0;i<5;i++) starsHtml+=i<Math.round(avgRating)?'★':'☆';
+        
+        var reviewsHtml='';
+        if(reviews.length){
+          reviewsHtml=reviews.map(function(r){
+            var rs='';for(var i=0;i<5;i++) rs+=i<r.rating?'★':'☆';
+            var date=new Date(r.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+            var email=r.buyer_email||'Buyer';
+            var masked=email.split('@')[0].substring(0,3)+'***';
+            return '<div class="review-item">'
+              +'<div class="review-header"><div><span class="review-stars">'+rs+'</span>'+(r.verified?'<span class="review-verified">Verified purchase</span>':'')+'</div><span class="review-date">'+date+'</span></div>'
+              +(r.comment?'<div class="review-comment">'+r.comment+'</div>':'')
+              +'</div>';
+          }).join('');
+        } else {
+          reviewsHtml='<div class="no-reviews">No reviews yet. Be the first to purchase and leave a review.</div>';
+        }
+        
+        var isSample=l.isSample||false;
+        var buyBtnText=isSample?'Sample offer':'Get access — $'+l.price;
+        var buyBtnAction=isSample
+          ?"alert('This is a sample offer.')"
+          :"startCheckout('"+l.id+"')";
+        
+        document.getElementById('offer-content').innerHTML=banner
+          +'<div class="offer-top">'
+          +'<div class="offer-main">'
+          +'<div class="offer-profile">'+avatar+'<div><div class="offer-creator-name">'+(l.name||'Creator')+'</div>'+(l.handle?'<div class="offer-creator-handle">@'+l.handle+'</div>':'')+'</div></div>'
+          +(isSample?'<span class="sample-badge">Sample offer</span>':'')
+          +'<h1 class="offer-title">'+l.title+'</h1>'
+          +'<span class="offer-type-badge">'+l.offer_type+'</span>'
+          +'<div class="offer-desc">'+(l.description||'No description provided.')+'</div>'
+          +'<div class="offer-reviews-title">Reviews ('+reviews.length+')</div>'
+          +reviewsHtml
+          +'</div>'
+          +'<div class="offer-sidebar">'
+          +'<div class="offer-price">$'+l.price+'</div>'
+          +'<div class="offer-billing">'+(l.billing_unit||'One-time payment')+'</div>'
+          +(reviews.length?'<div class="offer-rating"><span class="offer-rating-stars">'+starsHtml+'</span><span class="offer-rating-text">'+avgRating.toFixed(1)+' ('+reviews.length+' review'+(reviews.length!==1?'s':'')+')</span></div>':'')
+          +'<button class="offer-buy-btn" id="buy-btn" onclick="'+buyBtnAction+'"'+(isSample?' style="background:var(--muted);cursor:default"':'')+'>'+buyBtnText+'</button>'
+          +'<div class="offer-meta">'
+          +'<div>Category: '+(l.category||'General')+'</div>'
+          +'<div>Type: '+l.offer_type+'</div>'
+          +'</div>'
+          +'</div>'
+          +'</div>';
+        
+        document.getElementById('offer-content').style.display='block';
+      });
+    });
+  };
+  document.head.appendChild(s);
+}
+
+// Checkout function
+async function startCheckout(listingId){
+  var btn=document.getElementById('buy-btn');
+  if(btn){btn.disabled=true;btn.textContent='Loading...';}
+  try{
+    var listingRes=await fetch(SURL+'/rest/v1/listings?id=eq.'+listingId+'&select=*',{
+      headers:{'apikey':SKEY,'Authorization':'Bearer '+SKEY}
+    });
+    var listings=await listingRes.json();
+    var l=listings[0];
+    if(!l) throw new Error('Offer not found');
+    
+    var res=await fetch('/create-checkout',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        listing_id:l.id,
+        title:l.title,
+        price:l.price,
+        billing_unit:l.billing_unit||'one-time',
+        seller_stripe_id:l.seller_stripe_id||null
+      })
+    });
+    var data=await res.json();
+    if(data.url) window.location.href=data.url;
+    else throw new Error(data.error||'Checkout failed');
+  }catch(e){
+    alert('Something went wrong. Please try again.');
+    if(btn){btn.disabled=false;btn.textContent='Get access — $'+listings[0].price;}
+  }
+}
+</script>
+</body>
+</html>
