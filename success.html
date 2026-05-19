@@ -54,9 +54,41 @@ h1{font-family:'Space Grotesk',sans-serif;font-size:2rem;font-weight:400;margin-
   <a class="side-item" href="https://getminyt.com">Browse</a>
   <a class="side-item" href="https://getminyt.com/create-listing.html">Create</a>
   <div class="side-divider"></div>
-  <a class="side-item" href="mailto:hello@getminyt.com?subject=Feedback">Feedback</a>
+  <button class="side-item" onclick="openFeedback()">Feedback</button>
   <a class="side-item" href="https://getminyt.com/terms.html">Terms of service</a>
 </div>
+
+<!-- FEEDBACK MODAL -->
+<div class="fb-overlay" id="fb-overlay" onclick="closeFeedback()"></div>
+<div class="fb-modal" id="fb-modal" role="dialog" aria-modal="true" aria-label="Send feedback">
+  <div class="fb-head">
+    <div class="fb-title">Send feedback</div>
+    <button class="fb-close" onclick="closeFeedback()" aria-label="Close">&#10005;</button>
+  </div>
+  <p class="fb-sub">Found a bug or have an idea? Let us know, we read everything.</p>
+  <textarea class="fb-text" id="fb-text" rows="5" maxlength="2000" placeholder="What's on your mind?"></textarea>
+  <button class="fb-submit" id="fb-submit" onclick="sendFeedback()">Send feedback</button>
+  <div class="fb-done" id="fb-done">Thanks - your feedback was sent.</div>
+</div>
+
+<style>
+.fb-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.3);backdrop-filter:blur(2px);z-index:400;display:none}
+.fb-overlay.open{display:block}
+.fb-modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:calc(100% - 2.5rem);max-width:420px;background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;z-index:401;display:none}
+.fb-modal.open{display:block}
+.fb-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.25rem}
+.fb-title{font-family:'Space Grotesk',sans-serif;font-size:1.15rem;font-weight:500;color:var(--text)}
+.fb-close{background:none;border:none;font-size:14px;color:var(--muted);cursor:pointer;padding:4px 6px;line-height:1}
+.fb-close:hover{color:var(--text)}
+.fb-sub{font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:1rem}
+.fb-text{width:100%;border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--text);resize:vertical;box-sizing:border-box}
+.fb-text:focus{outline:none;border-color:var(--brand)}
+.fb-submit{width:100%;margin-top:0.85rem;padding:12px;background:var(--brand);color:#fff;border:none;border-radius:var(--radius);font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif}
+.fb-submit:hover{background:var(--brand-dark)}
+.fb-submit:disabled{background:var(--muted);cursor:not-allowed}
+.fb-done{display:none;margin-top:0.85rem;font-size:13px;color:#0F7B3E;text-align:center}
+.fb-done.show{display:block}
+</style>
 
 <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:3rem"><div class="hamburger" onclick="openSideMenu()" style="position:absolute;left:2rem"><span></span><span></span><span></span></div><div class="logo" style="margin-bottom:0" onclick="window.location.href='https://getminyt.com'">minyt<sup style="font-size:9px;color:var(--muted);vertical-align:super;margin-left:1px">™</sup></div></div>
 
@@ -126,6 +158,57 @@ function closeSideMenu(){
   document.getElementById('side-menu').classList.remove('open');
   document.getElementById('side-overlay').classList.remove('open');
   document.body.style.overflow='';
+}
+
+// FEEDBACK MODAL
+function openFeedback(){
+  closeSideMenu();
+  document.getElementById('fb-overlay').classList.add('open');
+  document.getElementById('fb-modal').classList.add('open');
+  document.getElementById('fb-done').classList.remove('show');
+  document.getElementById('fb-text').value='';
+  document.body.style.overflow='hidden';
+}
+function closeFeedback(){
+  document.getElementById('fb-overlay').classList.remove('open');
+  document.getElementById('fb-modal').classList.remove('open');
+  document.body.style.overflow='';
+}
+function fbGetSupabase(cb){
+  if(window.supabase&&window.supabase.createClient){cb();return;}
+  var s=document.createElement('script');
+  s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';
+  s.onload=function(){cb();};
+  s.onerror=function(){cb(true);};
+  document.head.appendChild(s);
+}
+function sendFeedback(){
+  var text=(document.getElementById('fb-text').value||'').trim();
+  if(!text){document.getElementById('fb-text').focus();return;}
+  var btn=document.getElementById('fb-submit');
+  btn.disabled=true;btn.textContent='Sending...';
+  fbGetSupabase(function(failed){
+    if(failed){
+      btn.disabled=false;btn.textContent='Send feedback';
+      alert('Could not send feedback. Please check your connection and try again.');
+      return;
+    }
+    var sb=window.supabase.createClient(SURL,SKEY);
+    var row={message:text,page_url:window.location.href};
+    sb.auth.getSession().then(function(res){
+      if(res&&res.data&&res.data.session){row.user_email=res.data.session.user.email;}
+      sb.from('feedback').insert(row).then(function(r){
+        btn.disabled=false;btn.textContent='Send feedback';
+        if(r.error){
+          alert('Could not send feedback. Please try again.');
+          return;
+        }
+        document.getElementById('fb-text').value='';
+        document.getElementById('fb-done').classList.add('show');
+        setTimeout(closeFeedback,1600);
+      });
+    });
+  });
 }
 </script>
 </body>
