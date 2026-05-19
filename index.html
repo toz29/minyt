@@ -1020,7 +1020,7 @@ function fbGetSupabase(cb){
   if(window.supabase&&window.supabase.createClient){cb();return;}
   var s=document.createElement('script');
   s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';
-  s.onload=cb;
+  s.onload=function(){cb();};
   s.onerror=function(){cb(true);};
   document.head.appendChild(s);
 }
