@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Terms of Service &amp; Privacy Policy - Minyt</title>
+<meta name="description" content="Minyt Terms of Service and Privacy Policy."/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--brand:#6366F1;--brand-light:#EEF2FF;--brand-dark:#4338CA;--text:#1a1a1a;--muted:#6b7280;--surface:#f9f9f7;--border:#e5e5e3;--radius:10px;--radius-lg:14px}
+body{font-family:'DM Sans',sans-serif;color:var(--text);background:#fff;min-height:100vh}
+nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;border-bottom:1px solid var(--border);background:#fff;position:sticky;top:0;z-index:100}
+.nav-logo{font-family:'Space Grotesk',sans-serif;font-size:1.25rem;font-weight:500;color:var(--brand);cursor:pointer;text-decoration:none}
+.nav-back{font-size:13px;color:var(--muted);text-decoration:none}
+.nav-back:hover{color:var(--text)}
+.hamburger{display:flex;flex-direction:column;gap:4px;cursor:pointer;padding:6px;z-index:101}
+.hamburger span{width:18px;height:2px;background:var(--text);border-radius:1px;transition:all 0.2s}
+.hamburger:hover span{background:var(--brand)}
+.side-menu{position:fixed;top:0;left:-280px;width:260px;height:100vh;background:#fff;border-right:1px solid var(--border);z-index:300;transition:left 0.25s ease;padding:1.5rem;display:flex;flex-direction:column}
+.side-menu.open{left:0}
+.side-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.3);backdrop-filter:blur(2px);z-index:299;display:none}
+.side-overlay.open{display:block}
+.side-logo{font-family:'Space Grotesk',sans-serif;font-size:1.25rem;font-weight:500;color:var(--brand);margin-bottom:2rem;display:flex;align-items:center;justify-content:space-between}
+.side-close{font-size:18px;color:var(--muted);cursor:pointer;background:none;border:none;padding:4px 8px}
+.side-close:hover{color:var(--text)}
+.side-item{display:block;padding:11px 12px;font-size:14px;color:var(--text);text-decoration:none;border-radius:var(--radius);font-family:'DM Sans',sans-serif;transition:background 0.15s;cursor:pointer;border:none;background:none;width:100%;text-align:left}
+.side-item:hover{background:var(--surface);color:var(--brand)}
+.side-divider{height:1px;background:var(--border);margin:8px 0}
+
+.doc-wrap{max-width:760px;margin:0 auto;padding:3rem 2rem 5rem}
+.doc-header{margin-bottom:2.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border)}
+.doc-eyebrow{font-size:11px;font-weight:500;color:var(--brand);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:0.6rem}
+.doc-title{font-family:'Space Grotesk',sans-serif;font-size:2rem;font-weight:500;line-height:1.2;margin-bottom:0.6rem}
+.doc-updated{font-size:13px;color:var(--muted)}
+.doc-intro{font-size:15px;color:var(--muted);line-height:1.7;margin-bottom:2.5rem}
+.toc{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem 1.5rem;margin-bottom:2.5rem}
+.toc-title{font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:0.75rem}
+.toc a{display:block;font-size:14px;color:var(--text);text-decoration:none;padding:4px 0}
+.toc a:hover{color:var(--brand)}
+.legal-disclaimer{background:var(--brand-light);border:1px solid #C7D2FE;border-radius:var(--radius-lg);padding:1rem 1.25rem;margin-bottom:2.5rem;font-size:13px;color:var(--brand-dark);line-height:1.6}
+h2.section{font-family:'Space Grotesk',sans-serif;font-size:1.3rem;font-weight:500;margin:2.5rem 0 0.4rem;scroll-margin-top:90px}
+.section-num{color:var(--brand);font-weight:500;margin-right:0.4rem}
+h3.sub{font-size:1rem;font-weight:600;margin:1.5rem 0 0.4rem;color:var(--text)}
+p.body{font-size:14px;line-height:1.75;color:var(--text);margin-bottom:0.9rem}
+ul.body{margin:0 0 0.9rem 1.25rem}
+ul.body li{font-size:14px;line-height:1.75;color:var(--text);margin-bottom:0.35rem}
+.doc-footer{margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border);font-size:13px;color:var(--muted);line-height:1.6}
+strong{font-weight:600}
+a.inline{color:var(--brand);text-decoration:none}
+a.inline:hover{text-decoration:underline}
+
+.fb-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.3);backdrop-filter:blur(2px);z-index:400;display:none}
+.fb-overlay.open{display:block}
+.fb-modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:calc(100% - 2.5rem);max-width:420px;background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;z-index:401;display:none}
+.fb-modal.open{display:block}
+.fb-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.25rem}
+.fb-title{font-family:'Space Grotesk',sans-serif;font-size:1.15rem;font-weight:500;color:var(--text)}
+.fb-close{background:none;border:none;font-size:14px;color:var(--muted);cursor:pointer;padding:4px 6px;line-height:1}
+.fb-close:hover{color:var(--text)}
+.fb-sub{font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:1rem}
+.fb-text{width:100%;border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--text);resize:vertical;box-sizing:border-box}
+.fb-text:focus{outline:none;border-color:var(--brand)}
+.fb-submit{width:100%;margin-top:0.85rem;padding:12px;background:var(--brand);color:#fff;border:none;border-radius:var(--radius);font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif}
+.fb-submit:hover{background:var(--brand-dark)}
+.fb-submit:disabled{background:var(--muted);cursor:not-allowed}
+.fb-done{display:none;margin-top:0.85rem;font-size:13px;color:#0F7B3E;text-align:center}
+.fb-done.show{display:block}
+@media(max-width:700px){
+  nav{padding:0.875rem 1rem}
+  .doc-wrap{padding:2rem 1.25rem 4rem}
+  .doc-title{font-size:1.6rem}
+}
+</style>
+</head>
+<body>
+<div class="side-overlay" id="side-overlay" onclick="closeSideMenu()"></div>
+<div class="side-menu" id="side-menu">
+  <div class="side-logo">
+    <span>minyt<sup style="font-size:9px;color:var(--muted);vertical-align:super;margin-left:1px">&trade;</sup></span>
+    <button class="side-close" onclick="closeSideMenu()">&#10005;</button>
+  </div>
+  <a class="side-item" href="https://getminyt.com">Browse</a>
+  <a class="side-item" href="https://getminyt.com/create-listing.html">Create</a>
+  <div class="side-divider"></div>
+  <button class="side-item" onclick="openFeedback()">Feedback</button>
+  <a class="side-item" href="https://getminyt.com/terms.html">Terms of service</a>
+</div>
+
+<!-- FEEDBACK MODAL -->
+<div class="fb-overlay" id="fb-overlay" onclick="closeFeedback()"></div>
+<div class="fb-modal" id="fb-modal" role="dialog" aria-modal="true" aria-label="Send feedback">
+  <div class="fb-head">
+    <div class="fb-title">Send feedback</div>
+    <button class="fb-close" onclick="closeFeedback()" aria-label="Close">&#10005;</button>
+  </div>
+  <p class="fb-sub">Found a bug or have an idea? Let us know, we read everything.</p>
+  <textarea class="fb-text" id="fb-text" rows="5" maxlength="2000" placeholder="What's on your mind?"></textarea>
+  <button class="fb-submit" id="fb-submit" onclick="sendFeedback()">Send feedback</button>
+  <div class="fb-done" id="fb-done">Thanks - your feedback was sent.</div>
+</div>
+
+<nav>
+  <div style="display:flex;align-items:center;gap:12px"><div class="hamburger" onclick="openSideMenu()"><span></span><span></span><span></span></div><a class="nav-logo" href="https://getminyt.com">minyt<sup style="font-size:9px;color:var(--muted);vertical-align:super;margin-left:1px">&trade;</sup></a></div>
+  <a class="nav-back" href="https://getminyt.com">&larr; Browse offers</a>
+</nav>
+
+<div class="doc-wrap">
+  <div class="doc-header">
+    <div class="doc-eyebrow">Legal</div>
+    <h1 class="doc-title">Terms of Service &amp; Privacy Policy</h1>
+    <div class="doc-updated">Last updated: May 19, 2026</div>
+  </div>
+
+  <p class="doc-intro">These terms govern your use of Minyt, an online marketplace where creators ("Creators") list and sell digital offers such as courses, coaching, and communities, and buyers ("Buyers") purchase them. By using Minyt, you agree to these terms. If you do not agree, please do not use the platform.</p>
+
+  <div class="legal-disclaimer">
+    <strong>Plain-language note:</strong> This document is written to be readable, but it is a legal agreement. It is not a substitute for legal advice. If anything here is unclear or important to you, please consult a lawyer before relying on it.
+  </div>
+
+  <div class="toc">
+    <div class="toc-title">Contents</div>
+    <a href="#about">1. About Minyt</a>
+    <a href="#accounts">2. Accounts</a>
+    <a href="#creators">3. Selling on Minyt</a>
+    <a href="#commission">4. Commission &amp; Fees</a>
+    <a href="#payments">5. Payments &amp; Payouts</a>
+    <a href="#refunds">6. Refunds</a>
+    <a href="#chargebacks">7. Chargebacks &amp; Disputes</a>
+    <a href="#buyers">8. Buying on Minyt</a>
+    <a href="#content">9. Content &amp; Conduct</a>
+    <a href="#ip">10. Intellectual Property</a>
+    <a href="#liability">11. Disclaimers &amp; Liability</a>
+    <a href="#termination">12. Suspension &amp; Termination</a>
+    <a href="#privacy">13. Privacy Policy</a>
+    <a href="#changes">14. Changes to These Terms</a>
+    <a href="#contact">15. Contact</a>
+  </div>
+
+  <h2 class="section" id="about"><span class="section-num">1.</span>About Minyt</h2>
+  <p class="body">Minyt is a marketplace that connects Creators and Buyers. Minyt provides the platform, listing tools, and payment infrastructure, but Minyt is not the seller of any offer listed by a Creator. Each offer is sold by the Creator who lists it. The contract for any purchase is between the Buyer and the Creator. Minyt facilitates that transaction but is not a party to it.</p>
+  <p class="body">Minyt is operated by an individual sole proprietor based in Illinois, United States. References to "we," "us," or "Minyt" refer to that operator.</p>
+
+  <h2 class="section" id="accounts"><span class="section-num">2.</span>Accounts</h2>
+  <p class="body">You may need an account to buy or sell on Minyt. You are responsible for the accuracy of the information you provide and for keeping your login credentials secure. You must be at least 18 years old, or the age of majority in your jurisdiction, to use Minyt. You are responsible for all activity that occurs under your account.</p>
+  <p class="body">You agree not to share your account, create accounts using false information, or use another person's account without permission.</p>
+
+  <h2 class="section" id="creators"><span class="section-num">3.</span>Selling on Minyt</h2>
+  <p class="body">As a Creator, you are solely responsible for the offers you list, including their description, pricing, delivery, and quality. You agree that:</p>
+  <ul class="body">
+    <li>Your listings are accurate and not misleading, and you can deliver what you describe.</li>
+    <li>You own or have the rights to everything you sell, and selling it does not infringe anyone's rights.</li>
+    <li>You will deliver purchased offers to Buyers promptly and as described.</li>
+    <li>You will set and clearly state your own refund policy for each offer (see Section 6).</li>
+    <li>You are responsible for your own tax obligations on income earned through Minyt.</li>
+  </ul>
+  <p class="body">Listings may be reviewed before they appear publicly. Minyt may decline, remove, or unpublish any listing at its discretion, including listings that are inaccurate, violate these terms, or create risk for Buyers or the platform.</p>
+
+  <h2 class="section" id="commission"><span class="section-num">4.</span>Commission &amp; Fees</h2>
+  <p class="body">Minyt charges Creators a commission on each sale. The commission rate is based on the Creator's total sales volume:</p>
+  <ul class="body">
+    <li><strong>10%</strong> on the portion of total sales from $0 to $50,000.</li>
+    <li><strong>8%</strong> on the portion of total sales from $50,000 to $100,000.</li>
+    <li><strong>6%</strong> on the portion of total sales above $100,000.</li>
+  </ul>
+  <p class="body">Commission rates apply to the sale amount only. <strong>Payment processing fees</strong> charged by our payment processor (Stripe) are separate from Minyt's commission and are the Creator's responsibility. Processing fees are generally not returned by the processor when a payment is refunded. Commission rates and fee structure may change; changes will be posted on this page and apply to sales made after the change.</p>
+  <h3 class="sub">Sales tax, VAT &amp; GST</h3>
+  <p class="body">Depending on a Buyer's location, sales tax, VAT, GST, or similar transaction taxes may apply to a purchase. Where such tax applies, it is the responsibility of the Buyer, and it is calculated based on the Buyer's location and added to the purchase at checkout, so that the total a Buyer pays may be higher than the listed price of an offer.</p>
+  <p class="body">Minyt's commission, and a Creator's earnings, are calculated on the pre-tax sale amount of an offer. Transaction tax collected at checkout is not part of a Creator's earnings or of Minyt's commission. Creators remain responsible for their own income taxes as described in Section 3.</p>
+
+  <h2 class="section" id="payments"><span class="section-num">5.</span>Payments &amp; Payouts</h2>
+  <p class="body">Payments on Minyt are processed by Stripe. To receive payouts, Creators must connect a Stripe account and complete Stripe's onboarding and verification. Your use of Stripe is also governed by Stripe's own terms.</p>
+  <p class="body">When a Buyer makes a purchase, funds are routed to the Creator's connected Stripe account, and Minyt's commission is collected as a platform fee. Payouts to a Creator's bank account are made on a delayed schedule after the sale. This delay exists in part to allow refunds to be processed cleanly. Minyt may adjust payout timing, or hold or reserve funds, where reasonably necessary to cover refunds, chargebacks, suspected fraud, or violations of these terms.</p>
+
+  <h2 class="section" id="refunds"><span class="section-num">6.</span>Refunds</h2>
+  <p class="body">Each Creator sets their own refund policy for each offer, and that policy should be clearly stated on the offer. Whether a refund is granted is determined by the Creator's stated policy.</p>
+  <h3 class="sub">Minyt's commission on refunds</h3>
+  <p class="body">If a refund is granted for a purchase made <strong>within 7 days</strong> of that purchase, Minyt will also refund its commission for that sale, so that the refund can be made whole apart from any non-refundable processing fees.</p>
+  <p class="body">If a refund is granted <strong>more than 7 days</strong> after the purchase, Minyt's commission for that sale is non-refundable, and the cost of the refund is the Creator's sole responsibility.</p>
+  <p class="body">In all cases, payment processing fees charged by Stripe are not returned and are the Creator's responsibility. "Full refund" therefore means the purchase amount less any non-refundable processing fees. Minyt facilitates refunds but does not itself guarantee, fund, or arbitrate them, except with respect to its own commission as described above.</p>
+
+  <h2 class="section" id="chargebacks"><span class="section-num">7.</span>Chargebacks &amp; Disputes</h2>
+  <p class="body">A chargeback occurs when a Buyer disputes a charge directly with their bank or card provider rather than requesting a refund. If a chargeback is filed on a Creator's sale, the disputed amount and any associated dispute or processing fees are the responsibility of the Creator, regardless of the outcome and regardless of the 7-day window described in Section 6.</p>
+  <p class="body">If chargebacks, refunds, or fees result in a negative balance on a Creator's account, the Creator is responsible for that balance, and Minyt may recover it from future payouts or by other lawful means. Buyers are encouraged to contact the Creator or Minyt to resolve issues before filing a chargeback.</p>
+
+  <h2 class="section" id="buyers"><span class="section-num">8.</span>Buying on Minyt</h2>
+  <p class="body">As a Buyer, you understand that you are purchasing from a Creator, not from Minyt. Before purchasing, you should review the offer description and the Creator's refund policy. Offers are typically digital and delivered electronically.</p>
+  <p class="body">Minyt does not endorse, verify the quality of, or guarantee any Creator or offer. Reviews and ratings reflect the opinions of other users. Any issue with an offer should first be raised with the Creator.</p>
+
+  <h2 class="section" id="content"><span class="section-num">9.</span>Content &amp; Conduct</h2>
+  <p class="body">You agree not to use Minyt to list, sell, post, or transmit anything that is illegal, fraudulent, infringing, harmful, sexually exploitative, hateful, or otherwise objectionable, and not to misuse the platform (for example, by attempting to bypass fees, scrape data, interfere with the service, or deceive other users).</p>
+  <p class="body">Minyt may remove content, decline listings, and suspend accounts that violate this section. You are responsible for content you submit, including listings, reviews, feedback, and messages.</p>
+
+  <h2 class="section" id="ip"><span class="section-num">10.</span>Intellectual Property</h2>
+  <p class="body">Creators retain ownership of the content and offers they create. By listing on Minyt, a Creator grants Minyt a limited license to display and promote that content for the purpose of operating and marketing the platform.</p>
+  <p class="body">The Minyt name, logo, site design, and platform software are the property of Minyt and may not be copied or used without permission.</p>
+
+  <h2 class="section" id="liability"><span class="section-num">11.</span>Disclaimers &amp; Liability</h2>
+  <p class="body">Minyt is provided "as is" and "as available," without warranties of any kind, whether express or implied, to the fullest extent permitted by law. Minyt does not warrant that the platform will be uninterrupted, error-free, or secure, and does not warrant the quality, accuracy, or results of any offer sold by a Creator.</p>
+  <p class="body">To the fullest extent permitted by law, Minyt and its operator will not be liable for any indirect, incidental, special, or consequential damages, or for any loss arising from a transaction between a Buyer and a Creator. To the fullest extent permitted by law, Minyt's total liability to you for any claim relating to the platform will not exceed the total commission Minyt earned from your transactions in the three months before the claim arose.</p>
+  <p class="body">Some jurisdictions do not allow certain limitations of liability, so some of the above may not apply to you.</p>
+
+  <h2 class="section" id="termination"><span class="section-num">12.</span>Suspension &amp; Termination</h2>
+  <p class="body">You may stop using Minyt at any time. Minyt may suspend or terminate an account, or remove listings, if a user violates these terms, creates risk for the platform or its users, or for other reasonable operational or legal reasons. Provisions that by their nature should survive termination — including those on commission owed, refunds, chargebacks, intellectual property, and liability — will survive.</p>
+
+  <h2 class="section" id="privacy"><span class="section-num">13.</span>Privacy Policy</h2>
+  <p class="body">This section explains what information Minyt collects and how it is used.</p>
+  <h3 class="sub">Information we collect</h3>
+  <ul class="body">
+    <li><strong>Account information</strong> you provide, such as your name and email address.</li>
+    <li><strong>Listing and transaction information</strong>, such as offers, purchases, and reviews.</li>
+    <li><strong>Feedback</strong> you submit through the platform, which may include the page you were on and, if you are signed in, your email address.</li>
+    <li><strong>Basic technical information</strong> ordinarily generated when using a website.</li>
+  </ul>
+  <p class="body">Payment card details are collected and processed by Stripe, not by Minyt. Minyt does not store full payment card numbers.</p>
+  <h3 class="sub">How we use information</h3>
+  <p class="body">We use information to operate the marketplace, process transactions, provide customer support, prevent fraud and abuse, improve the platform, and communicate with you (for example, transactional emails such as receipts and account notices).</p>
+  <h3 class="sub">How information is shared</h3>
+  <p class="body">We share information with service providers that help us run Minyt, including Stripe (payments), Supabase (data hosting), and email and hosting providers. We may share information when required by law, to enforce these terms, or to protect users. We do not sell your personal information. When you buy from a Creator, relevant transaction information may be shared with that Creator to fulfill the purchase.</p>
+  <h3 class="sub">Your choices</h3>
+  <p class="body">You may request access to or deletion of your personal information by contacting us at the email below. Some information may be retained where necessary for legal, accounting, or fraud-prevention purposes. Minyt is operated from the United States; by using the platform you understand your information is processed there.</p>
+
+  <h2 class="section" id="changes"><span class="section-num">14.</span>Changes to These Terms</h2>
+  <p class="body">Minyt may update these terms from time to time. The "Last updated" date at the top reflects the most recent change. Continued use of the platform after a change means you accept the updated terms. For significant changes, Minyt will make reasonable efforts to provide notice.</p>
+
+  <h2 class="section" id="contact"><span class="section-num">15.</span>Contact</h2>
+  <p class="body">Questions about these terms or your information can be sent to <a class="inline" href="mailto:hello@getminyt.com">hello@getminyt.com</a>.</p>
+  <p class="body">These terms are governed by the laws of the State of Illinois, United States, without regard to its conflict-of-laws rules. Any dispute that is not otherwise resolved will be handled in the state or federal courts located in Illinois.</p>
+
+  <div class="doc-footer">
+    &copy; 2026 Minyt. This document is provided for transparency and is not legal advice.
+  </div>
+</div>
+
+<script>
+var SURL='https://qoigwxwkhpcgisprkozg.supabase.co';
+var SKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFvaWd3eHdraHBjZ2lzcHJrb3pnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3NDAzOTUsImV4cCI6MjA5MjMxNjM5NX0.Si-GOt97FF4Wt49E_Yf7CsgyvU2-5dHbStQu1wwQ6Ik';
+
+function openSideMenu(){
+  document.getElementById('side-menu').classList.add('open');
+  document.getElementById('side-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeSideMenu(){
+  document.getElementById('side-menu').classList.remove('open');
+  document.getElementById('side-overlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+// FEEDBACK MODAL
+function openFeedback(){
+  closeSideMenu();
+  document.getElementById('fb-overlay').classList.add('open');
+  document.getElementById('fb-modal').classList.add('open');
+  document.getElementById('fb-done').classList.remove('show');
+  document.getElementById('fb-text').value='';
+  document.body.style.overflow='hidden';
+}
+function closeFeedback(){
+  document.getElementById('fb-overlay').classList.remove('open');
+  document.getElementById('fb-modal').classList.remove('open');
+  document.body.style.overflow='';
+}
+function fbGetSupabase(cb){
+  if(window.supabase&&window.supabase.createClient){cb();return;}
+  var s=document.createElement('script');
+  s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';
+  s.onload=function(){cb();};
+  s.onerror=function(){cb(true);};
+  document.head.appendChild(s);
+}
+function sendFeedback(){
+  var text=(document.getElementById('fb-text').value||'').trim();
+  if(!text){document.getElementById('fb-text').focus();return;}
+  var btn=document.getElementById('fb-submit');
+  btn.disabled=true;btn.textContent='Sending...';
+  fbGetSupabase(function(failed){
+    if(failed){
+      btn.disabled=false;btn.textContent='Send feedback';
+      alert('Could not send feedback. Please check your connection and try again.');
+      return;
+    }
+    var sb=window.supabase.createClient(SURL,SKEY);
+    var row={message:text,page_url:window.location.href};
+    sb.auth.getSession().then(function(res){
+      if(res&&res.data&&res.data.session){row.user_email=res.data.session.user.email;}
+      sb.from('feedback').insert(row).then(function(r){
+        btn.disabled=false;btn.textContent='Send feedback';
+        if(r.error){
+          alert('Could not send feedback. Please try again.');
+          return;
+        }
+        document.getElementById('fb-text').value='';
+        document.getElementById('fb-done').classList.add('show');
+        setTimeout(closeFeedback,1600);
+      });
+    });
+  });
+}
+</script>
+</body>
+</html>
