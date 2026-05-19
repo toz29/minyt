@@ -214,9 +214,7 @@ footer{padding:1.5rem 2rem;border-top:1px solid var(--border);display:flex;align
 .nav-account{position:relative}
 .nav-account-btn{width:34px;height:34px;border-radius:50%;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s;flex-shrink:0}
 .nav-account-btn:hover{border-color:var(--brand)}
-.nav-account-btn.logged-in{background:var(--brand-light);border-color:var(--brand)}
 .nav-account-btn svg{width:16px;height:16px;stroke:var(--muted)}
-.nav-account-btn.logged-in svg{stroke:var(--brand-dark)}
 .account-dropdown{position:absolute;top:calc(100% + 8px);right:0;background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:0.5rem;min-width:180px;box-shadow:0 8px 24px rgba(0,0,0,0.08);z-index:200;display:none}
 .account-dropdown.open{display:block}
 .dropdown-label{font-size:11px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:0.5px;padding:6px 10px 4px}
@@ -311,7 +309,7 @@ footer{padding:1.5rem 2rem;border-top:1px solid var(--border);display:flex;align
     <div class="nav-auth" id="nav-auth">
       <a class="nav-login" id="nav-login-btn" href="https://getminyt.com/account.html">Log in</a>
       <div class="nav-account" id="nav-account" style="display:none">
-        <div class="nav-account-btn logged-in" id="nav-acct-btn" onclick="toggleAccountMenu()" title="Account">
+        <div class="nav-account-btn" id="nav-acct-btn" onclick="toggleAccountMenu()" title="Account">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         </div>
         <div class="account-dropdown" id="account-dropdown">
