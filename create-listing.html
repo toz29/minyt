@@ -279,20 +279,28 @@ function initSB(cb){
   document.head.appendChild(s);
 }
 
-initSB(function(){
-  sb.auth.getSession().then(function(res){
-    if(res.data.session && res.data.session.user.email_confirmed_at) {
-      currentUser=res.data.session.user;
-      var name=currentUser.user_metadata?.name||currentUser.email.split('@')[0];
-      document.getElementById('prev-name').textContent=name;
-      document.getElementById('prev-name').style.color='var(--text)';
-      checkFreeOffer();
-      document.getElementById('dropdown-name').textContent=currentUser.user_metadata?.name||currentUser.email.split('@')[0];
-      document.getElementById('dropdown-email').textContent=currentUser.email;
-    } else {
-      window.location.href='https://getminyt.com/account.html?redirect=create-listing';
-    }
+function requireAuth(){
+  initSB(function(){
+    sb.auth.getSession().then(function(res){
+      if(res.data.session && res.data.session.user.email_confirmed_at) {
+        currentUser=res.data.session.user;
+        var name=currentUser.user_metadata?.name||currentUser.email.split('@')[0];
+        document.getElementById('prev-name').textContent=name;
+        document.getElementById('prev-name').style.color='var(--text)';
+        checkFreeOffer();
+        document.getElementById('dropdown-name').textContent=currentUser.user_metadata?.name||currentUser.email.split('@')[0];
+        document.getElementById('dropdown-email').textContent=currentUser.email;
+      } else {
+        window.location.replace('https://getminyt.com/account.html?redirect=create-listing');
+      }
+    });
   });
+}
+
+requireAuth();
+
+window.addEventListener('pageshow',function(e){
+  if(e.persisted) requireAuth();
 });
 
 function openSideMenu(){
