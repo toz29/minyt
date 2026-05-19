@@ -14,8 +14,9 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 .nav-create{padding:7px 14px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;font-weight:500;color:var(--text);cursor:pointer;transition:all 0.2s;text-decoration:none}
 .nav-create:hover{border-color:var(--brand);color:var(--brand);box-shadow:0 0 12px rgba(99,102,241,0.25)}
 .nav-account{position:relative}
-.nav-account-btn{width:34px;height:34px;border-radius:50%;background:var(--brand-light);border:1px solid var(--brand);display:flex;align-items:center;justify-content:center;cursor:pointer}
-.nav-account-btn svg{width:16px;height:16px;stroke:var(--brand-dark)}
+.nav-account-btn{width:34px;height:34px;border-radius:50%;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s;flex-shrink:0}
+.nav-account-btn:hover{border-color:var(--brand)}
+.nav-account-btn svg{width:16px;height:16px;stroke:var(--muted)}
 .account-dropdown{position:absolute;top:calc(100% + 8px);right:0;background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:0.5rem;min-width:200px;box-shadow:0 8px 24px rgba(0,0,0,0.08);z-index:200;display:none}
 .account-dropdown.open{display:block}
 .dropdown-name{font-size:13px;font-weight:500;padding:6px 10px 2px;color:var(--text)}
@@ -413,7 +414,7 @@ async function submitListing(){
   var unit=document.getElementById('funit').value||'one-time';
   var delivery=(document.getElementById('fdelivery').value||'').trim();
   if(!title){alert('Please add an offer title in step 2.');goStep(2);return;}
-  if(!FS.price){alert('Please select or enter a price.');return;}
+  if(FS.price===null||FS.price===undefined){alert('Please select or enter a price.');return;}
   var btn=document.getElementById('sbtn');
   btn.disabled=true;btn.textContent='Submitting...';
   initSB(async function(){
