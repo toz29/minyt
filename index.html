@@ -90,10 +90,12 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 .search-section{padding:2rem;max-width:1200px;margin:0 auto}
 .search-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.25rem}
 .tiers-wrap{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:3rem 2rem}
-.tiers-inner{max-width:900px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center}
+.tiers-inner{max-width:900px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start}
 .tiers-eyebrow{font-size:11px;font-weight:500;color:var(--brand);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:0.75rem}
 .tiers-title{font-family:'Space Grotesk',sans-serif;font-size:1.75rem;font-weight:400;line-height:1.2;margin-bottom:1rem}
 .tiers-sub{font-size:14px;color:var(--muted);line-height:1.6}
+.tiers-btns{display:flex;flex-direction:column;gap:12px;margin-top:1.75rem;max-width:320px}
+.tiers-btns button{padding:16px 28px;font-size:16px;width:100%}
 .tiers-right{display:flex;flex-direction:column;gap:10px}
 .tier{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between}
 .tier-range{font-size:14px;font-weight:500;margin-bottom:2px}
@@ -103,11 +105,6 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 .tier-top{border-color:var(--border);background:#fff}
 .tier-top .tier-range{color:var(--text)}
 .tier-pct-top{color:var(--brand)}
-.cta{background:var(--brand-light);padding:3rem 2rem;text-align:center;border-top:1px solid #C7D2FE}
-.cta h2{font-family:'Space Grotesk',sans-serif;font-size:1.8rem;font-weight:400;margin-bottom:0.4rem}
-.cta-motto{font-size:15px;color:var(--brand-dark);font-weight:500;margin-bottom:0.75rem}
-.cta p{font-size:14px;color:var(--muted);margin-bottom:1.5rem}
-.cta-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
 .btn-primary{padding:12px 26px;background:var(--brand);color:#fff;border:none;border-radius:var(--radius);font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif}
 .btn-primary:hover{background:var(--brand-dark)}
 .btn-outline{padding:12px 26px;background:transparent;color:var(--brand);border:1.5px solid var(--brand);border-radius:var(--radius);font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif}
@@ -251,6 +248,7 @@ footer{padding:1.5rem 2rem;border-top:1px solid var(--border);display:flex;align
   .stat{min-width:50%;border-right:none;border-bottom:1px solid var(--border)}
   .tiers-inner{grid-template-columns:1fr;gap:1.5rem}
   .tiers-wrap{padding:2rem 1rem}
+  .tiers-btns{max-width:none}
   .form-outer{grid-template-columns:1fr;padding:1.5rem 1rem}
   .form-left{position:static}
   .prev-card{display:none}
@@ -405,11 +403,15 @@ footer{padding:1.5rem 2rem;border-top:1px solid var(--border);display:flex;align
   <!-- TIERS -->
   <div class="tiers-wrap" id="tiers">
     <div class="tiers-inner">
-      <div>
+      <div class="tiers-left">
         <div class="tiers-eyebrow">Commission structure</div>
         <div class="tiers-title">A commission structure that rewards you.</div>
         <p class="tiers-sub">Your rate drops automatically as your revenue grows, based on total dollars earned.</p>
         <p class="tiers-sub" style="margin-top:0.75rem;padding-top:0.75rem;border-top:1px solid var(--border);font-size:13px">The more you earn, the more you keep.</p>
+        <div class="tiers-btns">
+          <button class="btn-primary" onclick="window.scrollTo({top:0,behavior:'smooth'})">Start learning</button>
+          <button class="btn-outline" onclick="window.location.href='https://getminyt.com/create-listing.html'">Create offer</button>
+        </div>
       </div>
       <div class="tiers-right">
         <div class="tier"><div><div class="tier-range">$0 — $50,000 in sales</div><div class="tier-label">Getting started</div></div><div class="tier-pct">10%</div></div>
@@ -420,17 +422,11 @@ footer{padding:1.5rem 2rem;border-top:1px solid var(--border);display:flex;align
     </div>
   </div>
 
-  <div class="cta">
-    <div class="cta-btns" style="flex-direction:column;max-width:320px;margin:0 auto;gap:12px">
-      <button class="btn-primary" onclick="window.scrollTo({top:0,behavior:'smooth'})" style="padding:16px 28px;font-size:16px;width:100%">Start learning</button>
-      <button class="btn-outline" onclick="window.location.href='https://getminyt.com/create-listing.html'" style="padding:16px 28px;font-size:16px;width:100%">Create offer</button>
-    </div>
-    <div style="margin-top:2.5rem;padding-top:1.5rem;border-top:1px solid #C7D2FE;display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--muted)">
-      <div class="footer-logo">minyt<sup style="font-size:9px;color:var(--muted);vertical-align:super;margin-left:1px">™</sup></div>
-      <div>© 2025 Minyt</div>
-      <div>hello@getminyt.com</div>
-    </div>
-  </div>
+  <footer>
+    <div class="footer-logo">minyt<sup style="font-size:9px;color:var(--muted);vertical-align:super;margin-left:1px">™</sup></div>
+    <div>© 2025 Minyt</div>
+    <div>hello@getminyt.com</div>
+  </footer>
 </div>
 
 <!-- LIST VIEW -->
