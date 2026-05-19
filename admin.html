@@ -70,6 +70,10 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 .status-pending{background:#FAEEDA;color:#412402}
 .status-approved{background:var(--brand-light);color:var(--brand-dark)}
 .status-denied{background:var(--danger-light);color:#A32D2D}
+.fb-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);border-left:3px solid var(--brand);padding:1.1rem 1.25rem}
+.fb-card-msg{font-size:14px;color:var(--text);line-height:1.5;white-space:pre-wrap;margin-bottom:0.65rem}
+.fb-card-meta{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--muted)}
+.fb-card-page{background:var(--surface);padding:1px 8px;border-radius:50px}
 .empty-state{text-align:center;padding:4rem 2rem;color:var(--muted);font-size:14px}
 .empty-state div{font-family:'Space Grotesk',sans-serif;font-size:1.25rem;font-weight:400;margin-bottom:0.5rem;color:var(--text)}
 .loading-state{text-align:center;padding:3rem;color:var(--muted);font-size:14px;font-style:italic}
@@ -132,6 +136,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
       <div class="tab" onclick="switchTab('approved',this)">Approved</div>
       <div class="tab" onclick="switchTab('denied',this)">Denied</div>
       <div class="tab" onclick="switchTab('all',this)">All</div>
+      <div class="tab" onclick="switchTab('feedback',this)">Feedback</div>
     </div>
 
     <div class="listings-grid" id="listings-grid">
@@ -217,7 +222,35 @@ function switchTab(tab, el) {
   currentTab = tab;
   document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
   el.classList.add('active');
-  renderListings();
+  if(tab === 'feedback') { loadFeedback(); }
+  else { renderListings(); }
+}
+
+function loadFeedback() {
+  var grid = document.getElementById('listings-grid');
+  grid.innerHTML = '<div class="loading-state">Loading feedback...</div>';
+  sb.from('feedback').select('*').order('created_at', {ascending:false}).then(function(res) {
+    if(res.error) { showToast('Error loading feedback.', 'error'); grid.innerHTML = '<div class="empty-state"><div>Could not load feedback</div>Check the feedback table exists in Supabase.</div>'; return; }
+    var rows = res.data || [];
+    if(!rows.length) {
+      grid.innerHTML = '<div class="empty-state"><div>No feedback yet</div>Submissions from the feedback box will appear here.</div>';
+      return;
+    }
+    grid.innerHTML = rows.map(function(f) {
+      var date = f.created_at ? new Date(f.created_at).toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'}) : 'Unknown date';
+      var who = f.user_email ? f.user_email : 'Anonymous';
+      var page = f.page_url ? f.page_url.replace(/^https?:\/\//,'') : '';
+      var msg = (f.message||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      return '<div class="fb-card">'
+        +'<div class="fb-card-msg">'+msg+'</div>'
+        +'<div class="fb-card-meta">'
+        +'<span>'+who+'</span>'
+        +(page?'<span class="fb-card-page">'+page+'</span>':'')
+        +'<span>'+date+'</span>'
+        +'</div>'
+        +'</div>';
+    }).join('');
+  });
 }
 
 function renderListings() {
