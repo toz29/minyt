@@ -17,6 +17,10 @@ export async function onRequestPost(context) {
     const isRecurring = billing_unit === '/ month' || billing_unit === '/ week';
     const applicationFeeAmount = Math.round(priceInCents * 0.10);
 
+    if (!seller_stripe_id) {
+      return new Response(JSON.stringify({ error: 'Seller has not connected a payout account' }), { status: 400, headers: corsHeaders });
+    }
+
     const params = new URLSearchParams();
     params.append('payment_method_types[]', 'card');
     params.append('line_items[0][price_data][currency]', 'usd');
@@ -32,25 +36,19 @@ export async function onRequestPost(context) {
 
     if (isRecurring) {
       params.append('line_items[0][price_data][recurring][interval]', billing_unit === '/ week' ? 'week' : 'month');
-    }
-
-    if (seller_stripe_id) {
-      if (isRecurring) {
-        params.append('subscription_data[application_fee_percent]', '10');
-        params.append('subscription_data[transfer_data][destination]', seller_stripe_id);
-        params.append('subscription_data[on_behalf_of]', seller_stripe_id);
-      } else {
-        params.append('payment_intent_data[application_fee_amount]', applicationFeeAmount.toString());
-        params.append('payment_intent_data[transfer_data][destination]', seller_stripe_id);
-        params.append('payment_intent_data[on_behalf_of]', seller_stripe_id);
-      }
+      // Direct charges with subscription: application fee as a percent
+      params.append('subscription_data[application_fee_percent]', '10');
+    } else {
+      // Direct charges with one-time payment: application fee as a fixed amount
+      params.append('payment_intent_data[application_fee_amount]', applicationFeeAmount.toString());
     }
 
     const res = await fetch('https://api.stripe.com/v1/checkout/sessions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${context.env.STRIPE_SECRET_KEY}`,
-        'Content-Type': 'application/x-www-form-urlencoded'
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Stripe-Account': seller_stripe_id
       },
       body: params.toString()
     });
