@@ -134,6 +134,39 @@ export async function onRequestPost(context) {
         break;
       }
 
+      case 'account.updated': {
+        // Seller's Connect account changed status (onboarding completed, capabilities enabled, etc.)
+        const acct = stripeEvent.data.object;
+        const fullyReady = acct.charges_enabled && acct.payouts_enabled && acct.details_submitted;
+
+        // Match by stripe_account_id which we saved on the seller's row during onboarding
+        await fetch(
+          `${supabaseUrl}/rest/v1/sellers?stripe_account_id=eq.${acct.id}`,
+          {
+            method: 'PATCH',
+            headers,
+            body: JSON.stringify({ stripe_connected: fullyReady })
+          }
+        );
+
+        // Also update any listings owned by this seller so checkout uses the right seller_stripe_id
+        if (fullyReady) {
+          // Find seller_id from the metadata we set when creating the account
+          const sellerId = acct.metadata && (acct.metadata.seller_id || acct.metadata.mentigo_seller_id);
+          if (sellerId) {
+            await fetch(
+              `${supabaseUrl}/rest/v1/listings?seller_id=eq.${sellerId}`,
+              {
+                method: 'PATCH',
+                headers,
+                body: JSON.stringify({ seller_stripe_id: acct.id })
+              }
+            );
+          }
+        }
+        break;
+      }
+
       default:
         break;
     }
