@@ -7,12 +7,16 @@ export async function onRequestPost(context) {
     const body = await context.request.text();
     const sig = context.request.headers.get('stripe-signature');
 
-    const verified = await verifyStripeSignature(body, sig, context.env.STRIPE_WEBHOOK_SECRET);
+    const verified =
+      (await verifyStripeSignature(body, sig, context.env.STRIPE_WEBHOOK_SECRET)) ||
+      (await verifyStripeSignature(body, sig, context.env.STRIPE_WEBHOOK_SECRET_CONNECT));
     if (!verified) {
       return new Response('Invalid signature', { status: 400 });
     }
 
     const stripeEvent = JSON.parse(body);
+    // For Connect events, stripeEvent.account is the connected account that triggered the event
+    const connectedAccountId = stripeEvent.account || null;
     const supabaseUrl = 'https://qoigwxwkhpcgisprkozg.supabase.co';
     const supabaseKey = context.env.SUPABASE_SERVICE_KEY;
     const headers = {
@@ -30,6 +34,8 @@ export async function onRequestPost(context) {
         if (!listing_id) break;
 
         const amount = (session.amount_total || 0) / 100;
+        // With direct charges, application_fee_amount lives on payment_intent or in metadata
+        // Fall back to metadata for the commission amount we tagged at checkout creation
         const commission = parseFloat(
           session.metadata?.minyt_commission || session.metadata?.mentigo_commission || 0
         ) / 100;
@@ -44,6 +50,7 @@ export async function onRequestPost(context) {
             commission,
             stripe_payment_id: session.id,
             stripe_customer_id: session.customer || null,
+            stripe_seller_account_id: connectedAccountId,
             subscription_id: session.subscription || null,
             subscription_status: session.subscription ? 'active' : null,
             status: 'completed'
