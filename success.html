@@ -28,6 +28,7 @@ h1{font-family:'Space Grotesk',sans-serif;font-size:2rem;font-weight:400;margin-
 .browse-btn{display:inline-block;padding:12px 28px;background:var(--brand);color:#fff;border:none;border-radius:var(--radius);font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none}
 .browse-btn:hover{background:var(--brand-dark)}
 .loading{font-size:13px;color:var(--muted);font-style:italic}
+.hidden{display:none !important}
 
 .hamburger{display:flex;flex-direction:column;gap:4px;cursor:pointer;padding:6px;z-index:101}
 .hamburger span{width:18px;height:2px;background:var(--text);border-radius:1px;transition:all 0.2s}
@@ -98,8 +99,8 @@ h1{font-family:'Space Grotesk',sans-serif;font-size:2rem;font-weight:400;margin-
   </svg>
 </div>
 
-<h1>You're all set.</h1>
-<p class="sub">Your purchase was successful. Access your content below and check your email for a receipt.</p>
+<h1 id="page-title">You're all set.</h1>
+<p class="sub" id="page-sub">Your purchase was successful. Access your content below and check your email for a receipt.</p>
 
 <!-- DELIVERY LINK -->
 <div class="access-box" id="access-box">
@@ -110,6 +111,13 @@ h1{font-family:'Space Grotesk',sans-serif;font-size:2rem;font-weight:400;margin-
     <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
   </a>
   <p class="no-access hidden" id="no-access">Your creator will send your access link shortly via email.</p>
+  <div class="hidden" id="expired-box">
+    <p class="no-access" id="expired-msg" style="margin-bottom:10px">Your subscription is no longer active. Renew to regain access.</p>
+    <a class="access-btn" id="manage-btn" href="#" style="background:#fff;color:var(--brand);border:1px solid var(--brand)">
+      Manage subscription
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--brand)"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </a>
+  </div>
 </div>
 
 <!-- CREATE ACCOUNT PROMPT -->
@@ -127,17 +135,50 @@ var SKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6I
 
 var params=new URLSearchParams(window.location.search);
 var listingId=params.get('listing_id');
+var sessionId=params.get('session_id');
 
 if(listingId){
   var s=document.createElement('script');
   s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';
   s.onload=function(){
     var sb=window.supabase.createClient(SURL,SKEY);
-    sb.from('listings').select('title,delivery_link').eq('id',listingId).single().then(function(res){
+
+    // Always fetch the listing for the delivery link
+    var listingPromise=sb.from('listings').select('title,delivery_link').eq('id',listingId).single();
+
+    // If we have a session_id, also fetch the order to check subscription status
+    var orderPromise=sessionId
+      ? sb.from('orders').select('subscription_id,subscription_status,stripe_customer_id').eq('stripe_payment_id',sessionId).maybeSingle()
+      : Promise.resolve({data:null});
+
+    Promise.all([listingPromise,orderPromise]).then(function(results){
+      var listing=results[0].data;
+      var order=results[1].data;
       document.getElementById('access-loading').classList.add('hidden');
-      if(res.data&&res.data.delivery_link){
+
+      // Decide which state to show
+      var isExpired=false;
+      if(order && order.subscription_id){
+        // It's a subscription. Active or trialing = OK, anything else = expired.
+        var status=order.subscription_status;
+        if(status!=='active' && status!=='trialing'){
+          isExpired=true;
+        }
+      }
+
+      if(isExpired){
+        document.getElementById('page-title').textContent='Subscription inactive.';
+        document.getElementById('page-sub').textContent='Your subscription is no longer active. You can renew below to regain access.';
+        document.getElementById('expired-box').classList.remove('hidden');
+        var manageBtn=document.getElementById('manage-btn');
+        if(order && order.stripe_customer_id){
+          manageBtn.href='https://getminyt.com/manage-subscription?customer='+encodeURIComponent(order.stripe_customer_id);
+        } else {
+          manageBtn.style.display='none';
+        }
+      } else if(listing && listing.delivery_link){
         var btn=document.getElementById('access-btn');
-        btn.href=res.data.delivery_link;
+        btn.href=listing.delivery_link;
         btn.classList.remove('hidden');
       } else {
         document.getElementById('no-access').classList.remove('hidden');
