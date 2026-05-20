@@ -28,15 +28,20 @@ export async function onRequestPost(context) {
     params.append('success_url', `https://getminyt.com/success.html?session_id={CHECKOUT_SESSION_ID}&listing_id=${listing_id}`);
     params.append('cancel_url', 'https://getminyt.com');
     params.append('metadata[listing_id]', listing_id);
-    params.append('metadata[mentigo_commission]', applicationFeeAmount.toString());
+    params.append('metadata[minyt_commission]', applicationFeeAmount.toString());
 
     if (isRecurring) {
       params.append('line_items[0][price_data][recurring][interval]', billing_unit === '/ week' ? 'week' : 'month');
     }
 
     if (seller_stripe_id) {
-      params.append('payment_intent_data[application_fee_amount]', applicationFeeAmount.toString());
-      params.append('payment_intent_data[transfer_data][destination]', seller_stripe_id);
+      if (isRecurring) {
+        params.append('subscription_data[application_fee_percent]', '10');
+        params.append('subscription_data[transfer_data][destination]', seller_stripe_id);
+      } else {
+        params.append('payment_intent_data[application_fee_amount]', applicationFeeAmount.toString());
+        params.append('payment_intent_data[transfer_data][destination]', seller_stripe_id);
+      }
     }
 
     const res = await fetch('https://api.stripe.com/v1/checkout/sessions', {
