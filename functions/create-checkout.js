@@ -38,9 +38,11 @@ export async function onRequestPost(context) {
       if (isRecurring) {
         params.append('subscription_data[application_fee_percent]', '10');
         params.append('subscription_data[transfer_data][destination]', seller_stripe_id);
+        params.append('subscription_data[on_behalf_of]', seller_stripe_id);
       } else {
         params.append('payment_intent_data[application_fee_amount]', applicationFeeAmount.toString());
         params.append('payment_intent_data[transfer_data][destination]', seller_stripe_id);
+        params.append('payment_intent_data[on_behalf_of]', seller_stripe_id);
       }
     }
 
