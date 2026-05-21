@@ -526,6 +526,13 @@ async function submitListing(){
         email:currentUser?currentUser.email:''
       };
       if(currentUser) insertData.seller_id=currentUser.id;
+      // Tag the listing with the seller's Stripe Connect account so checkout works
+      if(currentUser){
+        var sellerRes=await sb.from('sellers').select('stripe_account_id,stripe_connected').eq('id',currentUser.id).maybeSingle();
+        if(sellerRes.data && sellerRes.data.stripe_account_id){
+          insertData.seller_stripe_id=sellerRes.data.stripe_account_id;
+        }
+      }
       var res=await sb.from('listings').insert(insertData);
       if(res.error) throw res.error;
       document.getElementById('view-form').classList.add('hidden');
