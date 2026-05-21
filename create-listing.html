@@ -29,9 +29,16 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 .form-title{font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:400;margin-bottom:0.25rem}
 .form-sub{font-size:13px;color:var(--muted);margin-bottom:1.75rem;line-height:1.5}
 .progress-bar{display:flex;gap:6px;margin-bottom:1.75rem}
-.prog{flex:1;height:3px;border-radius:2px;background:var(--border);transition:background 0.3s}
+.prog-col{flex:1;display:flex;flex-direction:column;gap:8px}
+.prog-name{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:1px;color:var(--border);transition:color 0.2s;background:none;border:none;padding:0;font-family:'DM Sans',sans-serif;text-align:left;cursor:default;outline:none}
+.prog-name:focus{outline:none}
+.prog-name:hover{color:var(--border)}
+.prog-name.done{color:var(--muted);cursor:pointer}
+.prog-name.done:hover{color:var(--text)}
+.prog-name.active{color:var(--text);cursor:default}
+.prog-name.active:hover{color:var(--text)}
+.prog{height:3px;border-radius:2px;background:var(--border);transition:background 0.3s}
 .prog.done{background:var(--brand)}
-.step-label{font-size:11px;color:var(--muted);margin-bottom:1.25rem;font-weight:500;text-transform:uppercase;letter-spacing:1px}
 .field{margin-bottom:1rem}
 .field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:500}
 .field input,.field select,.field textarea{width:100%;padding:11px 14px;border:1px solid var(--border);border-radius:var(--radius);font-size:14px;font-family:'DM Sans',sans-serif;color:var(--text);background:#fff}
@@ -172,14 +179,22 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
       <div class="form-title">Create an offer</div>
       <div class="form-sub">Free to list. 10% commission only when you make a sale, dropping automatically as you scale.</div>
       <div class="progress-bar">
-        <div class="prog done" id="p1"></div>
-        <div class="prog" id="p2"></div>
-        <div class="prog" id="p3"></div>
+        <div class="prog-col">
+          <button type="button" class="prog-name active" id="n1" onclick="tryGoStep(1)">Visuals</button>
+          <div class="prog done" id="p1"></div>
+        </div>
+        <div class="prog-col">
+          <button type="button" class="prog-name" id="n2" onclick="tryGoStep(2)">Your offer</button>
+          <div class="prog" id="p2"></div>
+        </div>
+        <div class="prog-col">
+          <button type="button" class="prog-name" id="n3" onclick="tryGoStep(3)">Price</button>
+          <div class="prog" id="p3"></div>
+        </div>
       </div>
 
       <!-- STEP 1 -->
       <div id="step1">
-        <div class="step-label">Step 1 of 3 — Visuals</div>
         <div class="field">
           <label>Banner image</label>
           <div class="upload-box" onclick="document.getElementById('ub').click()">
@@ -203,28 +218,28 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 
       <!-- STEP 2 -->
       <div id="step2" class="hidden">
-        <div class="step-label">Step 2 of 3 — Your offer</div>
         <div class="field"><label>Offer type</label>
           <select id="ftype" onchange="updPrev()">
-            <option>1-on-1 coaching call</option>
-            <option>Course / program</option>
-            <option>Community membership</option>
-            <option>Done-for-you service</option>
-            <option>Group coaching</option>
+            <option>Course / Program</option>
+            <option>Community</option>
+            <option>1-on-1 session</option>
+            <option>Service</option>
+            <option>Downloads</option>
           </select>
         </div>
         <div class="field"><label>Category</label>
           <select id="fcat" onchange="updPrev()">
-            <option value="ecom">E-commerce / Amazon FBA</option>
-            <option value="realestate">Real estate investing</option>
-            <option value="coding">Coding / software</option>
-            <option value="fitness">Fitness &amp; health</option>
-            <option value="finance">Personal finance</option>
-            <option value="marketing">Marketing &amp; social media</option>
+            <option value="hobbies">Hobbies</option>
+            <option value="money">Money</option>
+            <option value="tech">Tech</option>
+            <option value="health">Health &amp; Fitness</option>
+            <option value="mindspirit">Mind &amp; Spirit</option>
+            <option value="lifestyle">Lifestyle</option>
+            <option value="sportsgames">Sports &amp; Games</option>
             <option value="other">Other</option>
           </select>
         </div>
-        <div class="field"><label>Listing title</label><input type="text" id="ftitle" placeholder="e.g. Amazon FBA brand scaling" oninput="updPrev()"/></div>
+        <div class="field"><label>Listing title</label><input type="text" id="ftitle" placeholder="e.g. Weekly chess coaching, Notion productivity templates..." oninput="updPrev()"/></div>
         <div class="field"><label>Short description</label><textarea id="fdesc" placeholder="What will buyers get? Be specific about results..." oninput="updPrev()"></textarea></div>
         <div class="field">
           <label>Delivery link</label>
@@ -236,7 +251,6 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 
       <!-- STEP 3 -->
       <div id="step3" class="hidden">
-        <div class="step-label">Step 3 of 3 — Price</div>
         <div class="field"><label>Choose a price</label></div>
         <div class="price-grid">
           <div class="price-opt" id="free-opt" onclick="selFree(this)">Free</div>
@@ -409,12 +423,22 @@ async function doSignOut(){
   window.location.href='https://getminyt.com';
 }
 
+var maxStep = 1;
 function goStep(n){
+  if(n > maxStep) maxStep = n;
   [1,2,3].forEach(function(i){
     document.getElementById('step'+i).classList.toggle('hidden',i!==n);
     document.getElementById('p'+i).classList.toggle('done',i<=n);
+    var nm = document.getElementById('n'+i);
+    nm.classList.remove('done','active');
+    if(i === n) nm.classList.add('active');
+    else if(i < maxStep) nm.classList.add('done');
   });
   window.scrollTo({top:0,behavior:'smooth'});
+}
+function tryGoStep(n){
+  // Only allow jumping to current step (no-op) or to any step already reached
+  if(n <= maxStep) goStep(n);
 }
 
 function onBanner(input){
