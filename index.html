@@ -38,7 +38,8 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 .search-wrap button:hover{background:var(--brand-dark)}
 .cat-nav{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;max-width:900px;margin:0 auto;padding:0 1rem}
 .cat-pill{padding:7px 16px;border:1px solid var(--border);border-radius:50px;font-size:13px;cursor:pointer;color:var(--muted);background:#fff;transition:all 0.15s;font-family:'DM Sans',sans-serif}
-.cat-pill:hover,.cat-pill.active{background:var(--brand-light);border-color:var(--brand);color:var(--brand-dark)}
+.cat-pill:hover{border-color:var(--brand);color:var(--brand-dark)}
+.cat-pill.active{background:var(--brand-light);border-color:var(--brand);color:var(--brand-dark)}
 .stats{display:none}
 .stat{flex:1;text-align:center;padding:1.25rem 1rem;border-right:1px solid var(--border)}
 .stat:last-child{border-right:none}
@@ -398,7 +399,7 @@ footer{padding:1.5rem 2rem;border-top:1px solid var(--border);display:flex;align
   <div id="search-results" class="search-section hidden">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;padding:0 2rem">
       <div style="font-family:'Space Grotesk',sans-serif;font-size:1.2rem;font-weight:400" id="search-label">Results</div>
-      <span style="font-size:13px;color:var(--brand);cursor:pointer" onclick="clearSearch()">Clear search</span>
+      <span style="font-size:13px;color:var(--brand);cursor:pointer" onclick="filterTopic('all',document.querySelector('.cat-pill'))">Clear search</span>
     </div>
     <div class="search-grid" id="search-grid" style="padding:0 2rem 2rem"></div>
   </div>
@@ -776,7 +777,7 @@ var SYNONYMS = {
 
 function handleSearch() {
   var q = document.getElementById('search-input').value.toLowerCase().trim();
-  if(!q){clearSearch();return;}
+  if(!q){filterTopic('all',document.querySelector('.cat-pill'));return;}
   var words = q.split(/\s+/);
   var matchedCats = [];
   Object.keys(SYNONYMS).forEach(function(cat){
@@ -802,21 +803,17 @@ function clearSearch() {
   document.getElementById('search-results').classList.add('hidden');
   document.getElementById('category-rows').classList.remove('hidden');
   document.getElementById('special-rows').classList.remove('hidden');
-  document.querySelector('.cat-pill').classList.add('active');
 }
 function scrollRow(id, dir) {
   var r = document.getElementById(id);
   if(r) r.scrollBy({left:dir*560,behavior:'smooth'});
 }
 function filterTopic(topic, el) {
+  clearSearch();
   document.querySelectorAll('.cat-pill').forEach(function(p){p.classList.remove('active');});
   if(el) el.classList.add('active');
-  clearSearch();
   activeTopic = topic;
   renderTypes(ALL);
-  // Scroll to the format rows so the user sees what changed
-  var target = document.getElementById('category-rows');
-  if(target) window.scrollTo({top:target.getBoundingClientRect().top+window.scrollY-80,behavior:'smooth'});
 }
 
 // ── MODAL ──
