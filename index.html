@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="description" content="Minyt is a marketplace where you can find courses, coaching calls and communities from real creators."/>
-<meta name="keywords" content="mentor marketplace, online courses, coaching, e-commerce mentor, real estate coaching, fitness coach, find a mentor"/>
+<meta name="keywords" content="learn online, online courses, coaching, find a mentor, paid community, digital downloads, group coaching, marketplace for creators"/>
 <meta property="og:title" content="Minyt | Learn or teach what you know"/>
 <meta property="og:description" content="Find courses, coaching calls and communities from real creators across every niche. Discover people you'd never find otherwise."/>
 <meta property="og:url" content="https://getminyt.com"/>
@@ -36,7 +36,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 .search-wrap input:focus{outline:none;border-color:var(--brand)}
 .search-wrap button{padding:12px 22px;background:var(--brand);color:#fff;border:none;border-radius:var(--radius);font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap}
 .search-wrap button:hover{background:var(--brand-dark)}
-.cat-nav{display:none}
+.cat-nav{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;max-width:900px;margin:0 auto;padding:0 1rem}
 .cat-pill{padding:7px 16px;border:1px solid var(--border);border-radius:50px;font-size:13px;cursor:pointer;color:var(--muted);background:#fff;transition:all 0.15s;font-family:'DM Sans',sans-serif}
 .cat-pill:hover,.cat-pill.active{background:var(--brand-light);border-color:var(--brand);color:var(--brand-dark)}
 .stats{display:none}
@@ -262,6 +262,9 @@ footer{padding:1.5rem 2rem;border-top:1px solid var(--border);display:flex;align
   .scroll-row{padding:0.25rem 1rem 1rem}
   .cat-divider{margin:0 1rem}
   .banner{padding:.875rem 1rem;flex-direction:column;align-items:flex-start}
+  .cat-nav{flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;padding:0 1rem 0.25rem;-ms-overflow-style:none;scrollbar-width:none}
+  .cat-nav::-webkit-scrollbar{display:none}
+  .cat-pill{flex-shrink:0}
 }
 </style>
 </head>
@@ -363,17 +366,19 @@ footer{padding:1.5rem 2rem;border-top:1px solid var(--border);display:flex;align
     <h1>Learn from someone who's<br>actually done it.</h1>
     <a href="https://getminyt.com/create-listing.html" class="hero-teach-link" style="display:inline-block;color:var(--brand);font-size:1.1rem;font-weight:500;cursor:pointer">Or teach what you know.</a>
     <div class="search-wrap">
-      <input type="text" id="search-input" placeholder="Search Amazon FBA, real estate, coding..." oninput="handleSearch()"/>
+      <input type="text" id="search-input" placeholder="Search courses, coaches, communities..." oninput="handleSearch()"/>
       <button onclick="handleSearch()">Search</button>
     </div>
     <div class="cat-nav">
-      <div class="cat-pill active" onclick="jumpTo('all',this)">All</div>
-      <div class="cat-pill" onclick="jumpTo('ecom',this)">E-commerce</div>
-      <div class="cat-pill" onclick="jumpTo('realestate',this)">Real estate</div>
-      <div class="cat-pill" onclick="jumpTo('coding',this)">Coding</div>
-      <div class="cat-pill" onclick="jumpTo('fitness',this)">Fitness</div>
-      <div class="cat-pill" onclick="jumpTo('finance',this)">Finance</div>
-      <div class="cat-pill" onclick="jumpTo('marketing',this)">Marketing</div>
+      <div class="cat-pill active" onclick="filterTopic('all',this)">All</div>
+      <div class="cat-pill" onclick="filterTopic('hobbies',this)">Hobbies</div>
+      <div class="cat-pill" onclick="filterTopic('money',this)">Money</div>
+      <div class="cat-pill" onclick="filterTopic('tech',this)">Tech</div>
+      <div class="cat-pill" onclick="filterTopic('health',this)">Health &amp; Fitness</div>
+      <div class="cat-pill" onclick="filterTopic('mindspirit',this)">Mind &amp; Spirit</div>
+      <div class="cat-pill" onclick="filterTopic('lifestyle',this)">Lifestyle</div>
+      <div class="cat-pill" onclick="filterTopic('sportsgames',this)">Sports &amp; Games</div>
+      <div class="cat-pill" onclick="filterTopic('other',this)">Other</div>
     </div>
   </div>
 
@@ -508,15 +513,15 @@ footer{padding:1.5rem 2rem;border-top:1px solid var(--border);display:flex;align
         <div class="step-label">Step 2 of 3 — Your offer</div>
         <div class="field"><label>Offer type</label>
           <select id="ftype" onchange="updPrev()">
-            <option>1-on-1 coaching call</option><option>Course / program</option><option>Community membership</option><option>Done-for-you service</option><option>Group coaching</option>
+            <option>Course / Program</option><option>Community</option><option>1-on-1 session</option><option>Service</option><option>Downloads</option>
           </select>
         </div>
         <div class="field"><label>Category</label>
           <select id="fcat" onchange="updPrev()">
-            <option value="ecom">E-commerce / Amazon FBA</option><option value="realestate">Real estate investing</option><option value="coding">Coding / software</option><option value="fitness">Fitness &amp; health</option><option value="finance">Personal finance</option><option value="marketing">Marketing &amp; social media</option><option value="other">Other</option>
+            <option value="hobbies">Hobbies</option><option value="money">Money</option><option value="tech">Tech</option><option value="health">Health &amp; Fitness</option><option value="mindspirit">Mind &amp; Spirit</option><option value="lifestyle">Lifestyle</option><option value="sportsgames">Sports &amp; Games</option><option value="other">Other</option>
           </select>
         </div>
-        <div class="field"><label>Listing title</label><input type="text" id="ftitle" placeholder="e.g. Amazon FBA brand scaling" oninput="updPrev()"/></div>
+        <div class="field"><label>Listing title</label><input type="text" id="ftitle" placeholder="e.g. Weekly chess coaching, Notion productivity templates..." oninput="updPrev()"/></div>
         <div class="field"><label>Short description</label><textarea id="fdesc" placeholder="What will buyers get? Be specific about results..." oninput="updPrev()"></textarea></div>
         <div class="step-nav"><button class="btn-back-s" onclick="goStep(1)">← Back</button><button class="btn-next" onclick="goStep(3)">Continue →</button></div>
       </div>
@@ -594,30 +599,47 @@ var ALL = [];
 var FS = {bannerFile:null,avatarFile:null,price:null};
 
 var SAMPLES = [
-  {id:'s1',isSample:true,name:'Harley B.',handle:'@brandscaler',avatar_url:null,banner_url:'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&q=80',title:'Amazon FBA brand scaling',description:'From first product to profitable exit. Everything I used to sell 4 companies.',offer_type:'Course',category:'ecom',price:297,billing_unit:'one-time',stars:4.9,review_count:34,revenue:98000},
-  {id:'s2',isSample:true,name:'Jake M.',handle:'@jakeinvests',avatar_url:null,banner_url:'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=600&q=80',title:'Section 8 rental investing',description:'Market to cash flow. Find, finance and manage your first rental property.',offer_type:'1-on-1 call',category:'realestate',price:150,billing_unit:'/ call',stars:5.0,review_count:12,revenue:8000},
-  {id:'s3',isSample:true,name:'Sara K.',handle:'@sarabuilds',avatar_url:null,banner_url:'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600&q=80',title:'Full-stack web dev bootcamp',description:'Job placement support included. Go from zero to hired in 6 months.',offer_type:'Program',category:'coding',price:499,billing_unit:'one-time',stars:4.8,review_count:61,revenue:72000},
-  {id:'s4',isSample:true,name:'Marco T.',handle:'@marcotrains',avatar_url:null,banner_url:'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&q=80',title:'90-day body recomposition',description:'Fully customized online coaching. Real results, no cookie-cutter plans.',offer_type:'Coaching',category:'fitness',price:197,billing_unit:'/ month',stars:4.7,review_count:28,revenue:31000},
-  {id:'s5',isSample:true,name:'Priya N.',handle:'@priyafinance',avatar_url:null,banner_url:'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=600&q=80',title:'Personal finance and FIRE strategy',description:'Budget, invest and build the plan to retire early at any income level.',offer_type:'Community',category:'finance',price:29,billing_unit:'/ month',stars:4.9,review_count:89,revenue:125000},
-  {id:'s6',isSample:true,name:'Dillon R.',handle:'@dillonads',avatar_url:null,banner_url:'https://images.unsplash.com/photo-1611162616305-c69b3fa7fbe0?w=600&q=80',title:'TikTok and Meta ads for ecom',description:'Cut wasted spend and build campaigns that actually scale your store.',offer_type:'Course',category:'marketing',price:197,billing_unit:'one-time',stars:4.6,review_count:45,revenue:37000},
-  {id:'s7',isSample:true,name:'Amir S.',handle:'@amirflips',avatar_url:null,banner_url:'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=600&q=80',title:'Wholesaling and house flipping',description:'Find deals with no money down. The exact system I used on my first 10 flips.',offer_type:'Program',category:'realestate',price:399,billing_unit:'one-time',stars:4.8,review_count:19,revenue:22000},
-  {id:'s8',isSample:true,name:'Cleo W.',handle:'@cleocodes',avatar_url:null,banner_url:'https://images.unsplash.com/photo-1555099962-4199c345e5dd?w=600&q=80',title:'No-code app building with Bubble',description:'Launch your MVP in 30 days without writing a single line of code.',offer_type:'Course',category:'coding',price:149,billing_unit:'one-time',stars:4.7,review_count:37,revenue:15000},
-  {id:'s9',isSample:true,name:'Ben T.',handle:'@benfba',avatar_url:null,banner_url:'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&q=80',title:'Amazon PPC mastery',description:'Cut wasted spend and scale winning ad campaigns for your store.',offer_type:'1-on-1 call',category:'ecom',price:200,billing_unit:'/ call',stars:4.8,review_count:22,revenue:44000},
-  {id:'s10',isSample:true,name:'Layla H.',handle:'@laylafits',avatar_url:null,banner_url:'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&q=80',title:"Women's strength training",description:'12-week progressive overload program built around your schedule and goals.',offer_type:'Program',category:'fitness',price:97,billing_unit:'one-time',stars:4.9,review_count:54,revenue:58000}
+  {id:'s1',isSample:true,name:'Harley B.',handle:'@brandscaler',avatar_url:null,banner_url:'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&q=80',title:'E-commerce brand scaling',description:'From first product to profitable exit. Everything I used to sell 4 companies.',offer_type:'Course / Program',category:'money',price:297,billing_unit:'one-time',stars:4.9,review_count:34,revenue:98000},
+  {id:'s2',isSample:true,name:'Jake M.',handle:'@jakeinvests',avatar_url:null,banner_url:'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=600&q=80',title:'Section 8 rental investing',description:'Market to cash flow. Find, finance and manage your first rental property.',offer_type:'1-on-1 session',category:'money',price:150,billing_unit:'/ call',stars:5.0,review_count:12,revenue:8000},
+  {id:'s3',isSample:true,name:'Sara K.',handle:'@sarabuilds',avatar_url:null,banner_url:'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600&q=80',title:'Full-stack web dev bootcamp',description:'Job placement support included. Go from zero to hired in 6 months.',offer_type:'Course / Program',category:'tech',price:499,billing_unit:'one-time',stars:4.8,review_count:61,revenue:72000},
+  {id:'s4',isSample:true,name:'Marco T.',handle:'@marcotrains',avatar_url:null,banner_url:'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&q=80',title:'90-day body recomposition',description:'Fully customized online coaching. Real results, no cookie-cutter plans.',offer_type:'Course / Program',category:'health',price:197,billing_unit:'/ month',stars:4.7,review_count:28,revenue:31000},
+  {id:'s5',isSample:true,name:'Priya N.',handle:'@priyafinance',avatar_url:null,banner_url:'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=600&q=80',title:'Personal finance and FIRE strategy',description:'Budget, invest and build the plan to retire early at any income level.',offer_type:'Community',category:'money',price:29,billing_unit:'/ month',stars:4.9,review_count:89,revenue:125000},
+  {id:'s6',isSample:true,name:'Dillon R.',handle:'@dillonads',avatar_url:null,banner_url:'https://images.unsplash.com/photo-1611162616305-c69b3fa7fbe0?w=600&q=80',title:'Done-for-you TikTok & Meta ads',description:"I run your ad accounts end to end. Strategy, creative briefs, daily optimization. You focus on the business.",offer_type:'Service',category:'money',price:1500,billing_unit:'/ month',stars:4.6,review_count:45,revenue:37000},
+  {id:'s7',isSample:true,name:'Amir S.',handle:'@amirflips',avatar_url:null,banner_url:'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=600&q=80',title:'Wholesaling and house flipping',description:'Find deals with no money down. The exact system I used on my first 10 flips.',offer_type:'Course / Program',category:'money',price:399,billing_unit:'one-time',stars:4.8,review_count:19,revenue:22000},
+  {id:'s8',isSample:true,name:'Cleo W.',handle:'@cleocodes',avatar_url:null,banner_url:'https://images.unsplash.com/photo-1555099962-4199c345e5dd?w=600&q=80',title:'No-code app building with Bubble',description:'Launch your MVP in 30 days without writing a single line of code.',offer_type:'Course / Program',category:'tech',price:149,billing_unit:'one-time',stars:4.7,review_count:37,revenue:15000},
+  {id:'s9',isSample:true,name:'Ben T.',handle:'@benfba',avatar_url:null,banner_url:'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&q=80',title:'Amazon PPC mastery',description:'Cut wasted spend and scale winning ad campaigns for your store.',offer_type:'1-on-1 session',category:'money',price:200,billing_unit:'/ call',stars:4.8,review_count:22,revenue:44000},
+  {id:'s10',isSample:true,name:'Layla H.',handle:'@laylafits',avatar_url:null,banner_url:'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&q=80',title:"Women's strength training",description:'12-week progressive overload program built around your schedule and goals.',offer_type:'Course / Program',category:'health',price:97,billing_unit:'one-time',stars:4.9,review_count:54,revenue:58000},
+  {id:'s11',isSample:true,name:'Asha P.',handle:'@ashabreathes',avatar_url:null,banner_url:'https://images.unsplash.com/photo-1545389336-cf090694435e?w=600&q=80',title:'Daily meditation circle',description:'Join 200+ practitioners for guided sessions, group reflection, and mindful living.',offer_type:'Community',category:'mindspirit',price:19,billing_unit:'/ month',stars:4.8,review_count:42,revenue:28000},
+  {id:'s12',isSample:true,name:'Nico R.',handle:'@chessbynico',avatar_url:null,banner_url:'https://images.unsplash.com/photo-1528819622765-d6bcf132f793?w=600&q=80',title:'Weekly chess coaching',description:'Improve your rating fast. Personalized game review and opening prep.',offer_type:'1-on-1 session',category:'sportsgames',price:60,billing_unit:'/ call',stars:4.9,review_count:31,revenue:11000},
+  {id:'s13',isSample:true,name:'Maya T.',handle:'@mayatemplates',avatar_url:null,banner_url:'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=600&q=80',title:'Notion productivity templates',description:'A bundle of 12 templates I use to run my whole business. Lifetime updates.',offer_type:'Downloads',category:'lifestyle',price:29,billing_unit:'one-time',stars:4.7,review_count:88,revenue:14000},
+  {id:'s14',isSample:true,name:'Liam C.',handle:'@liamdates',avatar_url:null,banner_url:'https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=600&q=80',title:'Dating skills for shy guys',description:'Build genuine confidence and learn to connect, without scripts or pickup lines.',offer_type:'Community',category:'lifestyle',price:39,billing_unit:'/ month',stars:4.6,review_count:24,revenue:9000}
 ];
 
-var CATS = [
-  {id:'ecom',label:'E-commerce',icon:'<svg class="cat-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>'},
-  {id:'realestate',label:'Real estate',icon:'<svg class="cat-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>'},
-  {id:'coding',label:'Coding',icon:'<svg class="cat-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>'},
-  {id:'fitness',label:'Fitness',icon:'<svg class="cat-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>'},
-  {id:'finance',label:'Finance',icon:'<svg class="cat-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>'},
-  {id:'marketing',label:'Marketing',icon:'<svg class="cat-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>'}
+var TYPES = [
+  {id:'Course / Program',label:'Courses & Programs',icon:'<svg class="cat-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>'},
+  {id:'Community',label:'Communities',icon:'<svg class="cat-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>'},
+  {id:'1-on-1 session',label:'1-on-1 sessions',icon:'<svg class="cat-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>'},
+  {id:'Service',label:'Services',icon:'<svg class="cat-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>'},
+  {id:'Downloads',label:'Downloads',icon:'<svg class="cat-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>'}
 ];
+
+var TOPICS = [
+  {id:'hobbies',label:'Hobbies'},
+  {id:'money',label:'Money'},
+  {id:'tech',label:'Tech'},
+  {id:'health',label:'Health & Fitness'},
+  {id:'mindspirit',label:'Mind & Spirit'},
+  {id:'lifestyle',label:'Lifestyle'},
+  {id:'sportsgames',label:'Sports & Games'},
+  {id:'other',label:'Other'}
+];
+
+// Current topic filter ('all' = no filter)
+var activeTopic = 'all';
 
 // ── HELPERS ──
 function ini(n){return (n||'?').split(' ').map(function(w){return w[0];}).join('').toUpperCase();}
-function catColor(c){var m={ecom:'#E1F5EE',realestate:'#E6F1FB',coding:'#EEEDFE',fitness:'#FAECE7',finance:'#FAEEDA',marketing:'#FBEAF0'};return m[c]||'#f9f9f7';}
+function catColor(c){var m={hobbies:'#FBEAF0',money:'#FAEEDA',tech:'#EEEDFE',health:'#FAECE7',mindspirit:'#E6F1FB',lifestyle:'#F1EFE8',sportsgames:'#E1F5EE',other:'#f9f9f7'};return m[c]||'#f9f9f7';}
 function fScore(l){return(Math.min((l.revenue||0)/500000,1)*70)+(((l.stars||0)/5)*30);}
 
 // ── BUILD CARD ──
@@ -660,21 +682,39 @@ function renderSpecial(data) {
   nr.innerHTML = newS.length ? newS.map(function(l){return buildCard(l,'<span class="badge-new">New</span>');}).join('') : '<div style="padding:1rem 0;font-size:13px;color:var(--muted)">New creators will appear here as they join.</div>';
 }
 
-function renderCategories(data) {
+function renderTypes(data) {
   var wrap = document.getElementById('category-rows');
   wrap.innerHTML = '';
-  CATS.forEach(function(cat, ci) {
-    var items = data.filter(function(l){return l.category===cat.id;});
-    if(!items.length) return;
-    var rid = 'row-'+cat.id;
+
+  // Apply topic filter (if any) before building rows
+  var filtered = (activeTopic === 'all')
+    ? data
+    : data.filter(function(l){return l.category === activeTopic;});
+
+  // When a topic filter is active and there are zero matches across all types, show friendly empty state
+  if(activeTopic !== 'all' && filtered.length === 0) {
+    wrap.innerHTML = '<div style="padding:3rem 2rem;text-align:center;color:var(--muted);font-size:14px">No offers match that filter yet. Try another category or come back later.</div>';
+    return;
+  }
+
+  TYPES.forEach(function(type, ti) {
+    var items = filtered.filter(function(l){return l.offer_type === type.id;});
+
+    // When filtering by a topic, hide rows that have zero matches (cleaner page)
+    if(activeTopic !== 'all' && items.length === 0) return;
+
+    var rid = 'row-type-' + ti;
     var div = document.createElement('div');
     div.className = 'cat-row';
-    div.id = 'section-'+cat.id;
-    div.innerHTML = '<div class="cat-row-header"><div class="cat-row-title">'+cat.icon+cat.label+'</div><div class="cat-row-arrows"><div class="cat-arrow" onclick="scrollRow(\''+rid+'\',-1)">&#8249;</div><div class="cat-arrow" onclick="scrollRow(\''+rid+'\',1)">&#8250;</div></div></div>'
-      +'<div class="scroll-wrap">' 
-      +'<div class="scroll-row" id="'+rid+'">'+items.map(function(l){return buildCard(l);}).join('')+'</div>'
+    div.id = 'section-type-' + ti;
+    var inner = items.length
+      ? items.map(function(l){return buildCard(l);}).join('')
+      : '<div style="padding:1rem 0;font-size:13px;color:var(--muted)">No '+type.label.toLowerCase()+' listed yet.</div>';
+    div.innerHTML = '<div class="cat-row-header"><div class="cat-row-title">'+type.icon+type.label+'</div><div class="cat-row-arrows"><div class="cat-arrow" onclick="scrollRow(\''+rid+'\',-1)">&#8249;</div><div class="cat-arrow" onclick="scrollRow(\''+rid+'\',1)">&#8250;</div></div></div>'
+      +'<div class="scroll-wrap">'
+      +'<div class="scroll-row" id="'+rid+'">'+inner+'</div>'
       +'</div>'
-      +(ci<CATS.length-1?'<div class="cat-divider"></div>':'');
+      +(ti<TYPES.length-1?'<div class="cat-divider"></div>':'');
     wrap.appendChild(div);
   });
 }
@@ -684,7 +724,7 @@ function renderAll(data) {
   document.getElementById('stat-listings').textContent = data.length+'+';
   document.getElementById('stat-creators').textContent = (new Set(data.map(function(l){return l.handle||l.name;}))).size+'+';
   renderSpecial(data);
-  renderCategories(data);
+  renderTypes(data);
 }
 
 // ── SUPABASE + INIT ──
@@ -724,12 +764,14 @@ function showList() {
 
 // ── SEARCH ──
 var SYNONYMS = {
-  'ecom':['ecommerce','e-commerce','amazon','fba','shopify','dropshipping','online store','product','brand'],
-  'realestate':['real estate','property','flipping','flip','wholesale','wholesaling','rental','renting','landlord','housing','mortgage','investment property','airbnb'],
-  'coding':['coding','programming','software','developer','web dev','javascript','python','app','tech','saas','ai','machine learning'],
-  'fitness':['fitness','gym','workout','training','health','nutrition','diet','weight loss','muscle','bodybuilding','yoga','personal trainer'],
-  'finance':['finance','investing','stocks','crypto','trading','money','budgeting','wealth','retirement','portfolio','financial'],
-  'marketing':['marketing','social media','ads','advertising','seo','content','branding','growth','tiktok','instagram','youtube','email marketing','copywriting']
+  'hobbies':['hobby','hobbies','crafts','craft','knitting','woodworking','painting','drawing','photography','baking','cooking','collecting','diy'],
+  'money':['ecommerce','e-commerce','amazon','fba','shopify','dropshipping','online store','product','brand','real estate','property','flipping','flip','wholesale','wholesaling','rental','renting','landlord','mortgage','airbnb','finance','investing','stocks','crypto','trading','money','budgeting','wealth','retirement','portfolio','financial','marketing','social media','ads','advertising','seo','content','branding','growth','tiktok','instagram','youtube','email marketing','copywriting','business','entrepreneur','startup','sales','saas'],
+  'tech':['coding','programming','software','developer','web dev','javascript','python','app','tech','technology','ai','machine learning','data','no-code','design tools','cybersecurity'],
+  'health':['fitness','gym','workout','training','health','nutrition','diet','weight loss','muscle','bodybuilding','yoga','personal trainer','wellness','sleep','biohacking'],
+  'mindspirit':['meditation','mindfulness','spirituality','spiritual','manifestation','astrology','tarot','therapy','therapist','mental health','anxiety','depression','journaling','breathwork','energy'],
+  'lifestyle':['lifestyle','dating','relationships','marriage','parenting','productivity','minimalism','travel','language','languages','spanish','french','japanese','english','self-improvement','self improvement','confidence','style','fashion'],
+  'sportsgames':['sports','basketball','football','soccer','tennis','golf','chess','poker','video games','gaming','esports','board games'],
+  'other':[]
 };
 
 function handleSearch() {
@@ -766,12 +808,15 @@ function scrollRow(id, dir) {
   var r = document.getElementById(id);
   if(r) r.scrollBy({left:dir*560,behavior:'smooth'});
 }
-function jumpTo(cat, el) {
+function filterTopic(topic, el) {
   document.querySelectorAll('.cat-pill').forEach(function(p){p.classList.remove('active');});
-  el.classList.add('active');
+  if(el) el.classList.add('active');
   clearSearch();
-  if(cat==='all'){window.scrollTo({top:document.querySelector('.stats').offsetTop-70,behavior:'smooth'});}
-  else{var s=document.getElementById('section-'+cat);if(s){window.scrollTo({top:s.getBoundingClientRect().top+window.scrollY-80,behavior:'smooth'});}}
+  activeTopic = topic;
+  renderTypes(ALL);
+  // Scroll to the format rows so the user sees what changed
+  var target = document.getElementById('category-rows');
+  if(target) window.scrollTo({top:target.getBoundingClientRect().top+window.scrollY-80,behavior:'smooth'});
 }
 
 // ── MODAL ──
