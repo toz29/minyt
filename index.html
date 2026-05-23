@@ -69,14 +69,19 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 .card{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);cursor:pointer;transition:all 0.15s;overflow:hidden;flex:0 0 260px;width:260px}
 .card:hover{border-color:var(--brand);transform:translateY(-2px);box-shadow:0 8px 24px rgba(29,158,117,0.1)}
 .card-banner-img{width:100%;height:120px;object-fit:cover;display:block}
-.card-banner-ph{width:100%;height:120px;display:flex;align-items:center;justify-content:center}
+.card-banner-ph{width:100%;height:120px}
+.card-banner-wrap{position:relative}
+.card-overlay-badges{position:absolute;top:8px;left:8px;display:flex;gap:4px;flex-wrap:wrap;max-width:calc(100% - 16px)}
+.card-logo{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:500;font-size:11px;flex-shrink:0;overflow:hidden;background:#C7D2FE;color:#312E81;letter-spacing:0.5px}
+.card-logo img{width:100%;height:100%;object-fit:cover}
 .card-body{padding:0.875rem 1rem 1rem}
-.card-profile{display:flex;align-items:center;gap:10px;margin-top:-26px;margin-bottom:8px}
-.avatar{width:44px;height:44px;border-radius:50%;border:3px solid #fff;display:flex;align-items:center;justify-content:center;font-weight:500;font-size:12px;flex-shrink:0;overflow:hidden;background:#C7D2FE;color:#312E81}
-.avatar img{width:100%;height:100%;object-fit:cover}
-.card-name{font-weight:500;font-size:13px;margin-bottom:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.card-handle{font-size:11px;color:var(--muted)}
-.card-identity{padding-top:14px;min-width:0}
+.card-profile{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.card-identity{padding-top:10px;min-width:0;flex:1}
+.card-name{font-weight:500;font-size:13px;margin-bottom:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3}
+.card-byline{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-creator-link{color:var(--brand);font-weight:500;cursor:pointer;text-decoration:none}
+.card-creator-link:hover{text-decoration:underline}
+.card-verified-check{display:inline-flex;align-items:center;color:var(--brand);font-size:13px;line-height:1;cursor:help;flex-shrink:0}
 .stars{font-size:11px;color:#BA7517;margin-bottom:5px}
 .card-title{font-size:13px;font-weight:500;margin-bottom:3px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .card-desc{font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
@@ -640,33 +645,65 @@ var activeTopic = 'all';
 
 // ── HELPERS ──
 function ini(n){return (n||'?').split(' ').map(function(w){return w[0];}).join('').toUpperCase();}
+function escapeHtmlSafe(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 function catColor(c){var m={hobbies:'#FBEAF0',money:'#FAEEDA',tech:'#EEEDFE',health:'#FAECE7',mindspirit:'#E6F1FB',lifestyle:'#F1EFE8',sportsgames:'#E1F5EE',other:'#f9f9f7'};return m[c]||'#f9f9f7';}
 function fScore(l){return(Math.min((l.revenue||0)/500000,1)*70)+(((l.stars||0)/5)*30);}
 
 // ── BUILD CARD ──
+// When a banner image fails to load, swap it for the color placeholder so the card layout doesn't collapse.
+function cardBannerFallback(img){
+  var cat = img.getAttribute('data-cat') || 'other';
+  var ph = document.createElement('div');
+  ph.className = 'card-banner-ph';
+  ph.style.background = catColor(cat);
+  img.replaceWith(ph);
+}
+
+// Verified badge eligibility: real stripe-connected creator with proven satisfied customers.
+function isVerified(l) {
+  // We don't have stripe_connected on the listing row; we infer it via seller_stripe_id being set.
+  // Real verification (stripe + reviews + rating) is the test.
+  var hasStripe = !!(l.seller_stripe_id);
+  var reviewCount = l.review_count || 0;
+  var avgRating = l.stars || 0;
+  return hasStripe && reviewCount >= 10 && avgRating >= 4.0;
+}
+
 function buildCard(l, badge, inProfile) {
   badge = badge || '';
   inProfile = inProfile || false;
   if(l.isSample) badge = '<span class="badge-sample">Sample offer</span>' + badge;
+  // Banner: real image, or flat color placeholder when missing/failed
+  var phBanner = '<div class="card-banner-ph" style="background:'+catColor(l.category)+'"></div>';
   var bn = l.banner_url
-    ? '<img class="card-banner-img" src="'+l.banner_url+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">'
-    : '<div class="card-banner-ph" style="background:'+catColor(l.category)+'"></div>';
-  var av = l.avatar_url
-    ? '<div class="avatar"><img src="'+l.avatar_url+'" alt=""></div>'
-    : '<div class="avatar">'+ini(l.name)+'</div>';
+    ? '<img class="card-banner-img" src="'+l.banner_url+'" alt="" loading="lazy" data-cat="'+(l.category||'other')+'" onerror="cardBannerFallback(this)">'
+    : phBanner;
+  // Badge overlay on top of banner (Sample offer + Featured/New)
+  var overlayBadges = badge ? '<div class="card-overlay-badges">'+badge+'</div>' : '';
+  // Square logo using the listing's avatar_url (the brand mark, distinct from creator's personal profile photo)
+  var logo = l.avatar_url
+    ? '<div class="card-logo"><img src="'+l.avatar_url+'" alt=""></div>'
+    : '<div class="card-logo">'+ini(l.name||l.title)+'</div>';
   var s = Math.round(l.stars||0);
   var stars = '';
   for(var i=0;i<s;i++) stars+='★';
   for(var i=s;i<5;i++) stars+='☆';
+  // Creator name is clickable when we have a seller_id AND we're not already on that creator's profile page
+  var creatorName = l.name || 'Creator';
+  var creatorClickable = !inProfile && l.seller_id && !l.isSample;
+  var creatorPart = creatorClickable
+    ? '<a class="card-creator-link" href="https://getminyt.com/creator.html?id='+l.seller_id+'" onclick="event.stopPropagation()">'+creatorName+'</a>'
+    : '<span style="color:var(--text)">'+creatorName+'</span>';
+  var verifiedCheck = isVerified(l)
+    ? '<span class="card-verified-check" title="Verified · 10+ satisfied customers on Minyt" aria-label="Verified creator">✓</span>'
+    : '';
   var clickAttr = inProfile ? '' : 'onclick="openModal(\''+l.id+'\')" style="cursor:pointer"';
   var w = inProfile ? 'width:100%;flex:none' : '';
   return '<div class="card" '+clickAttr+' style="'+w+'">'
-    +bn
+    +'<div class="card-banner-wrap">'+bn+overlayBadges+'</div>'
     +'<div class="card-body">'
-    +'<div class="card-profile">'+av+'<div class="card-identity"><div class="card-name">'+l.name+'</div><div class="card-handle">'+(l.handle||'')+'</div></div></div>'
-    +'<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:5px">'+badge+'<span class="badge-verified">✓ Verified reviews</span></div>'
+    +'<div class="card-profile">'+logo+'<div class="card-identity"><div class="card-name">'+(l.title||'')+'</div><div class="card-byline">by '+creatorPart+verifiedCheck+'</div></div></div>'
     +'<div class="stars">'+stars+' '+(l.stars||0)+' <span style="color:var(--muted)">('+( l.review_count||0)+')</span></div>'
-    +'<div class="card-title">'+l.title+'</div>'
     +'<div class="card-desc">'+(l.description||'')+'</div>'
     +'<div class="card-footer"><span class="badge">'+l.offer_type+'</span><div class="price">'+(l.price==0?'Free':'$'+Number(l.price).toLocaleString())+' <span>'+(l.price==0?'':(l.billing_unit||'one-time'))+'</span></div></div>'
     +'</div></div>';
