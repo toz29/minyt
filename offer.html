@@ -47,6 +47,8 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 .offer-top{display:grid;grid-template-columns:1fr 320px;gap:2rem;align-items:start}
 .offer-main{}
 .offer-profile{display:flex;align-items:center;gap:12px;margin-bottom:1.25rem}
+a.offer-profile{text-decoration:none;color:inherit;border-radius:var(--radius);transition:opacity 0.15s}
+a.offer-profile:hover{opacity:0.75}
 .offer-avatar{width:48px;height:48px;border-radius:50%;background:var(--brand-light);display:flex;align-items:center;justify-content:center;font-weight:500;font-size:14px;color:var(--brand-dark);overflow:hidden;flex-shrink:0}
 .offer-avatar img{width:100%;height:100%;object-fit:cover}
 .offer-creator-name{font-weight:500;font-size:15px}
@@ -315,10 +317,19 @@ if(!offerId){
             +'<div class="offer-long-desc">'+linkifyHtml(l.long_description)+'</div>';
         }
         
+        // Build creator block — link to profile if seller_id is set (skip for sample/legacy listings)
+        var creatorInner=avatar
+          +'<div><div class="offer-creator-name">'+escapeHtml(l.name||'Creator')+'</div>'
+          +(l.handle?'<div class="offer-creator-handle">@'+escapeHtml(l.handle)+'</div>':'')
+          +'</div>';
+        var creatorBlock=(l.seller_id && !isSample)
+          ? '<a class="offer-profile" href="https://getminyt.com/creator.html?id='+encodeURIComponent(l.seller_id)+'">'+creatorInner+'</a>'
+          : '<div class="offer-profile">'+creatorInner+'</div>';
+        
         document.getElementById('offer-content').innerHTML=bannerHtml
           +'<div class="offer-top">'
           +'<div class="offer-main">'
-          +'<div class="offer-profile">'+avatar+'<div><div class="offer-creator-name">'+escapeHtml(l.name||'Creator')+'</div>'+(l.handle?'<div class="offer-creator-handle">@'+escapeHtml(l.handle)+'</div>':'')+'</div></div>'
+          +creatorBlock
           +(isSample?'<span class="sample-badge">Sample offer</span>':'')
           +'<h1 class="offer-title">'+escapeHtml(l.title)+'</h1>'
           +'<span class="offer-type-badge">'+escapeHtml(l.offer_type||'')+'</span>'
