@@ -51,6 +51,20 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 .upload-box span{font-size:13px;color:var(--brand);font-weight:500}
 .upload-prev{width:100%;height:100px;object-fit:cover;border-radius:var(--radius);margin-top:8px;display:none}
 .av-prev{width:52px;height:52px;border-radius:50%;object-fit:cover;margin-top:8px;display:none;border:2px solid var(--brand)}
+.gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;margin-top:8px}
+.gallery-thumb{position:relative;width:100%;aspect-ratio:1;border-radius:var(--radius);overflow:hidden;background:var(--surface);border:1px solid var(--border)}
+.gallery-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.gallery-thumb .gt-actions{position:absolute;top:4px;right:4px;display:flex;gap:3px}
+.gallery-thumb .gt-btn{width:22px;height:22px;border:none;background:rgba(0,0,0,0.6);color:#fff;border-radius:4px;cursor:pointer;font-size:11px;line-height:1;display:flex;align-items:center;justify-content:center;font-family:'DM Sans',sans-serif;padding:0}
+.gallery-thumb .gt-btn:hover{background:rgba(0,0,0,0.85)}
+.gallery-thumb .gt-btn:disabled{opacity:0.35;cursor:not-allowed}
+.gallery-thumb .gt-del{background:rgba(226,75,74,0.85)}
+.gallery-thumb .gt-del:hover{background:#c43d3c}
+.gallery-add{border:1.5px dashed var(--border);border-radius:var(--radius);aspect-ratio:1;display:flex;align-items:center;justify-content:center;cursor:pointer;background:#fafaf9;color:var(--brand);font-size:24px;font-weight:300;transition:border-color 0.15s}
+.gallery-add:hover{border-color:var(--brand)}
+.gallery-counter{font-size:11px;color:var(--muted);margin-top:6px;text-align:right}
+.char-counter{font-size:11px;color:var(--muted);margin-top:5px;text-align:right}
+.char-counter.warn{color:var(--danger)}
 .price-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:1rem}
 .price-opt{padding:10px 8px;border:1px solid var(--border);border-radius:var(--radius);font-size:14px;font-weight:500;text-align:center;cursor:pointer;transition:all 0.15s;font-family:'Space Grotesk',sans-serif}
 .price-opt:hover,.price-opt.sel{border-color:var(--brand);background:var(--brand-light);color:var(--brand-dark)}
@@ -205,6 +219,15 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
           <input type="file" id="ub" accept="image/*" style="display:none" onchange="onBanner(this)"/>
         </div>
         <div class="field">
+          <label>Additional images <span style="color:var(--muted);font-weight:400">(optional)</span></label>
+          <div class="field-note" style="margin-top:0;margin-bottom:6px">Up to 4 more photos shown on your full listing page.</div>
+          <div class="gallery-grid" id="gallery-grid">
+            <div class="gallery-add" id="gallery-add" onclick="document.getElementById('ug').click()">+</div>
+          </div>
+          <div class="gallery-counter" id="gallery-counter">0 / 4</div>
+          <input type="file" id="ug" accept="image/*" style="display:none" onchange="onGalleryAdd(this)"/>
+        </div>
+        <div class="field">
           <label>Profile photo</label>
           <div class="upload-box" onclick="document.getElementById('ua').click()">
             <span id="al">Click to upload photo</span>
@@ -241,6 +264,12 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
         </div>
         <div class="field"><label>Listing title</label><input type="text" id="ftitle" placeholder="e.g. Weekly chess coaching, Notion productivity templates..." oninput="updPrev()"/></div>
         <div class="field"><label>Short description</label><textarea id="fdesc" placeholder="What will buyers get? Be specific about results..." oninput="updPrev()"></textarea></div>
+        <div class="field">
+          <label>Full details <span style="color:var(--muted);font-weight:400">(optional)</span></label>
+          <textarea id="flongdesc" rows="6" placeholder="Add more depth — who this is for, what's included, what results to expect, your background, FAQs. Links auto-convert to clickable." maxlength="5000" oninput="updLongCounter()"></textarea>
+          <div class="field-note">Shown on your full listing page. URLs become clickable. Markdown not supported.</div>
+          <div class="char-counter" id="long-counter">0 / 5000</div>
+        </div>
         <div class="field">
           <label>Delivery link</label>
           <input type="text" id="fdelivery" placeholder="e.g. Discord invite, Calendly, Notion, YouTube..."/>
@@ -316,7 +345,8 @@ var SURL='https://qoigwxwkhpcgisprkozg.supabase.co';
 var SKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFvaWd3eHdraHBjZ2lzcHJrb3pnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3NDAzOTUsImV4cCI6MjA5MjMxNjM5NX0.Si-GOt97FF4Wt49E_Yf7CsgyvU2-5dHbStQu1wwQ6Ik';
 var sb=null;
 var currentUser=null;
-var FS={bannerFile:null,avatarFile:null,price:null};
+var FS={bannerFile:null,avatarFile:null,price:null,galleryFiles:[]};
+var MAX_GALLERY=4;
 
 function initSB(cb){
   if(sb){cb();return;}
@@ -466,6 +496,62 @@ function onAvatar(input){
   r.readAsDataURL(f);
 }
 
+function onGalleryAdd(input){
+  var f=input.files[0];
+  input.value='';
+  if(!f) return;
+  if(FS.galleryFiles.length>=MAX_GALLERY){alert('You can add up to '+MAX_GALLERY+' additional images.');return;}
+  var r=new FileReader();
+  r.onload=function(e){
+    FS.galleryFiles.push({file:f,dataUrl:e.target.result});
+    renderGallery();
+  };
+  r.readAsDataURL(f);
+}
+
+function renderGallery(){
+  var grid=document.getElementById('gallery-grid');
+  var counter=document.getElementById('gallery-counter');
+  var thumbsHtml=FS.galleryFiles.map(function(g,i){
+    var canUp=i>0;
+    var canDown=i<FS.galleryFiles.length-1;
+    return '<div class="gallery-thumb">'
+      +'<img src="'+g.dataUrl+'" alt="">'
+      +'<div class="gt-actions">'
+        +'<button type="button" class="gt-btn" onclick="moveGallery('+i+',-1)"'+(canUp?'':' disabled')+' aria-label="Move up">↑</button>'
+        +'<button type="button" class="gt-btn" onclick="moveGallery('+i+',1)"'+(canDown?'':' disabled')+' aria-label="Move down">↓</button>'
+        +'<button type="button" class="gt-btn gt-del" onclick="removeGallery('+i+')" aria-label="Remove">×</button>'
+      +'</div>'
+    +'</div>';
+  }).join('');
+  var addHtml=FS.galleryFiles.length<MAX_GALLERY
+    ? '<div class="gallery-add" id="gallery-add" onclick="document.getElementById(\'ug\').click()">+</div>'
+    : '';
+  grid.innerHTML=thumbsHtml+addHtml;
+  counter.textContent=FS.galleryFiles.length+' / '+MAX_GALLERY;
+}
+
+function moveGallery(i,delta){
+  var j=i+delta;
+  if(j<0||j>=FS.galleryFiles.length) return;
+  var tmp=FS.galleryFiles[i];
+  FS.galleryFiles[i]=FS.galleryFiles[j];
+  FS.galleryFiles[j]=tmp;
+  renderGallery();
+}
+
+function removeGallery(i){
+  FS.galleryFiles.splice(i,1);
+  renderGallery();
+}
+
+function updLongCounter(){
+  var len=(document.getElementById('flongdesc').value||'').length;
+  var c=document.getElementById('long-counter');
+  c.textContent=len+' / 5000';
+  c.classList.toggle('warn',len>=5000);
+}
+
 var hasFreeOffer=false;
 
 async function checkFreeOffer(){
@@ -516,6 +602,7 @@ function updPrev(){
 async function submitListing(){
   var title=(document.getElementById('ftitle').value||'').trim();
   var desc=(document.getElementById('fdesc').value||'').trim();
+  var longDesc=(document.getElementById('flongdesc').value||'').trim();
   var type=document.getElementById('ftype').value||'';
   var cat=document.getElementById('fcat').value||'';
   var unit=document.getElementById('funit').value||'one-time';
@@ -526,7 +613,7 @@ async function submitListing(){
   btn.disabled=true;btn.textContent='Submitting...';
   initSB(async function(){
     try{
-      var banner_url=null,avatar_url=null;
+      var banner_url=null,avatar_url=null,gallery_urls=[];
       if(FS.bannerFile){
         var ext=FS.bannerFile.name.split('.').pop();
         var path='banners/'+Date.now()+'.'+ext;
@@ -539,10 +626,23 @@ async function submitListing(){
         var up=await sb.storage.from('listing-images').upload(path,FS.avatarFile);
         if(!up.error){var pu=sb.storage.from('listing-images').getPublicUrl(path);avatar_url=pu.data.publicUrl;}
       }
+      // Upload gallery images sequentially, preserving order
+      for(var i=0;i<FS.galleryFiles.length;i++){
+        var gf=FS.galleryFiles[i].file;
+        var gext=gf.name.split('.').pop();
+        var gpath='gallery/'+Date.now()+'-'+i+'.'+gext;
+        var gup=await sb.storage.from('listing-images').upload(gpath,gf);
+        if(!gup.error){
+          var gpu=sb.storage.from('listing-images').getPublicUrl(gpath);
+          gallery_urls.push(gpu.data.publicUrl);
+        }
+      }
       var insertData={
         title,description:desc,offer_type:type,category:cat,
         price:FS.price,billing_unit:unit,
         banner_url,avatar_url,
+        gallery_urls,
+        long_description:longDesc||null,
         delivery_link:delivery||null,
         approved:false,
         name:currentUser?currentUser.user_metadata?.name||currentUser.email.split('@')[0]:'Pending review',
