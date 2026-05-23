@@ -18,8 +18,17 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 .nav-back{font-size:13px;color:var(--muted);text-decoration:none}
 .nav-back:hover{color:var(--text)}
 .offer-wrap{max-width:900px;margin:0 auto;padding:2rem}
-.offer-banner{width:100%;height:280px;object-fit:cover;border-radius:var(--radius-lg);background:var(--surface);margin-bottom:1.5rem}
-.offer-banner-ph{width:100%;height:280px;border-radius:var(--radius-lg);background:var(--border);margin-bottom:1.5rem}
+.offer-banner{width:100%;height:380px;object-fit:cover;border-radius:var(--radius-lg);background:var(--surface);margin-bottom:0.75rem;cursor:pointer}
+.offer-banner-ph{width:100%;height:380px;border-radius:var(--radius-lg);background:var(--border);margin-bottom:0.75rem}
+.thumb-strip{display:flex;gap:8px;margin-bottom:1.5rem;flex-wrap:wrap}
+.thumb-strip .thumb{width:88px;height:64px;border-radius:8px;overflow:hidden;cursor:pointer;border:2px solid transparent;background:var(--surface);transition:border-color 0.15s;flex-shrink:0}
+.thumb-strip .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb-strip .thumb:hover{border-color:var(--border)}
+.thumb-strip .thumb.active{border-color:var(--brand)}
+.offer-long-desc{font-size:15px;color:var(--text);line-height:1.7;margin-bottom:2rem;white-space:pre-wrap;word-wrap:break-word}
+.offer-long-desc a{color:var(--brand);text-decoration:underline;word-break:break-all}
+.offer-long-desc a:hover{color:var(--brand-dark)}
+.offer-section-title{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:500;margin-bottom:0.75rem;margin-top:0.5rem}
 .offer-top{display:grid;grid-template-columns:1fr 320px;gap:2rem;align-items:start}
 .offer-main{}
 .offer-profile{display:flex;align-items:center;gap:12px;margin-bottom:1.25rem}
@@ -74,7 +83,9 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
   .offer-top{grid-template-columns:1fr}
   .offer-sidebar{position:static}
   .offer-wrap{padding:1rem}
-  .offer-banner{height:180px}
+  .offer-banner{height:240px}
+  .offer-banner-ph{height:240px}
+  .thumb-strip .thumb{width:72px;height:52px}
   nav{padding:0.875rem 1rem}
 }
 </style>
@@ -145,6 +156,38 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 var SURL='https://qoigwxwkhpcgisprkozg.supabase.co';
 var SKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFvaWd3eHdraHBjZ2lzcHJrb3pnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3NDAzOTUsImV4cCI6MjA5MjMxNjM5NX0.Si-GOt97FF4Wt49E_Yf7CsgyvU2-5dHbStQu1wwQ6Ik';
 
+// Escape user-supplied text before inserting into HTML
+function escapeHtml(s){
+  return String(s==null?'':s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function escapeAttr(s){ return escapeHtml(s); }
+
+// Auto-link URLs in user text. Escapes first, then converts URLs to anchors.
+// Preserves whitespace via CSS white-space:pre-wrap on the container.
+function linkifyHtml(text){
+  if(!text) return '';
+  var escaped=escapeHtml(text);
+  // Match http(s)://... up to whitespace or common terminators
+  var urlRe=/(https?:\/\/[^\s<>"']+[^\s<>"',.;:!?)\]])/g;
+  return escaped.replace(urlRe, function(url){
+    return '<a href="'+url+'" target="_blank" rel="noopener nofollow ugc">'+url+'</a>';
+  });
+}
+
+// Swap the main offer image when a thumbnail is clicked
+function setMainImage(idx){
+  var images=window.OFFER_IMAGES||[];
+  var main=document.getElementById('offer-main-img');
+  if(!main||!images[idx]) return;
+  main.src=images[idx];
+  document.querySelectorAll('.thumb-strip .thumb').forEach(function(t){
+    t.classList.toggle('active', parseInt(t.dataset.idx)===idx);
+  });
+}
+
+
 var params=new URLSearchParams(window.location.search);
 var offerId=params.get('id');
 
@@ -179,9 +222,26 @@ if(!offerId){
         var reviews=revRes.data||[];
         var avgRating=reviews.length?reviews.reduce(function(s,r){return s+r.rating;},0)/reviews.length:0;
         
-        var banner=l.banner_url
-          ?'<img class="offer-banner" src="'+l.banner_url+'" alt="'+l.title+'">'
-          :'<div class="offer-banner-ph"></div>';
+        // Build full image list (banner is image 0; gallery_urls are 1..N)
+        var images=[];
+        if(l.banner_url) images.push(l.banner_url);
+        if(Array.isArray(l.gallery_urls)) {
+          l.gallery_urls.forEach(function(u){ if(u) images.push(u); });
+        }
+        
+        var bannerHtml;
+        if(images.length){
+          bannerHtml='<img class="offer-banner" id="offer-main-img" src="'+images[0]+'" alt="'+escapeAttr(l.title)+'">';
+          if(images.length>1){
+            bannerHtml+='<div class="thumb-strip">'+images.map(function(u,i){
+              return '<div class="thumb '+(i===0?'active':'')+'" data-idx="'+i+'" onclick="setMainImage('+i+')"><img src="'+u+'" alt=""></div>';
+            }).join('')+'</div>';
+          }
+        } else {
+          bannerHtml='<div class="offer-banner-ph"></div>';
+        }
+        // Expose images for setMainImage to use
+        window.OFFER_IMAGES=images;
         
         var avatar=l.avatar_url
           ?'<div class="offer-avatar"><img src="'+l.avatar_url+'" alt=""></div>'
@@ -199,7 +259,7 @@ if(!offerId){
             var masked=email.split('@')[0].substring(0,3)+'***';
             return '<div class="review-item">'
               +'<div class="review-header"><div><span class="review-stars">'+rs+'</span>'+(r.verified?'<span class="review-verified">Verified purchase</span>':'')+'</div><span class="review-date">'+date+'</span></div>'
-              +(r.comment?'<div class="review-comment">'+r.comment+'</div>':'')
+              +(r.comment?'<div class="review-comment">'+escapeHtml(r.comment)+'</div>':'')
               +'</div>';
           }).join('');
         } else {
@@ -212,14 +272,22 @@ if(!offerId){
           ?"alert('This is a sample offer.')"
           :"startCheckout('"+l.id+"')";
         
-        document.getElementById('offer-content').innerHTML=banner
+        // Long description with autolinked URLs (rendered as separate section)
+        var longDescHtml='';
+        if(l.long_description && l.long_description.trim()){
+          longDescHtml='<div class="offer-section-title">About this offer</div>'
+            +'<div class="offer-long-desc">'+linkifyHtml(l.long_description)+'</div>';
+        }
+        
+        document.getElementById('offer-content').innerHTML=bannerHtml
           +'<div class="offer-top">'
           +'<div class="offer-main">'
-          +'<div class="offer-profile">'+avatar+'<div><div class="offer-creator-name">'+(l.name||'Creator')+'</div>'+(l.handle?'<div class="offer-creator-handle">@'+l.handle+'</div>':'')+'</div></div>'
+          +'<div class="offer-profile">'+avatar+'<div><div class="offer-creator-name">'+escapeHtml(l.name||'Creator')+'</div>'+(l.handle?'<div class="offer-creator-handle">@'+escapeHtml(l.handle)+'</div>':'')+'</div></div>'
           +(isSample?'<span class="sample-badge">Sample offer</span>':'')
-          +'<h1 class="offer-title">'+l.title+'</h1>'
-          +'<span class="offer-type-badge">'+l.offer_type+'</span>'
-          +'<div class="offer-desc">'+(l.description||'No description provided.')+'</div>'
+          +'<h1 class="offer-title">'+escapeHtml(l.title)+'</h1>'
+          +'<span class="offer-type-badge">'+escapeHtml(l.offer_type||'')+'</span>'
+          +'<div class="offer-desc">'+escapeHtml(l.description||'No description provided.')+'</div>'
+          +longDescHtml
           +'<div class="offer-reviews-title">Reviews ('+reviews.length+')</div>'
           +reviewsHtml
           +'</div>'
@@ -229,8 +297,8 @@ if(!offerId){
           +(reviews.length?'<div class="offer-rating"><span class="offer-rating-stars">'+starsHtml+'</span><span class="offer-rating-text">'+avgRating.toFixed(1)+' ('+reviews.length+' review'+(reviews.length!==1?'s':'')+')</span></div>':'')
           +'<button class="offer-buy-btn" id="buy-btn" onclick="'+buyBtnAction+'"'+(isSample?' style="background:var(--muted);cursor:default"':'')+'>'+buyBtnText+'</button>'
           +'<div class="offer-meta">'
-          +'<div>Category: '+(l.category||'General')+'</div>'
-          +'<div>Type: '+l.offer_type+'</div>'
+          +'<div>Category: '+escapeHtml(l.category||'General')+'</div>'
+          +'<div>Type: '+escapeHtml(l.offer_type||'')+'</div>'
           +'</div>'
           +'</div>'
           +'</div>';
