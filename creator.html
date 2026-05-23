@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Creator profile - Minyt</title>
+<meta name="description" content="View this creator's profile and offers on Minyt."/>
+<meta name="robots" content="index, follow"/>
+<meta property="og:title" content="Creator profile - Minyt"/>
+<meta property="og:description" content="Courses, coaching, communities and digital products from real creators on Minyt."/>
+<meta property="og:type" content="profile"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--brand:#6366F1;--brand-light:#EEF2FF;--brand-dark:#4338CA;--text:#1a1a1a;--muted:#6b7280;--border:#e5e5e3;--surface:#f9f9f7;--radius:10px;--radius-lg:14px;--danger:#E24B4A;--danger-light:#FAECE7}
+body{font-family:'DM Sans',sans-serif;color:var(--text);background:var(--surface);min-height:100vh;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+
+/* Nav (mirrors offer.html) */
+nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;border-bottom:1px solid var(--border);background:#fff;position:sticky;top:0;z-index:100}
+.nav-logo{font-family:'Space Grotesk',sans-serif;font-size:1.25rem;font-weight:500;color:var(--brand);cursor:pointer;text-decoration:none}
+.nav-back{font-size:13px;color:var(--muted);text-decoration:none}
+.nav-back:hover{color:var(--text)}
+.nav-right{display:flex;align-items:center;gap:14px}
+.nav-login{padding:7px 14px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;font-weight:500;color:var(--text);cursor:pointer;transition:all 0.2s;text-decoration:none}
+.nav-login:hover{border-color:var(--brand);color:var(--brand);box-shadow:0 0 12px rgba(99,102,241,0.25)}
+.nav-auth{display:none}
+.nav-auth.resolved{display:flex;align-items:center}
+.nav-account{position:relative}
+.nav-account-btn{width:34px;height:34px;border-radius:50%;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s;flex-shrink:0}
+.nav-account-btn:hover{border-color:var(--brand)}
+.nav-account-btn svg{width:16px;height:16px;stroke:var(--muted)}
+.account-dropdown{position:absolute;top:calc(100% + 8px);right:0;background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:0.5rem;min-width:180px;box-shadow:0 8px 24px rgba(0,0,0,0.08);z-index:200;display:none}
+.account-dropdown.open{display:block}
+.dropdown-label{font-size:11px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:0.5px;padding:6px 10px 4px}
+.dropdown-item{display:block;width:100%;padding:9px 10px;font-size:13px;color:var(--text);cursor:pointer;border:none;background:none;font-family:'DM Sans',sans-serif;text-align:left;border-radius:var(--radius);text-decoration:none}
+.dropdown-item:hover{background:var(--surface);color:var(--brand)}
+.dropdown-divider{height:1px;background:var(--border);margin:4px 0}
+
+/* Hamburger / side menu (same vocabulary as offer.html) */
+.hamburger{display:flex;flex-direction:column;gap:4px;cursor:pointer;padding:6px;z-index:101}
+.hamburger span{width:18px;height:2px;background:var(--text);border-radius:1px;transition:all 0.2s}
+.hamburger:hover span{background:var(--brand)}
+.side-menu{position:fixed;top:0;left:-280px;width:260px;height:100vh;background:#fff;border-right:1px solid var(--border);z-index:300;transition:left 0.25s ease;padding:1.5rem;display:flex;flex-direction:column}
+.side-menu.open{left:0}
+.side-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.3);backdrop-filter:blur(2px);z-index:299;display:none}
+.side-overlay.open{display:block}
+.side-logo{font-family:'Space Grotesk',sans-serif;font-size:1.25rem;font-weight:500;color:var(--brand);margin-bottom:2rem;display:flex;align-items:center;justify-content:space-between}
+.side-close{font-size:18px;color:var(--muted);cursor:pointer;background:none;border:none;padding:4px 8px}
+.side-close:hover{color:var(--text)}
+.side-item{display:block;padding:11px 12px;font-size:14px;color:var(--text);text-decoration:none;border-radius:var(--radius);font-family:'DM Sans',sans-serif;transition:background 0.15s;cursor:pointer;border:none;background:none;width:100%;text-align:left}
+.side-item:hover{background:var(--surface);color:var(--brand)}
+.side-divider{height:1px;background:var(--border);margin:8px 0}
+
+/* Profile page */
+.profile-wrap{max-width:1080px;margin:0 auto;padding:0 0 3rem}
+.banner{width:100%;aspect-ratio:3/1;background:linear-gradient(135deg, var(--brand-light), #FAEEDA);overflow:hidden}
+.banner img{width:100%;height:100%;object-fit:cover;display:block}
+.profile-header{padding:0 2rem;position:relative}
+.profile-avatar{width:120px;height:120px;border-radius:50%;border:5px solid var(--surface);background:var(--brand-light);display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-size:2.25rem;font-weight:500;color:var(--brand-dark);overflow:hidden;margin-top:-60px;flex-shrink:0;position:relative;z-index:2}
+.profile-avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.profile-name{font-family:'Space Grotesk',sans-serif;font-size:1.75rem;font-weight:500;margin-top:0.875rem;line-height:1.2;overflow-wrap:anywhere}
+.profile-handle{font-size:14px;color:var(--muted);margin-top:2px;overflow-wrap:anywhere}
+.profile-stats{display:flex;flex-wrap:wrap;gap:0.5rem 1.25rem;margin-top:0.875rem;font-size:13px;color:var(--muted)}
+.profile-stat{display:inline-flex;align-items:center;gap:5px}
+.profile-stat .stat-num{color:var(--text);font-weight:500}
+.profile-bio{margin-top:1.25rem;font-size:15px;color:var(--text);line-height:1.6;max-width:680px;white-space:pre-wrap;overflow-wrap:anywhere}
+.profile-bio a{color:var(--brand);text-decoration:underline;word-break:break-all}
+.profile-bio a:hover{color:var(--brand-dark)}
+
+/* Listings grid */
+.listings-section{padding:2rem;margin-top:1rem}
+.listings-title{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:500;margin-bottom:1rem;display:flex;align-items:center;gap:10px}
+.listings-title svg{width:18px;height:18px;stroke:var(--text)}
+.listings-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem}
+.empty-state{padding:3rem 1rem;text-align:center;color:var(--muted);font-size:14px;background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg)}
+
+/* Card (reuses index.html visual vocab) */
+.card{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);cursor:pointer;transition:all 0.15s;overflow:hidden;display:block}
+.card:hover{border-color:var(--brand);transform:translateY(-2px);box-shadow:0 8px 24px rgba(99,102,241,0.1)}
+.card-banner-img{width:100%;height:120px;object-fit:cover;display:block}
+.card-banner-ph{width:100%;height:120px}
+.card-body{padding:0.875rem 1rem 1rem}
+.card-profile{display:flex;align-items:center;gap:10px;margin-top:-26px;margin-bottom:8px}
+.avatar{width:44px;height:44px;border-radius:50%;border:3px solid #fff;display:flex;align-items:center;justify-content:center;font-weight:500;font-size:12px;flex-shrink:0;overflow:hidden;background:#C7D2FE;color:#312E81}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.card-name{font-weight:500;font-size:13px;margin-bottom:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-handle{font-size:11px;color:var(--muted)}
+.card-identity{padding-top:14px;min-width:0}
+.card-stars{font-size:11px;color:#BA7517;margin-bottom:5px}
+.card-title{font-size:13px;font-weight:500;margin-bottom:3px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card-desc{font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card-footer{display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);padding-top:8px}
+.card-badge{padding:2px 8px;border-radius:50px;font-size:10px;font-weight:500;background:var(--brand-light);color:var(--brand-dark)}
+.card-price{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:400}
+.card-price span{font-size:10px;color:var(--muted);font-family:'DM Sans',sans-serif}
+
+/* States */
+.loading,.error{padding:4rem 2rem;text-align:center;color:var(--muted)}
+.hidden{display:none !important}
+
+@media(max-width:700px){
+  nav{padding:0.875rem 1rem}
+  .nav-back{display:none}
+  .nav-right{gap:10px}
+  .profile-header{padding:0 1rem}
+  .profile-avatar{width:96px;height:96px;margin-top:-48px;font-size:1.75rem;border-width:4px}
+  .profile-name{font-size:1.4rem;margin-top:0.75rem}
+  .listings-section{padding:1.25rem 1rem 2rem}
+  .listings-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:0.75rem}
+  .card-banner-img,.card-banner-ph{height:96px}
+  .avatar{width:36px;height:36px;border-width:2px}
+  .card-profile{margin-top:-20px}
+  .card-identity{padding-top:10px}
+}
+</style>
+</head>
+<body>
+
+<div class="side-overlay" id="side-overlay" onclick="closeSideMenu()"></div>
+<div class="side-menu" id="side-menu">
+  <div class="side-logo">
+    <span>minyt<sup style="font-size:9px;color:var(--muted);vertical-align:super;margin-left:1px">™</sup></span>
+    <button class="side-close" onclick="closeSideMenu()">✕</button>
+  </div>
+  <a class="side-item" href="https://getminyt.com">Browse</a>
+  <a class="side-item" href="https://getminyt.com/create-listing.html">Create</a>
+  <a class="side-item" href="https://getminyt.com/account.html">My account</a>
+  <div class="side-divider"></div>
+  <a class="side-item" href="https://getminyt.com/terms.html">Terms of service</a>
+</div>
+
+<nav>
+  <div style="display:flex;align-items:center;gap:12px">
+    <div class="hamburger" onclick="openSideMenu()"><span></span><span></span><span></span></div>
+    <a class="nav-logo" href="https://getminyt.com">minyt<sup style="font-size:9px;color:var(--muted);vertical-align:super;margin-left:1px">™</sup></a>
+  </div>
+  <div class="nav-right">
+    <a class="nav-back" href="https://getminyt.com">← Browse offers</a>
+    <div class="nav-auth" id="nav-auth">
+      <a class="nav-login" id="nav-login-btn" href="https://getminyt.com/account.html">Log in</a>
+      <div class="nav-account" id="nav-account" style="display:none">
+        <div class="nav-account-btn" id="nav-acct-btn" onclick="toggleAccountMenu()" title="Account">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <div class="account-dropdown" id="account-dropdown">
+          <div class="dropdown-label" id="dropdown-email" style="color:var(--text);font-size:12px;text-transform:none;letter-spacing:0"></div>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="https://getminyt.com/account.html">My account</a>
+          <a class="dropdown-item" href="https://getminyt.com/create-listing.html">Create offer</a>
+          <div class="dropdown-divider"></div>
+          <div class="dropdown-item" onclick="signOutAll()" style="color:var(--muted)">Sign out</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div id="loading" class="loading">Loading creator…</div>
+<div id="not-found" class="error hidden">Creator not found.</div>
+
+<div id="profile-content" class="profile-wrap hidden">
+  <div class="banner" id="profile-banner"></div>
+  <div class="profile-header">
+    <div class="profile-avatar" id="profile-avatar"></div>
+    <h1 class="profile-name" id="profile-name"></h1>
+    <div class="profile-handle hidden" id="profile-handle"></div>
+    <div class="profile-stats" id="profile-stats"></div>
+    <div class="profile-bio hidden" id="profile-bio"></div>
+  </div>
+  <div class="listings-section">
+    <div class="listings-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      <span id="listings-heading">Offers</span>
+    </div>
+    <div id="listings-container"></div>
+  </div>
+</div>
+
+<script>
+var SURL='https://qoigwxwkhpcgisprkozg.supabase.co';
+var SKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFvaWd3eHdraHBjZ2lzcHJrb3pnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3NDAzOTUsImV4cCI6MjA5MjMxNjM5NX0.Si-GOt97FF4Wt49E_Yf7CsgyvU2-5dHbStQu1wwQ6Ik';
+
+// ── HELPERS ──
+function escapeHtml(s){
+  return String(s==null?'':s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function linkifyHtml(text){
+  if(!text) return '';
+  var esc=escapeHtml(text);
+  var urlRe=/(https?:\/\/[^\s<>"']+[^\s<>"',.;:!?)\]])/g;
+  return esc.replace(urlRe, function(url){
+    return '<a href="'+url+'" target="_blank" rel="noopener nofollow ugc">'+url+'</a>';
+  });
+}
+function ini(name){
+  if(!name) return '?';
+  return name.split(/\s+/).map(function(w){return w[0]||'';}).join('').slice(0,2).toUpperCase();
+}
+function catColor(c){
+  var m={hobbies:'#FBEAF0',money:'#FAEEDA',tech:'#EEEDFE',health:'#FAECE7',mindspirit:'#E6F1FB',lifestyle:'#F1EFE8',sportsgames:'#E1F5EE',other:'#f9f9f7'};
+  return m[c]||'#f9f9f7';
+}
+function fmtJoined(iso){
+  if(!iso) return '';
+  var d=new Date(iso);
+  return d.toLocaleDateString('en-US',{month:'short',year:'numeric'});
+}
+
+// ── BUILD CARD (linked to /offer.html?id=...) ──
+function buildCard(l){
+  var bn=l.banner_url
+    ?'<img class="card-banner-img" src="'+escapeHtml(l.banner_url)+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">'
+    :'<div class="card-banner-ph" style="background:'+catColor(l.category)+'"></div>';
+  var av=l.avatar_url
+    ?'<div class="avatar"><img src="'+escapeHtml(l.avatar_url)+'" alt=""></div>'
+    :'<div class="avatar">'+escapeHtml(ini(l.name))+'</div>';
+  var s=Math.round(l.stars||0);
+  var stars='';
+  for(var i=0;i<s;i++) stars+='★';
+  for(var i=s;i<5;i++) stars+='☆';
+  var price=l.price==0?'Free':'$'+Number(l.price).toLocaleString();
+  var unit=l.price==0?'':(l.billing_unit||'one-time');
+  return '<a class="card" href="https://getminyt.com/offer.html?id='+encodeURIComponent(l.id)+'">'
+    +bn
+    +'<div class="card-body">'
+    +'<div class="card-profile">'+av+'<div class="card-identity"><div class="card-name">'+escapeHtml(l.name||'')+'</div><div class="card-handle">'+escapeHtml(l.handle||'')+'</div></div></div>'
+    +'<div class="card-stars">'+stars+' '+Number(l.stars||0).toFixed(1)+' <span style="color:var(--muted)">('+(l.review_count||0)+')</span></div>'
+    +'<div class="card-title">'+escapeHtml(l.title||'')+'</div>'
+    +'<div class="card-desc">'+escapeHtml(l.description||'')+'</div>'
+    +'<div class="card-footer"><span class="card-badge">'+escapeHtml(l.offer_type||'')+'</span><div class="card-price">'+price+' <span>'+escapeHtml(unit)+'</span></div></div>'
+    +'</div></a>';
+}
+
+// ── LOAD CREATOR ──
+var params=new URLSearchParams(window.location.search);
+var creatorId=params.get('id');
+
+if(!creatorId){
+  document.getElementById('loading').classList.add('hidden');
+  document.getElementById('not-found').classList.remove('hidden');
+} else {
+  var s=document.createElement('script');
+  s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';
+  s.onload=function(){
+    var sb=window.supabase.createClient(SURL,SKEY);
+    loadCreator(sb, creatorId);
+  };
+  document.head.appendChild(s);
+}
+
+async function loadCreator(sb, id){
+  // Use the public_creators view so we only fetch safe fields
+  var creatorPromise=sb.from('public_creators').select('*').eq('id',id).maybeSingle();
+  // Their approved (and not denied) listings
+  var listingsPromise=sb.from('listings').select('*').eq('seller_id',id).eq('approved',true).eq('denied',false).order('created_at',{ascending:false});
+  
+  var [creatorRes, listingsRes]=await Promise.all([creatorPromise, listingsPromise]);
+  
+  document.getElementById('loading').classList.add('hidden');
+  
+  if(creatorRes.error || !creatorRes.data){
+    document.getElementById('not-found').classList.remove('hidden');
+    return;
+  }
+  
+  var c=creatorRes.data;
+  var listings=listingsRes.data||[];
+  
+  renderProfile(c, listings);
+  document.getElementById('profile-content').classList.remove('hidden');
+}
+
+function renderProfile(c, listings){
+  // Display name: explicit display_name, else fallback to "Creator"
+  var displayName=c.display_name && c.display_name.trim() ? c.display_name.trim() : 'Creator';
+  
+  // Update page title and meta
+  document.title=displayName+' - Minyt';
+  document.querySelector('meta[property="og:title"]').setAttribute('content', displayName+' on Minyt');
+  if(c.bio){
+    document.querySelector('meta[name="description"]').setAttribute('content', c.bio.substring(0,160));
+    document.querySelector('meta[property="og:description"]').setAttribute('content', c.bio.substring(0,160));
+  }
+  
+  // Banner — fall back to brand gradient (set in CSS default)
+  if(c.banner_url){
+    var bn=document.getElementById('profile-banner');
+    bn.innerHTML='<img src="'+escapeHtml(c.banner_url)+'" alt="">';
+  }
+  
+  // Avatar — image or initials fallback
+  var av=document.getElementById('profile-avatar');
+  if(c.avatar_url){
+    av.innerHTML='<img src="'+escapeHtml(c.avatar_url)+'" alt="">';
+  } else {
+    av.textContent=ini(displayName);
+  }
+  
+  // Name
+  document.getElementById('profile-name').textContent=displayName;
+  
+  // Handle
+  if(c.handle && c.handle.trim()){
+    var h=document.getElementById('profile-handle');
+    h.textContent='@'+c.handle.trim().replace(/^@/,'');
+    h.classList.remove('hidden');
+  }
+  
+  // Stats
+  var statsEl=document.getElementById('profile-stats');
+  var statsParts=[];
+  
+  // Compute aggregate rating from listings that have reviews
+  var rated=listings.filter(function(l){return (l.review_count||0)>0 && l.stars;});
+  if(rated.length){
+    var totalReviews=rated.reduce(function(sum,l){return sum+(l.review_count||0);},0);
+    var weightedSum=rated.reduce(function(sum,l){return sum+(l.stars||0)*(l.review_count||0);},0);
+    var avg=totalReviews ? (weightedSum/totalReviews) : 0;
+    statsParts.push('<div class="profile-stat"><span style="color:#BA7517">★</span><span class="stat-num">'+avg.toFixed(1)+'</span><span>('+totalReviews+' review'+(totalReviews!==1?'s':'')+')</span></div>');
+  }
+  
+  // Offers count
+  statsParts.push('<div class="profile-stat"><span class="stat-num">'+listings.length+'</span><span>offer'+(listings.length!==1?'s':'')+'</span></div>');
+  
+  // Students = sum of revenue/avg-price won't work without an orders query.
+  // For now: skip students stat (we'd need an orders count by seller). Can add later via aggregate query.
+  
+  // Joined
+  if(c.created_at){
+    statsParts.push('<div class="profile-stat">Joined '+escapeHtml(fmtJoined(c.created_at))+'</div>');
+  }
+  
+  statsEl.innerHTML=statsParts.join('');
+  
+  // Bio
+  if(c.bio && c.bio.trim()){
+    var bio=document.getElementById('profile-bio');
+    bio.innerHTML=linkifyHtml(c.bio);
+    bio.classList.remove('hidden');
+  }
+  
+  // Listings
+  var container=document.getElementById('listings-container');
+  var headingEl=document.getElementById('listings-heading');
+  if(listings.length){
+    headingEl.textContent='Offers ('+listings.length+')';
+    container.className='listings-grid';
+    container.innerHTML=listings.map(buildCard).join('');
+  } else {
+    headingEl.textContent='Offers';
+    container.innerHTML='<div class="empty-state">This creator hasn\'t published any offers yet.</div>';
+  }
+}
+
+// ── NAV ──
+function openSideMenu(){
+  document.getElementById('side-menu').classList.add('open');
+  document.getElementById('side-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeSideMenu(){
+  document.getElementById('side-menu').classList.remove('open');
+  document.getElementById('side-overlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+function toggleAccountMenu(){
+  var dd=document.getElementById('account-dropdown');
+  dd.classList.toggle('open');
+}
+document.addEventListener('click',function(e){
+  var acct=document.getElementById('nav-acct-btn');
+  var dd=document.getElementById('account-dropdown');
+  if(dd && acct && !dd.contains(e.target) && !acct.contains(e.target)){
+    dd.classList.remove('open');
+  }
+});
+
+// Auth state — show Log in vs account avatar
+(function(){
+  var s=document.createElement('script');
+  s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';
+  s.onload=function(){
+    var sba=window.supabase.createClient(SURL,SKEY);
+    sba.auth.getSession().then(function(res){
+      if(res.data.session){
+        var user=res.data.session.user;
+        document.getElementById('nav-login-btn').style.display='none';
+        document.getElementById('nav-account').style.display='block';
+        document.getElementById('dropdown-email').textContent=user.email;
+      }
+      document.getElementById('nav-auth').classList.add('resolved');
+    }).catch(function(){
+      document.getElementById('nav-auth').classList.add('resolved');
+    });
+  };
+  s.onerror=function(){
+    document.getElementById('nav-auth').classList.add('resolved');
+  };
+  document.head.appendChild(s);
+})();
+
+function signOutAll(){
+  var s=document.createElement('script');
+  s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';
+  s.onload=function(){
+    var sba=window.supabase.createClient(SURL,SKEY);
+    sba.auth.signOut().then(function(){window.location.reload();});
+  };
+  document.head.appendChild(s);
+}
+</script>
+</body>
+</html>
