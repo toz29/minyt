@@ -58,6 +58,54 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 .stat-num{font-family:'Space Grotesk',sans-serif;font-size:1.75rem;font-weight:500;color:var(--brand)}
 .stat-label{font-size:12px;color:var(--muted);margin-top:2px}
 .tier-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;margin-bottom:1.5rem}
+
+/* Profile section */
+.profile-section{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:1.5rem}
+.profile-section-header{padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+.profile-section-title{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:500}
+.profile-section-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.profile-edit-btn{padding:7px 14px;background:#fff;color:var(--brand);border:1px solid var(--brand);border-radius:var(--radius);font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none}
+.profile-edit-btn:hover{background:var(--brand-light)}
+.profile-edit-btn.primary{background:var(--brand);color:#fff;border-color:var(--brand)}
+.profile-edit-btn.primary:hover{background:var(--brand-dark);border-color:var(--brand-dark)}
+.profile-edit-btn:disabled{opacity:0.6;cursor:not-allowed}
+
+/* Preview state */
+.profile-preview-banner{width:100%;aspect-ratio:3/1;background:linear-gradient(135deg, var(--brand-light), #FAEEDA);overflow:hidden}
+.profile-preview-banner img{width:100%;height:100%;object-fit:cover;display:block}
+.profile-preview-body{padding:0 1.25rem 1.25rem;position:relative}
+.profile-preview-av{width:72px;height:72px;border-radius:50%;border:4px solid #fff;background:var(--brand-light);display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-weight:500;color:var(--brand-dark);overflow:hidden;margin-top:-36px;position:relative;z-index:2;font-size:1.4rem}
+.profile-preview-av img{width:100%;height:100%;object-fit:cover}
+.profile-preview-name{font-family:'Space Grotesk',sans-serif;font-size:1.15rem;font-weight:500;margin-top:0.625rem;overflow-wrap:anywhere}
+.profile-preview-handle{font-size:12px;color:var(--muted);margin-top:2px;overflow-wrap:anywhere}
+.profile-preview-bio{margin-top:0.75rem;font-size:13px;color:var(--text);line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere;max-width:680px}
+.profile-preview-link{display:inline-block;margin-top:0.875rem;font-size:12px;color:var(--brand);text-decoration:underline;cursor:pointer}
+
+/* Edit state */
+.profile-edit-body{padding:1.25rem}
+.profile-edit-body .field{margin-bottom:1rem}
+.profile-edit-body label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:500}
+.profile-edit-body input[type="text"],
+.profile-edit-body textarea{width:100%;padding:11px 14px;border:1px solid var(--border);border-radius:var(--radius);font-size:14px;font-family:'DM Sans',sans-serif;color:var(--text);background:#fff;resize:vertical}
+.profile-edit-body input[type="text"]:focus,
+.profile-edit-body textarea:focus{outline:none;border-color:var(--brand)}
+.profile-edit-body .field-note{font-size:11px;color:var(--muted);margin-top:5px}
+.profile-edit-body .char-counter{font-size:11px;color:var(--muted);margin-top:5px;text-align:right}
+.profile-edit-body .char-counter.warn{color:var(--danger)}
+.profile-edit-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:1rem}
+.profile-edit-cancel{padding:9px 16px;background:#fff;color:var(--muted);border:1px solid var(--border);border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif}
+.profile-edit-cancel:hover{color:var(--text);border-color:var(--text)}
+
+/* File upload chips in edit mode */
+.pf-upload{display:flex;align-items:center;gap:10px}
+.pf-upload-btn{padding:7px 12px;background:#fff;color:var(--brand);border:1px solid var(--border);border-radius:var(--radius);font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif}
+.pf-upload-btn:hover{border-color:var(--brand)}
+.pf-remove{font-size:12px;color:var(--danger);cursor:pointer;background:none;border:none;padding:0;font-family:'DM Sans',sans-serif}
+.pf-remove:hover{text-decoration:underline}
+.pf-preview-banner{width:100%;aspect-ratio:3/1;border-radius:var(--radius);background:linear-gradient(135deg, var(--brand-light), #FAEEDA);overflow:hidden;margin-bottom:8px}
+.pf-preview-banner img{width:100%;height:100%;object-fit:cover;display:block}
+.pf-preview-av{width:64px;height:64px;border-radius:50%;background:var(--brand-light);display:flex;align-items:center;justify-content:center;color:var(--brand-dark);font-family:'Space Grotesk',sans-serif;font-weight:500;overflow:hidden;flex-shrink:0}
+.pf-preview-av img{width:100%;height:100%;object-fit:cover}
 .tier-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem}
 .tier-title{font-size:14px;font-weight:500}
 .tier-pct{font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:400;color:var(--brand)}
@@ -299,6 +347,76 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
       <div class="tier-header"><div class="tier-title">Commission tier progress</div><div class="tier-pct" id="tier-pct">10%</div></div>
       <div class="tier-bar-wrap"><div class="tier-bar" id="tier-bar" style="width:0%"></div></div>
       <div class="tier-labels"><span>$0</span><span id="tier-next-label">$50,000 to reach 8%</span><span>$50k</span></div>
+    </div>
+
+    <!-- PROFILE -->
+    <div class="profile-section">
+      <div class="profile-section-header">
+        <div>
+          <div class="profile-section-title">Public profile</div>
+          <div class="profile-section-sub">How buyers see you across Minyt.</div>
+        </div>
+        <button class="profile-edit-btn" id="profile-edit-toggle" onclick="enterProfileEdit()">Edit profile</button>
+      </div>
+
+      <!-- Preview view -->
+      <div id="profile-preview-view">
+        <div class="profile-preview-banner" id="pf-prev-banner"></div>
+        <div class="profile-preview-body">
+          <div class="profile-preview-av" id="pf-prev-avatar"></div>
+          <div class="profile-preview-name" id="pf-prev-name">—</div>
+          <div class="profile-preview-handle hidden" id="pf-prev-handle"></div>
+          <div class="profile-preview-bio hidden" id="pf-prev-bio"></div>
+          <a class="profile-preview-link" id="pf-prev-link" href="#">View public profile →</a>
+        </div>
+      </div>
+
+      <!-- Edit view -->
+      <div id="profile-edit-view" class="profile-edit-body hidden">
+        <div class="field">
+          <label>Banner image</label>
+          <div class="pf-preview-banner" id="pf-edit-banner-prev"></div>
+          <div class="pf-upload">
+            <button type="button" class="pf-upload-btn" onclick="document.getElementById('pf-banner-input').click()">Upload banner</button>
+            <button type="button" class="pf-remove hidden" id="pf-banner-remove" onclick="removeProfileBanner()">Remove</button>
+            <input type="file" id="pf-banner-input" accept="image/*" style="display:none" onchange="onProfileBanner(this)"/>
+          </div>
+          <div class="field-note">Recommended 1200x400px · JPG or PNG. Sits at the top of your profile.</div>
+        </div>
+
+        <div class="field">
+          <label>Profile photo</label>
+          <div class="pf-upload">
+            <div class="pf-preview-av" id="pf-edit-avatar-prev"></div>
+            <button type="button" class="pf-upload-btn" onclick="document.getElementById('pf-avatar-input').click()">Upload photo</button>
+            <button type="button" class="pf-remove hidden" id="pf-avatar-remove" onclick="removeProfileAvatar()">Remove</button>
+            <input type="file" id="pf-avatar-input" accept="image/*" style="display:none" onchange="onProfileAvatar(this)"/>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Display name</label>
+          <input type="text" id="pf-displayname" maxlength="80" placeholder="Your full name or brand"/>
+          <div class="field-note">Shown on your public profile (separate from individual listings).</div>
+        </div>
+
+        <div class="field">
+          <label>Handle <span style="color:var(--muted);font-weight:400">(optional)</span></label>
+          <input type="text" id="pf-handle" maxlength="40" placeholder="@yourhandle"/>
+          <div class="field-note">Vanity tag shown below your name. No uniqueness required.</div>
+        </div>
+
+        <div class="field">
+          <label>Bio <span style="color:var(--muted);font-weight:400">(optional)</span></label>
+          <textarea id="pf-bio" rows="4" maxlength="500" placeholder="Tell buyers who you are, what you teach, and who it's for. URLs become clickable." oninput="updProfileBioCounter()"></textarea>
+          <div class="char-counter" id="pf-bio-counter">0 / 500</div>
+        </div>
+
+        <div class="profile-edit-actions">
+          <button type="button" class="profile-edit-cancel" onclick="cancelProfileEdit()">Cancel</button>
+          <button type="button" class="profile-edit-btn primary" id="pf-save-btn" onclick="saveProfile()">Save changes</button>
+        </div>
+      </div>
     </div>
 
     <!-- LISTINGS -->
@@ -586,6 +704,10 @@ async function showDashboard(){
   }
   if(profile.stripe_connected) document.getElementById('stripe-status').innerHTML='<div class="stripe-connected">✓ Bank account connected</div>';
 
+  // Stash profile + render Public profile section
+  window.PROFILE=profile;
+  renderProfilePreview(profile);
+
   // Load listings
   var listingsRes=await sb.from('listings').select('*').eq('seller_id',currentUser.id).order('created_at',{ascending:false});
   var listings=listingsRes.data||[];
@@ -738,6 +860,220 @@ function showToast(msg,type){
   var t=document.getElementById('toast');
   t.textContent=msg;t.className='toast show '+(type||'');
   setTimeout(function(){t.className='toast';},3000);
+}
+
+// ── PROFILE EDITOR ──
+var PFS={bannerFile:null,avatarFile:null,bannerToRemove:false,avatarToRemove:false};
+
+function escapeHtmlA(s){
+  return String(s==null?'':s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function linkifyHtmlA(text){
+  if(!text) return '';
+  var esc=escapeHtmlA(text);
+  var urlRe=/(https?:\/\/[^\s<>"']+[^\s<>"',.;:!?)\]])/g;
+  return esc.replace(urlRe, function(url){
+    return '<a href="'+url+'" target="_blank" rel="noopener nofollow ugc">'+url+'</a>';
+  });
+}
+function iniA(name){
+  if(!name) return '?';
+  return name.split(/\s+/).map(function(w){return w[0]||'';}).join('').slice(0,2).toUpperCase();
+}
+
+function renderProfilePreview(profile){
+  if(!profile) profile={};
+  var displayName=(profile.display_name && profile.display_name.trim()) || (currentUser&&currentUser.email ? currentUser.email.split('@')[0] : 'Creator');
+  
+  // Banner
+  var bn=document.getElementById('pf-prev-banner');
+  bn.innerHTML=profile.banner_url ? '<img src="'+escapeHtmlA(profile.banner_url)+'" alt="">' : '';
+  
+  // Avatar
+  var av=document.getElementById('pf-prev-avatar');
+  if(profile.avatar_url){
+    av.innerHTML='<img src="'+escapeHtmlA(profile.avatar_url)+'" alt="">';
+  } else {
+    av.textContent=iniA(displayName);
+  }
+  
+  // Name
+  document.getElementById('pf-prev-name').textContent=displayName;
+  
+  // Handle
+  var hEl=document.getElementById('pf-prev-handle');
+  if(profile.handle && profile.handle.trim()){
+    hEl.textContent='@'+profile.handle.trim().replace(/^@/,'');
+    hEl.classList.remove('hidden');
+  } else {
+    hEl.classList.add('hidden');
+  }
+  
+  // Bio
+  var bioEl=document.getElementById('pf-prev-bio');
+  if(profile.bio && profile.bio.trim()){
+    bioEl.innerHTML=linkifyHtmlA(profile.bio);
+    bioEl.classList.remove('hidden');
+  } else {
+    bioEl.classList.add('hidden');
+  }
+  
+  // Public profile link
+  if(currentUser && currentUser.id){
+    document.getElementById('pf-prev-link').href='https://getminyt.com/creator.html?id='+encodeURIComponent(currentUser.id);
+  }
+}
+
+function enterProfileEdit(){
+  var profile=window.PROFILE||{};
+  // Reset transient file state
+  PFS.bannerFile=null; PFS.avatarFile=null;
+  PFS.bannerToRemove=false; PFS.avatarToRemove=false;
+  
+  // Populate form fields from current profile
+  document.getElementById('pf-displayname').value=profile.display_name||'';
+  document.getElementById('pf-handle').value=profile.handle||'';
+  document.getElementById('pf-bio').value=profile.bio||'';
+  updProfileBioCounter();
+  
+  // Banner preview
+  var bnPrev=document.getElementById('pf-edit-banner-prev');
+  if(profile.banner_url){
+    bnPrev.innerHTML='<img src="'+escapeHtmlA(profile.banner_url)+'" alt="">';
+    document.getElementById('pf-banner-remove').classList.remove('hidden');
+  } else {
+    bnPrev.innerHTML='';
+    document.getElementById('pf-banner-remove').classList.add('hidden');
+  }
+  
+  // Avatar preview
+  var avPrev=document.getElementById('pf-edit-avatar-prev');
+  if(profile.avatar_url){
+    avPrev.innerHTML='<img src="'+escapeHtmlA(profile.avatar_url)+'" alt="">';
+    document.getElementById('pf-avatar-remove').classList.remove('hidden');
+  } else {
+    avPrev.textContent=iniA(profile.display_name||(currentUser&&currentUser.email?currentUser.email.split('@')[0]:''));
+    document.getElementById('pf-avatar-remove').classList.add('hidden');
+  }
+  
+  document.getElementById('profile-preview-view').classList.add('hidden');
+  document.getElementById('profile-edit-view').classList.remove('hidden');
+  document.getElementById('profile-edit-toggle').classList.add('hidden');
+}
+
+function cancelProfileEdit(){
+  document.getElementById('profile-preview-view').classList.remove('hidden');
+  document.getElementById('profile-edit-view').classList.add('hidden');
+  document.getElementById('profile-edit-toggle').classList.remove('hidden');
+}
+
+function onProfileBanner(input){
+  var f=input.files[0];
+  input.value='';
+  if(!f) return;
+  PFS.bannerFile=f;
+  PFS.bannerToRemove=false;
+  var r=new FileReader();
+  r.onload=function(e){
+    document.getElementById('pf-edit-banner-prev').innerHTML='<img src="'+e.target.result+'" alt="">';
+    document.getElementById('pf-banner-remove').classList.remove('hidden');
+  };
+  r.readAsDataURL(f);
+}
+
+function removeProfileBanner(){
+  PFS.bannerFile=null;
+  PFS.bannerToRemove=true;
+  document.getElementById('pf-edit-banner-prev').innerHTML='';
+  document.getElementById('pf-banner-remove').classList.add('hidden');
+}
+
+function onProfileAvatar(input){
+  var f=input.files[0];
+  input.value='';
+  if(!f) return;
+  PFS.avatarFile=f;
+  PFS.avatarToRemove=false;
+  var r=new FileReader();
+  r.onload=function(e){
+    document.getElementById('pf-edit-avatar-prev').innerHTML='<img src="'+e.target.result+'" alt="">';
+    document.getElementById('pf-avatar-remove').classList.remove('hidden');
+  };
+  r.readAsDataURL(f);
+}
+
+function removeProfileAvatar(){
+  PFS.avatarFile=null;
+  PFS.avatarToRemove=true;
+  var avPrev=document.getElementById('pf-edit-avatar-prev');
+  var dn=document.getElementById('pf-displayname').value||'';
+  avPrev.textContent=iniA(dn||(currentUser&&currentUser.email?currentUser.email.split('@')[0]:''));
+  document.getElementById('pf-avatar-remove').classList.add('hidden');
+}
+
+function updProfileBioCounter(){
+  var len=(document.getElementById('pf-bio').value||'').length;
+  var c=document.getElementById('pf-bio-counter');
+  c.textContent=len+' / 500';
+  c.classList.toggle('warn',len>=500);
+}
+
+async function saveProfile(){
+  var btn=document.getElementById('pf-save-btn');
+  btn.disabled=true; btn.textContent='Saving...';
+  try{
+    var displayName=(document.getElementById('pf-displayname').value||'').trim();
+    var handle=(document.getElementById('pf-handle').value||'').trim().replace(/^@/,'');
+    var bio=(document.getElementById('pf-bio').value||'').trim();
+    
+    // Resolve banner_url
+    var banner_url=(window.PROFILE&&window.PROFILE.banner_url)||null;
+    if(PFS.bannerToRemove) banner_url=null;
+    if(PFS.bannerFile){
+      var ext=PFS.bannerFile.name.split('.').pop();
+      var path='profile-banners/'+currentUser.id+'-'+Date.now()+'.'+ext;
+      var up=await sb.storage.from('listing-images').upload(path,PFS.bannerFile,{upsert:true});
+      if(!up.error){
+        var pu=sb.storage.from('listing-images').getPublicUrl(path);
+        banner_url=pu.data.publicUrl;
+      }
+    }
+    
+    // Resolve avatar_url
+    var avatar_url=(window.PROFILE&&window.PROFILE.avatar_url)||null;
+    if(PFS.avatarToRemove) avatar_url=null;
+    if(PFS.avatarFile){
+      var ext=PFS.avatarFile.name.split('.').pop();
+      var path='profile-avatars/'+currentUser.id+'-'+Date.now()+'.'+ext;
+      var up=await sb.storage.from('listing-images').upload(path,PFS.avatarFile,{upsert:true});
+      if(!up.error){
+        var pu=sb.storage.from('listing-images').getPublicUrl(path);
+        avatar_url=pu.data.publicUrl;
+      }
+    }
+    
+    var patch={
+      display_name:displayName||null,
+      handle:handle||null,
+      bio:bio||null,
+      banner_url:banner_url,
+      avatar_url:avatar_url
+    };
+    var res=await sb.from('sellers').update(patch).eq('id',currentUser.id);
+    if(res.error) throw res.error;
+    
+    // Merge into local profile and re-render
+    var newProfile=Object.assign({}, window.PROFILE||{}, patch);
+    window.PROFILE=newProfile;
+    renderProfilePreview(newProfile);
+    cancelProfileEdit();
+    showToast('Profile updated.','success');
+  }catch(e){
+    showToast('Could not save profile. Please try again.','error');
+  }
+  btn.disabled=false; btn.textContent='Save changes';
 }
 </script>
 </body>
