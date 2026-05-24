@@ -164,50 +164,7 @@ footer{padding:1.5rem 2rem;border-top:1px solid var(--border);display:flex;align
 .success-box h3{font-family:'Space Grotesk',sans-serif;font-weight:400;font-size:1.25rem;margin-bottom:0.5rem}
 .success-box p{font-size:13px;color:#312E81}
 /* MODAL */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.55);backdrop-filter:blur(5px);z-index:200;display:none;align-items:center;justify-content:center;padding:1.5rem}
-.overlay.show{display:flex}
-.modal{background:#fff;border-radius:var(--radius-lg);max-width:640px;width:100%;max-height:90vh;overflow-y:auto;position:relative;-ms-overflow-style:none;scrollbar-width:none;animation:slideUp 0.2s ease}
-.modal::-webkit-scrollbar{display:none}
 @keyframes slideUp{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}
-.modal-banner-img{width:100%;height:180px;object-fit:cover;display:block;border-radius:var(--radius-lg) var(--radius-lg) 0 0}
-.modal-banner-ph{width:100%;height:180px;border-radius:var(--radius-lg) var(--radius-lg) 0 0;display:flex;align-items:center;justify-content:center}
-.modal-body{padding:1.5rem}
-.modal-profile{display:flex;align-items:flex-start;gap:14px;margin-top:-36px;margin-bottom:1.25rem}
-.modal-av{width:64px;height:64px;border-radius:50%;border:4px solid #fff;display:flex;align-items:center;justify-content:center;font-weight:500;font-size:16px;flex-shrink:0;overflow:hidden;background:#C7D2FE;color:#312E81;cursor:pointer}
-.modal-av:hover{opacity:0.85}
-.modal-av img{width:100%;height:100%;object-fit:cover}
-.modal-identity{padding-top:24px}
-.modal-name{font-weight:500;font-size:15px;cursor:pointer;color:var(--text)}
-.modal-name:hover{color:var(--brand);text-decoration:underline}
-.modal-handle{font-size:13px;color:var(--muted)}
-.modal-title{font-family:'Space Grotesk',sans-serif;font-size:1.4rem;font-weight:400;margin-bottom:0.5rem;line-height:1.3}
-.modal-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:0.875rem}
-.modal-stars{font-size:13px;color:#BA7517;margin-bottom:1rem}
-.modal-desc{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:1.5rem}
-.modal-price-row{display:flex;align-items:center;justify-content:space-between;padding:1.25rem;background:var(--surface);border-radius:var(--radius);margin-bottom:1rem}
-.modal-price-num{font-family:'Space Grotesk',sans-serif;font-size:2rem;font-weight:400}
-.modal-price-unit{font-size:13px;color:var(--muted);margin-top:2px}
-.modal-buy-btn{padding:13px 28px;background:var(--brand);color:#fff;border:none;border-radius:var(--radius);font-size:15px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif}
-.modal-buy-btn:hover{background:var(--brand-dark)}
-.modal-close{position:absolute;top:12px;right:12px;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,0.4);color:#fff;border:none;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;line-height:1}
-.modal-close:hover{background:rgba(0,0,0,0.65)}
-.modal-divider{height:1px;background:var(--border);margin:1.25rem 0}
-.modal-sample-note{background:#F1EFE8;border:1px solid #D3D1C7;border-radius:var(--radius);padding:0.75rem 1rem;font-size:13px;color:#5F5E5A;margin-bottom:1rem}
-/* PROFILE OVERLAY */
-.p-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.55);backdrop-filter:blur(5px);z-index:300;display:none;align-items:center;justify-content:center;padding:1.5rem}
-.p-overlay.show{display:flex}
-.p-modal{background:#fff;border-radius:var(--radius-lg);max-width:700px;width:100%;max-height:90vh;overflow-y:auto;-ms-overflow-style:none;scrollbar-width:none;animation:slideUp 0.2s ease}
-.p-modal::-webkit-scrollbar{display:none}
-.p-header{padding:2rem 2rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:16px;position:relative}
-.p-av{width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:500;font-size:20px;flex-shrink:0;overflow:hidden;background:#C7D2FE;color:#312E81}
-.p-av img{width:100%;height:100%;object-fit:cover}
-.p-name{font-family:'Space Grotesk',sans-serif;font-size:1.4rem;font-weight:400}
-.p-handle{font-size:14px;color:var(--muted);margin-top:2px}
-.p-listings{padding:1.25rem 2rem 2rem}
-.p-listings-label{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:1rem}
-.p-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem}
-.p-close{position:absolute;top:14px;right:14px;width:32px;height:32px;border-radius:50%;background:var(--surface);color:var(--text);border:1px solid var(--border);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.p-close:hover{border-color:var(--text)}
 
 .nav-create{padding:7px 14px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;font-weight:500;color:var(--text);cursor:pointer;transition:all 0.2s;text-decoration:none}
 .nav-create:hover{border-color:var(--brand);color:var(--brand);box-shadow:0 0 12px rgba(99,102,241,0.25)}
@@ -579,26 +536,6 @@ footer{padding:1.5rem 2rem;border-top:1px solid var(--border);display:flex;align
   </div>
 </div>
 
-<!-- LISTING MODAL -->
-<div class="overlay" id="listing-overlay" onclick="overlayClick(event,'listing-overlay')">
-  <div class="modal" id="modal-inner"></div>
-</div>
-
-<!-- PROFILE MODAL -->
-<div class="p-overlay" id="profile-overlay" onclick="overlayClick(event,'profile-overlay')">
-  <div class="p-modal">
-    <div class="p-header">
-      <div class="p-av" id="p-av"></div>
-      <div><div class="p-name" id="p-name"></div><div class="p-handle" id="p-handle"></div></div>
-      <button class="p-close" onclick="closeProfile()">✕</button>
-    </div>
-    <div class="p-listings">
-      <div class="p-listings-label">All listings</div>
-      <div class="p-grid" id="p-grid"></div>
-    </div>
-  </div>
-</div>
-
 <script>
 // ── DATA ──
 var ALL = [];
@@ -692,21 +629,22 @@ function buildCard(l, badge, inProfile) {
   var creatorName = l.name || 'Creator';
   var creatorClickable = !inProfile && l.seller_id && !l.isSample;
   var creatorPart = creatorClickable
-    ? '<a class="card-creator-link" href="https://getminyt.com/creator.html?id='+l.seller_id+'" onclick="event.stopPropagation()">'+creatorName+'</a>'
+    ? '<span class="card-creator-link" onclick="event.stopPropagation();event.preventDefault();window.location.href=\'https://getminyt.com/creator.html?id='+l.seller_id+'\'">'+creatorName+'</span>'
     : '<span style="color:var(--text)">'+creatorName+'</span>';
   var verifiedCheck = isVerified(l)
     ? '<span class="card-verified-check" title="Verified · 10+ satisfied customers on Minyt" aria-label="Verified creator">✓</span>'
     : '';
-  var clickAttr = inProfile ? '' : 'onclick="openModal(\''+l.id+'\')" style="cursor:pointer"';
-  var w = inProfile ? 'width:100%;flex:none' : '';
-  return '<div class="card" '+clickAttr+' style="'+w+'">'
+  var hrefAttr = inProfile ? '' : 'href="https://getminyt.com/offer.html?id='+encodeURIComponent(l.id)+'"';
+  var extraStyle = inProfile ? 'width:100%;flex:none;' : '';
+  var tag = inProfile ? 'div' : 'a';
+  return '<'+tag+' class="card" '+hrefAttr+' style="'+extraStyle+'text-decoration:none;color:inherit;display:block">'
     +'<div class="card-banner-wrap">'+bn+overlayBadges+'</div>'
     +'<div class="card-body">'
     +'<div class="card-profile">'+logo+'<div class="card-identity"><div class="card-name">'+(l.title||'')+'</div><div class="card-byline">by '+creatorPart+verifiedCheck+'</div></div></div>'
     +'<div class="stars">'+stars+' '+(l.stars||0)+' <span style="color:var(--muted)">('+( l.review_count||0)+')</span></div>'
     +'<div class="card-desc">'+(l.description||'')+'</div>'
     +'<div class="card-footer"><span class="badge">'+l.offer_type+'</span><div class="price">'+(l.price==0?'Free':'$'+Number(l.price).toLocaleString())+' <span>'+(l.price==0?'':(l.billing_unit||'one-time'))+'</span></div></div>'
-    +'</div></div>';
+    +'</div></'+tag+'>';
 }
 
 // ── RENDER ──
@@ -853,72 +791,6 @@ function filterTopic(topic, el) {
   renderTypes(ALL);
 }
 
-// ── MODAL ──
-function openModal(id) {
-  var l = null;
-  for(var i=0;i<ALL.length;i++){if(String(ALL[i].id)===String(id)){l=ALL[i];break;}}
-  if(!l) return;
-  var s = Math.round(l.stars||0);
-  var stars=''; for(var i=0;i<s;i++) stars+='★'; for(var i=s;i<5;i++) stars+='☆';
-  var bn = l.banner_url
-    ? '<img class="modal-banner-img" src="'+l.banner_url+'" alt="">'
-    : '<div class="modal-banner-ph" style="background:'+catColor(l.category)+'"></div>';
-  var av = l.avatar_url ? '<img src="'+l.avatar_url+'" alt="">' : ini(l.name);
-  var sampleNote = l.isSample ? '<div class="modal-sample-note">This is a sample listing for demonstration purposes only.</div>' : '';
-  var buyBtn = l.isSample
-    ? '<button class="modal-buy-btn" onclick="alert(\'This is a sample listing. Real listings will have a purchase button here.\')">Sample offer</button>'
-    : '<button class="modal-buy-btn" id="buy-btn-' + l.id + '" onclick="startCheckout(\'' + l.id + '\')" >Get access' + (l.price==0?' — Free':' — $'+l.price) + '</button>';
-    var viewLink = '<div style="display:flex;gap:1rem;margin-top:0.75rem;font-size:12px"><a href="https://getminyt.com/offer.html?id='+l.id+'" style="color:var(--brand);text-decoration:none">View full page ↗</a><span style="color:var(--brand);cursor:pointer" onclick="copyOfferLink(\''+l.id+'\')" >Copy link</span></div>';
-  document.getElementById('modal-inner').innerHTML =
-    '<button class="modal-close" onclick="closeModal()">✕</button>'
-    +bn
-    +'<div class="modal-body">'
-    +'<div class="modal-profile">'
-    +'<div class="modal-av" onclick="openProfile(\''+id+'\')" title="View all listings">'+av+'</div>'
-    +'<div class="modal-identity"><div class="modal-name" onclick="openProfile(\''+id+'\')" >'+l.name+'</div><div class="modal-handle">'+(l.handle||'')+'</div></div>'
-    +'</div>'
-    +sampleNote
-    +'<div class="modal-title">'+l.title+'</div>'
-    +'<div class="modal-badges"><span class="badge">'+l.offer_type+'</span><span class="badge-verified">✓ Verified reviews</span>'+(l.isSample?'<span class="badge-sample">Sample offer</span>':'')+'</div>'
-    +'<div class="modal-stars">'+stars+' '+(l.stars||0)+' ('+(l.review_count||0)+' verified reviews)</div>'
-    +'<div class="modal-desc">'+(l.description||'No description provided.')+'</div>'
-    +'<div class="modal-divider"></div>'
-    +'<div class="modal-price-row"><div><div class="modal-price-num">'+(l.price==0?'Free':'$'+Number(l.price).toLocaleString())+'</div><div class="modal-price-unit">'+(l.billing_unit||'one-time')+'</div></div>'+buyBtn+'</div>'
-    +(l.isSample?'':'<div style="display:flex;gap:1rem;margin-top:0.75rem;justify-content:center;font-size:12px"><a href="https://getminyt.com/offer.html?id='+l.id+'" style="color:var(--brand);text-decoration:none">View full page ↗</a><span style="color:var(--brand);cursor:pointer" onclick="copyOfferLink(\''+l.id+'\')" >Copy link</span></div>')
-    +'<div style="font-size:12px;color:var(--muted);text-align:center;margin-top:0.5rem"><span class="badge-verified" style="display:inline-flex">✓ Verified reviews only</span></div>'
-    +'</div>';
-  document.getElementById('listing-overlay').classList.add('show');
-  document.body.style.overflow = 'hidden';
-}
-function closeModal() {
-  document.getElementById('listing-overlay').classList.remove('show');
-  document.body.style.overflow = '';
-}
-function openProfile(listingId) {
-  var l = null;
-  for(var i=0;i<ALL.length;i++){if(String(ALL[i].id)===String(listingId)){l=ALL[i];break;}}
-  if(!l) return;
-  closeModal();
-  var creatorListings = ALL.filter(function(x){return (x.handle&&x.handle===l.handle)||(x.name===l.name);});
-  var av = l.avatar_url ? '<img src="'+l.avatar_url+'" alt="">' : ini(l.name);
-  document.getElementById('p-av').innerHTML = av;
-  document.getElementById('p-name').textContent = l.name;
-  document.getElementById('p-handle').textContent = l.handle||'';
-  document.getElementById('p-grid').innerHTML = creatorListings.map(function(x){return buildCard(x,'',true);}).join('');
-  document.getElementById('profile-overlay').classList.add('show');
-  document.body.style.overflow = 'hidden';
-}
-function closeProfile() {
-  document.getElementById('profile-overlay').classList.remove('show');
-  document.body.style.overflow = '';
-}
-function overlayClick(e, id) {
-  if(e.target===document.getElementById(id)){
-    if(id==='listing-overlay') closeModal();
-    else closeProfile();
-  }
-}
-
 // ── FORM ──
 function goStep(n) {
   [1,2,3].forEach(function(i){
@@ -1023,53 +895,7 @@ function submitListing() {
 // ── STRIPE CHECKOUT ──
 var STRIPE_PK = 'pk_test_51TPZ3wQS8EtYXGyhaP2w3zmyJT2IjMrSbJKO4KoUOoGrZC5ACf199uqe0nIwNUBvyIGERuU7d9IshZ9DriY8MISc004nvmtHw4';
 
-async function startCheckout(listingId) {
-  var l = null;
-  for(var i=0;i<ALL.length;i++){if(String(ALL[i].id)===String(listingId)){l=ALL[i];break;}}
-  if(!l) return;
-
-  if(l.isSample) {
-    alert('This is a sample listing. Real listings will have a working checkout.');
-    return;
-  }
-
-  var btn = document.getElementById('buy-btn-' + listingId);
-  if(btn) { btn.disabled = true; btn.textContent = 'Loading...'; }
-
-  try {
-    var res = await fetch('/create-checkout', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        listing_id: l.id,
-        title: l.title,
-        price: l.price,
-        billing_unit: l.billing_unit || 'one-time',
-        seller_stripe_id: l.seller_stripe_id || null
-      })
-    });
-
-    var data = await res.json();
-
-    if(data.url) {
-      window.location.href = data.url;
-    } else {
-      throw new Error(data.error || 'Checkout failed');
-    }
-  } catch(e) {
-    console.error('Checkout error:', e);
-    alert('Something went wrong. Please try again.');
-    if(btn) { btn.disabled = false; btn.textContent = 'Get access — $' + l.price; }
-  }
-}
-
 // ── ACCOUNT DROPDOWN ──
-function copyOfferLink(id){
-  navigator.clipboard.writeText('https://getminyt.com/offer.html?id='+id).then(function(){
-    alert('Link copied!');
-  });
-}
-
 function openSideMenu(){
   document.getElementById('side-menu').classList.add('open');
   document.getElementById('side-overlay').classList.add('open');
