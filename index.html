@@ -717,7 +717,7 @@ renderAll(SAMPLES);
   s.onload = function() {
     try {
       var sb = window.supabase.createClient(SURL, SKEY);
-      sb.from('listings').select('*').eq('approved', true).order('created_at', {ascending:false}).then(function(res) {
+      sb.from('listings').select('*').eq('approved', true).eq('visibility', 'live').order('created_at', {ascending:false}).then(function(res) {
         if(res.data && res.data.length >= 10) renderAll(res.data);
         else if(res.data && res.data.length > 0) renderAll(res.data.concat(SAMPLES.slice(res.data.length)));
       });
