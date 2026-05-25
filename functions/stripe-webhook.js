@@ -33,6 +33,15 @@ export async function onRequestPost(context) {
         const listing_id = session.metadata?.listing_id;
         if (!listing_id) break;
 
+        // Idempotency: Stripe can retry webhooks, so make sure we haven't already
+        // recorded this checkout session before inserting a duplicate order row.
+        const existingCheck = await fetch(
+          `${supabaseUrl}/rest/v1/orders?stripe_payment_id=eq.${encodeURIComponent(session.id)}&select=id`,
+          { headers: { 'apikey': supabaseKey, 'Authorization': `Bearer ${supabaseKey}` } }
+        );
+        const existing = await existingCheck.json();
+        if (existing && existing.length > 0) break;
+
         const amount = (session.amount_total || 0) / 100;
         // With direct charges, application_fee_amount lives on payment_intent or in metadata
         // Fall back to metadata for the commission amount we tagged at checkout creation
