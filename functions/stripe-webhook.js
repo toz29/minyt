@@ -72,34 +72,32 @@ export async function onRequestPost(context) {
           })
         });
 
-        const listingRes = await fetch(
-          `${supabaseUrl}/rest/v1/listings?id=eq.${listing_id}&select=revenue`,
+        // Race-safe revenue: recompute from the orders table rather than incrementing.
+        // If two webhook deliveries race, both will recompute to the same correct total.
+        const ordersRes = await fetch(
+          `${supabaseUrl}/rest/v1/orders?listing_id=eq.${listing_id}&status=eq.completed&select=amount`,
           { headers: { 'apikey': supabaseKey, 'Authorization': `Bearer ${supabaseKey}` } }
         );
-        const listings = await listingRes.json();
-        if (listings && listings.length > 0) {
-          const currentRevenue = listings[0].revenue || 0;
-          const newRevenue = currentRevenue + amount;
-          let commissionRate = 0.10;
-          if (newRevenue >= 100000) commissionRate = 0.06;
-          else if (newRevenue >= 50000) commissionRate = 0.08;
+        const allOrders = await ordersRes.json();
+        const newRevenue = (allOrders || []).reduce((sum, o) => sum + (parseFloat(o.amount) || 0), 0);
+        let commissionRate = 0.10;
+        if (newRevenue >= 100000) commissionRate = 0.06;
+        else if (newRevenue >= 50000) commissionRate = 0.08;
 
-          console.log('[REVENUE-DBG-CHECKOUT]', JSON.stringify({
-            session_id: session.id,
-            listing_id,
-            currentRevenue,
-            amount,
-            newRevenue,
-            connectedAccountId,
-            timestamp: new Date().toISOString()
-          }));
+        console.log('[REVENUE-DBG-CHECKOUT]', JSON.stringify({
+          session_id: session.id,
+          listing_id,
+          orderCount: (allOrders || []).length,
+          newRevenue,
+          connectedAccountId,
+          timestamp: new Date().toISOString()
+        }));
 
-          await fetch(`${supabaseUrl}/rest/v1/listings?id=eq.${listing_id}`, {
-            method: 'PATCH',
-            headers,
-            body: JSON.stringify({ revenue: newRevenue, commission_rate: commissionRate })
-          });
-        }
+        await fetch(`${supabaseUrl}/rest/v1/listings?id=eq.${listing_id}`, {
+          method: 'PATCH',
+          headers,
+          body: JSON.stringify({ revenue: newRevenue, commission_rate: commissionRate })
+        });
         break;
       }
 
