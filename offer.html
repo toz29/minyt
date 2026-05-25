@@ -305,10 +305,23 @@ if(!offerId){
         }
         
         var isSample=l.isSample||false;
-        var buyBtnText=isSample?'Sample offer':l.price==0?'Get access — Free':'Get access — $'+Number(l.price).toLocaleString();
-        var buyBtnAction=isSample
-          ?"alert('This is a sample offer.')"
-          :"startCheckout('"+l.id+"')";
+        var isPaused=(l.visibility==='paused');
+        var buyBtnText;
+        var buyBtnAction;
+        if(isPaused){
+          buyBtnText='Not accepting new buyers';
+          buyBtnAction='void(0)';
+        } else if(isSample){
+          buyBtnText='Sample offer';
+          buyBtnAction="alert('This is a sample offer.')";
+        } else {
+          buyBtnText=l.price==0?'Get access — Free':'Get access — $'+Number(l.price).toLocaleString();
+          buyBtnAction="startCheckout('"+l.id+"')";
+        }
+        var buyBtnStyle=(isSample||isPaused)?' style="background:var(--muted);cursor:not-allowed" disabled':'';
+        var pausedNotice=isPaused
+          ? '<div style="background:#FEF3C7;border:1px solid #FCD34D;border-radius:var(--radius);padding:12px 14px;font-size:13px;color:#78350F;line-height:1.5;margin-bottom:1.5rem"><strong>This offer is currently paused by the creator.</strong> New purchases aren\'t available right now. Existing customers keep full access.</div>'
+          : '';
         
         // Long description with autolinked URLs (rendered as separate section)
         var longDescHtml='';
@@ -338,6 +351,7 @@ if(!offerId){
           +(isSample?'<span class="sample-badge">Sample offer</span>':'')
           +'<h1 class="offer-title">'+escapeHtml(l.title)+'</h1>'
           +'<span class="offer-type-badge">'+escapeHtml(l.offer_type||'')+'</span>'
+          +pausedNotice
           +'<div class="offer-desc">'+escapeHtml(l.description||'No description provided.')+'</div>'
           +longDescHtml
           +'<div class="offer-reviews-title">Reviews ('+reviews.length+')</div>'
@@ -347,7 +361,7 @@ if(!offerId){
           +'<div class="offer-price">'+(l.price==0?'Free':'$'+Number(l.price).toLocaleString())+'</div>'
           +'<div class="offer-billing">'+(l.billing_unit||'One-time payment')+'</div>'
           +(reviews.length?'<div class="offer-rating"><span class="offer-rating-stars">'+starsHtml+'</span><span class="offer-rating-text">'+avgRating.toFixed(1)+' ('+reviews.length+' review'+(reviews.length!==1?'s':'')+')</span></div>':'')
-          +'<button class="offer-buy-btn" id="buy-btn" onclick="'+buyBtnAction+'"'+(isSample?' style="background:var(--muted);cursor:default"':'')+'>'+buyBtnText+'</button>'
+          +'<button class="offer-buy-btn" id="buy-btn" onclick="'+buyBtnAction+'"'+buyBtnStyle+'>'+buyBtnText+'</button>'
           +'<div class="offer-meta">'
           +'<div>Category: '+escapeHtml(l.category||'General')+'</div>'
           +'<div>Type: '+escapeHtml(l.offer_type||'')+'</div>'
