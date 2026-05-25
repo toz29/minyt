@@ -17,6 +17,12 @@ export async function onRequestPost(context) {
     const stripeEvent = JSON.parse(body);
     // For Connect events, stripeEvent.account is the connected account that triggered the event
     const connectedAccountId = stripeEvent.account || null;
+    console.log('[WEBHOOK-DBG]', JSON.stringify({
+      type: stripeEvent.type,
+      event_id: stripeEvent.id,
+      account: connectedAccountId,
+      session_id: stripeEvent.data?.object?.id || null
+    }));
     const supabaseUrl = 'https://qoigwxwkhpcgisprkozg.supabase.co';
     const supabaseKey = context.env.SUPABASE_SERVICE_KEY;
     const headers = {
@@ -77,6 +83,16 @@ export async function onRequestPost(context) {
           let commissionRate = 0.10;
           if (newRevenue >= 100000) commissionRate = 0.06;
           else if (newRevenue >= 50000) commissionRate = 0.08;
+
+          console.log('[REVENUE-DBG-CHECKOUT]', JSON.stringify({
+            session_id: session.id,
+            listing_id,
+            currentRevenue,
+            amount,
+            newRevenue,
+            connectedAccountId,
+            timestamp: new Date().toISOString()
+          }));
 
           await fetch(`${supabaseUrl}/rest/v1/listings?id=eq.${listing_id}`, {
             method: 'PATCH',
