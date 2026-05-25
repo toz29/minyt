@@ -93,6 +93,8 @@ export async function onRequestPost(context) {
         const periodEnd = inv.lines && inv.lines.data[0]
           ? new Date(inv.lines.data[0].period.end * 1000).toISOString()
           : null;
+
+        // Update the order row's status + new period end on every successful invoice payment
         await fetch(
           `${supabaseUrl}/rest/v1/orders?subscription_id=eq.${inv.subscription}`,
           {
@@ -104,6 +106,59 @@ export async function onRequestPost(context) {
             })
           }
         );
+
+        // Revenue accumulation for renewals.
+        // `subscription_create` is the initial payment — that's already counted by checkout.session.completed.
+        // `subscription_cycle` is a renewal — that's what we want to count here.
+        // Idempotency: track each paid invoice id in the order's invoice_history JSON array,
+        // skipping any invoice we've already processed (handles webhook retries).
+        if (inv.billing_reason === 'subscription_cycle' && inv.id) {
+          const orderLookup = await fetch(
+            `${supabaseUrl}/rest/v1/orders?subscription_id=eq.${inv.subscription}&select=id,listing_id,invoice_history`,
+            { headers: { 'apikey': supabaseKey, 'Authorization': `Bearer ${supabaseKey}` } }
+          );
+          const orderRows = await orderLookup.json();
+          if (orderRows && orderRows.length > 0) {
+            const order = orderRows[0];
+            const history = Array.isArray(order.invoice_history) ? order.invoice_history : [];
+            if (!history.includes(inv.id)) {
+              const renewalAmount = (inv.amount_paid || 0) / 100;
+              // Append the invoice id to the order's history
+              const updatedHistory = history.concat([inv.id]);
+              await fetch(
+                `${supabaseUrl}/rest/v1/orders?id=eq.${order.id}`,
+                {
+                  method: 'PATCH',
+                  headers,
+                  body: JSON.stringify({ invoice_history: updatedHistory })
+                }
+              );
+              // Increment listing revenue + recompute commission tier
+              if (order.listing_id && renewalAmount > 0) {
+                const listingRes = await fetch(
+                  `${supabaseUrl}/rest/v1/listings?id=eq.${order.listing_id}&select=revenue`,
+                  { headers: { 'apikey': supabaseKey, 'Authorization': `Bearer ${supabaseKey}` } }
+                );
+                const listings = await listingRes.json();
+                if (listings && listings.length > 0) {
+                  const currentRevenue = listings[0].revenue || 0;
+                  const newRevenue = currentRevenue + renewalAmount;
+                  let commissionRate = 0.10;
+                  if (newRevenue >= 100000) commissionRate = 0.06;
+                  else if (newRevenue >= 50000) commissionRate = 0.08;
+                  await fetch(
+                    `${supabaseUrl}/rest/v1/listings?id=eq.${order.listing_id}`,
+                    {
+                      method: 'PATCH',
+                      headers,
+                      body: JSON.stringify({ revenue: newRevenue, commission_rate: commissionRate })
+                    }
+                  );
+                }
+              }
+            }
+          }
+        }
         break;
       }
 
