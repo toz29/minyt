@@ -93,6 +93,13 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 .profile-edit-body .char-counter{font-size:11px;color:var(--muted);margin-top:5px;text-align:right}
 .profile-edit-body .char-counter.warn{color:var(--danger)}
 .profile-edit-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:1rem}
+.apply-to-listings{background:var(--brand-light);border:1.5px solid #C7D2FE;border-radius:var(--radius);padding:14px 16px;margin-top:1rem;margin-bottom:0.5rem}
+.apply-to-listings-label{display:flex;align-items:flex-start;gap:12px;cursor:pointer;margin:0}
+.apply-to-listings-label input[type="checkbox"]{width:18px;height:18px;margin:0;margin-top:1px;flex-shrink:0;accent-color:var(--brand);cursor:pointer}
+.apply-to-listings-text{display:flex;flex-direction:column;gap:3px;min-width:0}
+.apply-to-listings-title{font-size:13px;font-weight:500;color:var(--text);line-height:1.4}
+.apply-to-listings-sub{font-size:12px;color:var(--muted);line-height:1.45}
+.apply-to-listings.hidden{display:none}
 .profile-edit-cancel{padding:9px 16px;background:#fff;color:var(--muted);border:1px solid var(--border);border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif}
 .profile-edit-cancel:hover{color:var(--text);border-color:var(--text)}
 
@@ -412,6 +419,16 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
           <div class="char-counter" id="pf-bio-counter">0 / 500</div>
         </div>
 
+        <div class="apply-to-listings" id="apply-to-listings-wrap">
+          <label class="apply-to-listings-label">
+            <input type="checkbox" id="pf-apply-listings" checked/>
+            <span class="apply-to-listings-text">
+              <span class="apply-to-listings-title">Apply name &amp; handle to my existing offers <span id="pf-apply-count">(0)</span></span>
+              <span class="apply-to-listings-sub">Updates the creator name and handle on every offer you've posted. Uncheck to keep them as-is.</span>
+            </span>
+          </label>
+        </div>
+
         <div class="profile-edit-actions">
           <button type="button" class="profile-edit-cancel" onclick="cancelProfileEdit()">Cancel</button>
           <button type="button" class="profile-edit-btn primary" id="pf-save-btn" onclick="saveProfile()">Save changes</button>
@@ -716,6 +733,7 @@ async function showDashboard(){
   var listingsByEmailRes=await sb.from('listings').select('*').eq('email',currentUser.email).is('seller_id',null).order('created_at',{ascending:false});
   var listingsByEmail=listingsByEmailRes.data||[];
   var allListings=[...listings,...listingsByEmail];
+  window.ALL_LISTINGS=allListings;
 
   // Load purchases (orders where user is buyer)
   var ordersRes=await sb.from('orders').select('*, listings(title,banner_url,offer_type,delivery_link)').eq('buyer_email',currentUser.email).order('created_at',{ascending:false});
@@ -961,6 +979,20 @@ function enterProfileEdit(){
   document.getElementById('profile-preview-view').classList.add('hidden');
   document.getElementById('profile-edit-view').classList.remove('hidden');
   document.getElementById('profile-edit-toggle').classList.add('hidden');
+
+  // Apply-to-listings checkbox: default checked, show count, hide entirely when user has no listings
+  var listings=window.ALL_LISTINGS||[];
+  var applyWrap=document.getElementById('apply-to-listings-wrap');
+  var applyBox=document.getElementById('pf-apply-listings');
+  var applyCount=document.getElementById('pf-apply-count');
+  if(listings.length){
+    applyWrap.classList.remove('hidden');
+    applyBox.checked=true;
+    applyCount.textContent='('+listings.length+')';
+  } else {
+    applyWrap.classList.add('hidden');
+    applyBox.checked=false;
+  }
 }
 
 function cancelProfileEdit(){
@@ -1063,6 +1095,24 @@ async function saveProfile(){
     };
     var res=await sb.from('sellers').update(patch).eq('id',currentUser.id);
     if(res.error) throw res.error;
+    
+    // Bulk-update existing listings' name + handle if seller opted in
+    var applyBox=document.getElementById('pf-apply-listings');
+    var listings=window.ALL_LISTINGS||[];
+    if(applyBox && applyBox.checked && listings.length){
+      var listingPatch={
+        name:displayName||null,
+        handle:handle||null
+      };
+      var bulkRes=await sb.from('listings').update(listingPatch).eq('seller_id',currentUser.id);
+      // Don't throw on bulk failure — primary profile save already succeeded.
+      // Refresh local copy so dashboard reflects the change.
+      if(!bulkRes.error){
+        window.ALL_LISTINGS=listings.map(function(l){
+          return Object.assign({},l,listingPatch);
+        });
+      }
+    }
     
     // Merge into local profile and re-render
     var newProfile=Object.assign({}, window.PROFILE||{}, patch);
