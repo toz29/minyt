@@ -123,7 +123,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 .section-title{font-family:'Space Grotesk',sans-serif;font-size:1.2rem;font-weight:400}
 .new-listing-btn{padding:9px 18px;background:var(--brand);color:#fff;border:none;border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;display:inline-block}
 .new-listing-btn:hover{background:var(--brand-dark)}
-.listing-item{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;text-decoration:none;color:inherit;transition:border-color 0.15s,box-shadow 0.15s}
+.listing-item{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;cursor:pointer;transition:border-color 0.15s,box-shadow 0.15s}
 .listing-item:hover{border-color:var(--brand);box-shadow:0 2px 8px rgba(99,102,241,0.08)}
 .listing-banner{width:60px;height:40px;object-fit:cover;border-radius:6px;background:var(--surface);flex-shrink:0}
 .listing-banner-ph{width:60px;height:40px;border-radius:6px;background:var(--surface);flex-shrink:0}
@@ -131,12 +131,27 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 .listing-title{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .listing-meta{font-size:12px;color:var(--muted);margin-top:2px}
 .listing-status{padding:2px 8px;border-radius:50px;font-size:10px;font-weight:500;white-space:nowrap}
+.status-live{background:var(--brand-light);color:var(--brand-dark)}
 .status-approved{background:var(--brand-light);color:var(--brand-dark)}
 .status-pending{background:#FAEEDA;color:#412402}
 .status-denied{background:var(--danger-light);color:var(--danger)}
-.listing-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.status-unlisted{background:#E5E7EB;color:#374151}
+.status-paused{background:#FEF3C7;color:#78350F}
+.listing-actions{display:flex;align-items:center;gap:8px;flex-shrink:0;position:relative}
 .listing-edit{padding:6px 12px;background:#fff;color:var(--brand);border:1px solid var(--border);border-radius:var(--radius);font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;transition:all 0.15s;white-space:nowrap}
 .listing-edit:hover{border-color:var(--brand);background:var(--brand-light)}
+.listing-kebab{width:32px;height:32px;border-radius:var(--radius);background:#fff;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;color:var(--muted);line-height:0;padding:0;font-family:inherit;transition:all 0.15s}
+.listing-kebab:hover{border-color:var(--brand);color:var(--brand);background:var(--brand-light)}
+.listing-menu{position:absolute;top:calc(100% + 6px);right:0;background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:0.4rem;min-width:180px;box-shadow:0 8px 24px rgba(0,0,0,0.08);z-index:50;display:none}
+.listing-menu.open{display:block}
+.listing-menu-item{display:block;width:100%;padding:8px 10px;font-size:13px;color:var(--text);cursor:pointer;border:none;background:none;font-family:'DM Sans',sans-serif;text-align:left;border-radius:var(--radius);text-decoration:none;transition:background 0.1s}
+.listing-menu-item:hover{background:var(--surface);color:var(--brand)}
+.listing-menu-item.danger{color:var(--danger)}
+.listing-menu-item.danger:hover{background:var(--danger-light);color:var(--danger)}
+.listing-menu-item:disabled,.listing-menu-item.disabled{color:var(--muted);cursor:not-allowed;opacity:0.6}
+.listing-menu-item:disabled:hover,.listing-menu-item.disabled:hover{background:none;color:var(--muted)}
+.listing-menu-divider{height:1px;background:var(--border);margin:4px 0}
+.listing-menu-hint{font-size:11px;color:var(--muted);padding:4px 10px;line-height:1.4}
 .purchase-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:0.75rem}
 .pc-top{display:grid;grid-template-columns:70px 1fr auto;gap:1rem;padding:1.1rem;align-items:center}
 .pc-banner{width:70px;height:46px;object-fit:cover;border-radius:6px;background:var(--surface)}
@@ -790,23 +805,33 @@ async function showDashboard(){
     ll.innerHTML=allListings.map(function(l){
       var bn=l.banner_url?'<img class="listing-banner" src="'+l.banner_url+'" alt="">'
         :'<div class="listing-banner-ph"></div>';
-      var status,statusLabel;
-      if(l.denied){status='status-denied';statusLabel='Not approved';}
-      else if(l.approved){status='status-approved';statusLabel='Live';}
-      else {status='status-pending';statusLabel='Pending review';}
-      var editBtn='<span class="listing-edit" role="button" tabindex="0" onclick="event.stopPropagation();event.preventDefault();window.location.href=\'https://getminyt.com/edit-listing.html?id='+l.id+'\'">Edit</span>';
-      // Approved listings are publicly viewable; pending/denied aren't, so those rows route to the edit page
+      // Compute state — single source of truth
+      var state;
+      if(l.denied) state='denied';
+      else if(!l.approved) state='pending';
+      else if(l.visibility==='paused') state='paused';
+      else if(l.visibility==='unlisted') state='unlisted';
+      else state='live';
+      var stateLabels={live:'Live',unlisted:'Unlisted',paused:'Paused',pending:'Pending review',denied:'Not approved'};
+      var stateClass='status-'+state;
+      // Row destination: approved listings (any visibility) go to offer.html; pending/denied go to edit
       var rowHref=l.approved
         ? 'https://getminyt.com/offer.html?id='+l.id
         : 'https://getminyt.com/edit-listing.html?id='+l.id;
-      return '<a class="listing-item" href="'+rowHref+'">'+bn
-        +'<div class="listing-info"><div class="listing-title">'+l.title+'</div>'
-        +'<div class="listing-meta">'+l.offer_type+' · $'+l.price+' '+(l.billing_unit||'one-time')+'</div></div>'
+      var editBtn='<span class="listing-edit" role="button" tabindex="0" onclick="event.stopPropagation();event.preventDefault();window.location.href=\'https://getminyt.com/edit-listing.html?id='+l.id+'\'">Edit</span>';
+      // Kebab menu items depend on state
+      var menuItems=buildListingMenuItems(l,state);
+      var kebab='<button class="listing-kebab" type="button" aria-label="More actions" onclick="event.stopPropagation();event.preventDefault();toggleListingMenu(\''+l.id+'\')">⋯</button>'
+        +'<div class="listing-menu" id="menu-'+l.id+'" onclick="event.stopPropagation()">'+menuItems+'</div>';
+      return '<div class="listing-item" onclick="window.location.href=\''+rowHref+'\'">'+bn
+        +'<div class="listing-info"><div class="listing-title">'+(l.title||'')+'</div>'
+        +'<div class="listing-meta">'+(l.offer_type||'')+' · $'+l.price+' '+(l.billing_unit||'one-time')+'</div></div>'
         +'<div class="listing-actions">'
-        +'<span class="listing-status '+status+'">'+statusLabel+'</span>'
+        +'<span class="listing-status '+stateClass+'">'+stateLabels[state]+'</span>'
         +editBtn
+        +kebab
         +'</div>'
-        +'</a>';
+        +'</div>';
     }).join('');
   }
 
@@ -835,6 +860,85 @@ async function showDashboard(){
         +'</div>';
     }).join('');
   }
+}
+
+// ── LISTING ACTIONS (kebab menu) ──
+
+function buildListingMenuItems(l,state){
+  var items=[];
+  // Edit is always available
+  items.push('<a class="listing-menu-item" href="https://getminyt.com/edit-listing.html?id='+l.id+'">Edit</a>');
+  if(state==='live'){
+    items.push('<button class="listing-menu-item" onclick="unlistListing(\''+l.id+'\')">Unlist</button>');
+    items.push('<button class="listing-menu-item" onclick="pauseListing(\''+l.id+'\')">Pause new sales</button>');
+  } else if(state==='unlisted'){
+    items.push('<button class="listing-menu-item" onclick="relistListing(\''+l.id+'\')">Make live</button>');
+    items.push('<button class="listing-menu-item" onclick="pauseListing(\''+l.id+'\')">Pause new sales</button>');
+  } else if(state==='paused'){
+    items.push('<button class="listing-menu-item" onclick="relistListing(\''+l.id+'\')">Resume</button>');
+    items.push('<button class="listing-menu-item" onclick="unlistListing(\''+l.id+'\')">Unlist</button>');
+  }
+  // Delete: only safe for pending/denied OR approved-with-zero-orders
+  if(state==='pending' || state==='denied'){
+    items.push('<div class="listing-menu-divider"></div>');
+    items.push('<button class="listing-menu-item danger" onclick="deleteListing(\''+l.id+'\')">Delete</button>');
+  } else {
+    // For approved states, delete shows only after a runtime check (we don't know order count here yet)
+    items.push('<div class="listing-menu-divider"></div>');
+    items.push('<button class="listing-menu-item danger" onclick="deleteListing(\''+l.id+'\')">Delete</button>');
+  }
+  return items.join('');
+}
+
+function toggleListingMenu(id){
+  var openMenu=document.querySelector('.listing-menu.open');
+  if(openMenu && openMenu.id!=='menu-'+id) openMenu.classList.remove('open');
+  var menu=document.getElementById('menu-'+id);
+  if(menu) menu.classList.toggle('open');
+}
+
+document.addEventListener('click',function(e){
+  // Close any open listing menu when clicking outside
+  if(!e.target.closest('.listing-actions')){
+    document.querySelectorAll('.listing-menu.open').forEach(function(m){m.classList.remove('open');});
+  }
+});
+
+async function patchVisibility(id, newVisibility, confirmMsg){
+  if(confirmMsg && !confirm(confirmMsg)) return;
+  initSB(async function(){
+    var res=await sb.from('listings').update({visibility:newVisibility}).eq('id',id);
+    if(res.error){alert('Something went wrong. Please try again.');return;}
+    location.reload();
+  });
+}
+
+function unlistListing(id){
+  patchVisibility(id,'unlisted',"Hide this offer from browse?\n\nExisting customers keep full access. New buyers can still purchase if they have the direct link.");
+}
+
+function relistListing(id){
+  // No confirm — restoring visibility is a forgiving action
+  patchVisibility(id,'live',null);
+}
+
+function pauseListing(id){
+  patchVisibility(id,'paused',"Pause new sales on this offer?\n\nExisting customers keep full access. New visitors will see the page but won't be able to purchase.");
+}
+
+async function deleteListing(id){
+  if(!confirm("Permanently delete this offer?\n\nThis can't be undone. If this offer has orders, deletion will be blocked.")) return;
+  initSB(async function(){
+    // Check order count first — block deletion if any orders exist
+    var orderCount=await sb.from('orders').select('id',{count:'exact',head:true}).eq('listing_id',id);
+    if(orderCount.count && orderCount.count>0){
+      alert("Can't delete — this offer has "+orderCount.count+" order(s).\n\nUse Pause or Unlist instead to stop new sales while keeping existing customers' access intact.");
+      return;
+    }
+    var res=await sb.from('listings').delete().eq('id',id);
+    if(res.error){alert('Something went wrong. Please try again.');return;}
+    location.reload();
+  });
 }
 
 async function connectStripe(){
