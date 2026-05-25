@@ -146,10 +146,29 @@ if(listingId){
     // Always fetch the listing for the delivery link
     var listingPromise=sb.from('listings').select('title,delivery_link').eq('id',listingId).single();
 
-    // If we have a session_id, also fetch the order to check subscription status
-    var orderPromise=sessionId
-      ? sb.from('orders').select('subscription_id,subscription_status,stripe_customer_id').eq('stripe_payment_id',sessionId).maybeSingle()
-      : Promise.resolve({data:null});
+    // Order lookup with retry: the Stripe webhook is asynchronous and may not have
+    // written the order row yet by the time the buyer's browser hits this page.
+    // We retry every 700ms up to ~6 seconds, then give up and show the link based on listing alone.
+    function fetchOrderWithRetry(){
+      if(!sessionId) return Promise.resolve({data:null});
+      var maxAttempts=9; // ~6 seconds total
+      var attempt=0;
+      return new Promise(function(resolve){
+        function tryOnce(){
+          attempt++;
+          sb.from('orders').select('subscription_id,subscription_status,stripe_customer_id').eq('stripe_payment_id',sessionId).maybeSingle().then(function(res){
+            if(res.data){resolve(res);return;}
+            if(attempt>=maxAttempts){resolve({data:null});return;}
+            setTimeout(tryOnce,700);
+          }).catch(function(){
+            if(attempt>=maxAttempts){resolve({data:null});return;}
+            setTimeout(tryOnce,700);
+          });
+        }
+        tryOnce();
+      });
+    }
+    var orderPromise=fetchOrderWithRetry();
 
     Promise.all([listingPromise,orderPromise]).then(function(results){
       var listing=results[0].data;
