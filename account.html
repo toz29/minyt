@@ -123,7 +123,8 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 .section-title{font-family:'Space Grotesk',sans-serif;font-size:1.2rem;font-weight:400}
 .new-listing-btn{padding:9px 18px;background:var(--brand);color:#fff;border:none;border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;display:inline-block}
 .new-listing-btn:hover{background:var(--brand-dark)}
-.listing-item{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem}
+.listing-item{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;text-decoration:none;color:inherit;transition:border-color 0.15s,box-shadow 0.15s}
+.listing-item:hover{border-color:var(--brand);box-shadow:0 2px 8px rgba(99,102,241,0.08)}
 .listing-banner{width:60px;height:40px;object-fit:cover;border-radius:6px;background:var(--surface);flex-shrink:0}
 .listing-banner-ph{width:60px;height:40px;border-radius:6px;background:var(--surface);flex-shrink:0}
 .listing-info{flex:1;min-width:0}
@@ -140,7 +141,8 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 .pc-top{display:grid;grid-template-columns:70px 1fr auto;gap:1rem;padding:1.1rem;align-items:center}
 .pc-banner{width:70px;height:46px;object-fit:cover;border-radius:6px;background:var(--surface)}
 .pc-banner-ph{width:70px;height:46px;border-radius:6px;background:var(--surface)}
-.pc-title{font-size:14px;font-weight:500;margin-bottom:2px}
+.pc-title{font-size:14px;font-weight:500;margin-bottom:2px;transition:color 0.15s}
+a.pc-title:hover{color:var(--brand) !important}
 .pc-meta{font-size:12px;color:var(--muted)}
 .pc-price{font-family:'Space Grotesk',sans-serif;font-size:1rem;text-align:right;white-space:nowrap}
 .pc-actions{padding:0.75rem 1.1rem;background:var(--surface);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
@@ -792,15 +794,19 @@ async function showDashboard(){
       if(l.denied){status='status-denied';statusLabel='Not approved';}
       else if(l.approved){status='status-approved';statusLabel='Live';}
       else {status='status-pending';statusLabel='Pending review';}
-      var editBtn='<a class="listing-edit" href="https://getminyt.com/edit-listing.html?id='+l.id+'">Edit</a>';
-      return '<div class="listing-item">'+bn
+      var editBtn='<a class="listing-edit" href="https://getminyt.com/edit-listing.html?id='+l.id+'" onclick="event.stopPropagation()">Edit</a>';
+      // Approved listings are publicly viewable; pending/denied aren't, so those rows route to the edit page
+      var rowHref=l.approved
+        ? 'https://getminyt.com/offer.html?id='+l.id
+        : 'https://getminyt.com/edit-listing.html?id='+l.id;
+      return '<a class="listing-item" href="'+rowHref+'">'+bn
         +'<div class="listing-info"><div class="listing-title">'+l.title+'</div>'
         +'<div class="listing-meta">'+l.offer_type+' · $'+l.price+' '+(l.billing_unit||'one-time')+'</div></div>'
         +'<div class="listing-actions">'
         +'<span class="listing-status '+status+'">'+statusLabel+'</span>'
         +editBtn
         +'</div>'
-        +'</div>';
+        +'</a>';
     }).join('');
   }
 
@@ -822,7 +828,7 @@ async function showDashboard(){
         :'<button class="review-btn" onclick="openReview(\''+o.listing_id+'\',\''+encodeURIComponent(l.title||'')+'\',\''+o.stripe_payment_id+'\')">Leave a review</button>';
       return '<div class="purchase-card">'
         +'<div class="pc-top">'+bn
-        +'<div><div class="pc-title">'+(l.title||'Purchase')+'</div><div class="pc-meta">'+(l.offer_type||'')+' · '+date+'</div></div>'
+        +'<div><a class="pc-title" href="https://getminyt.com/offer.html?id='+o.listing_id+'" style="text-decoration:none;color:inherit;display:block">'+(l.title||'Purchase')+'</a><div class="pc-meta">'+(l.offer_type||'')+' · '+date+'</div></div>'
         +'<div class="pc-price">$'+o.amount.toFixed(2)+'</div>'
         +'</div>'
         +'<div class="pc-actions">'+deliveryBtn+reviewSection+'</div>'
