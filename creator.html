@@ -275,7 +275,7 @@ async function loadCreator(sb, id){
   // Use the public_creators view so we only fetch safe fields
   var creatorPromise=sb.from('public_creators').select('*').eq('id',id).maybeSingle();
   // Their approved (and not denied) listings
-  var listingsPromise=sb.from('listings').select('*').eq('seller_id',id).eq('approved',true).eq('denied',false).order('created_at',{ascending:false});
+  var listingsPromise=sb.from('listings').select('*').eq('seller_id',id).eq('approved',true).eq('denied',false).eq('visibility','live').order('created_at',{ascending:false});
   
   var [creatorRes, listingsRes]=await Promise.all([creatorPromise, listingsPromise]);
   
