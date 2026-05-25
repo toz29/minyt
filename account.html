@@ -794,7 +794,7 @@ async function showDashboard(){
       if(l.denied){status='status-denied';statusLabel='Not approved';}
       else if(l.approved){status='status-approved';statusLabel='Live';}
       else {status='status-pending';statusLabel='Pending review';}
-      var editBtn='<a class="listing-edit" href="https://getminyt.com/edit-listing.html?id='+l.id+'" onclick="event.stopPropagation()">Edit</a>';
+      var editBtn='<span class="listing-edit" role="button" tabindex="0" onclick="event.stopPropagation();event.preventDefault();window.location.href=\'https://getminyt.com/edit-listing.html?id='+l.id+'\'">Edit</span>';
       // Approved listings are publicly viewable; pending/denied aren't, so those rows route to the edit page
       var rowHref=l.approved
         ? 'https://getminyt.com/offer.html?id='+l.id
