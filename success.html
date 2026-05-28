@@ -184,7 +184,14 @@ if(listingId){
         btn.href='https://getminyt.com/account.html?prefill_email='+encodeURIComponent(order.buyer_email)+'&from=purchase';
         if(isSub){
           label.textContent='Create your account to manage this subscription';
-          sub.textContent="Without an account you'll need to find this email to cancel, update payment, or change plans. Takes 30 seconds.";
+          sub.innerHTML="Without an account, you won't be able to:"
+            +'<ul style="margin:0.5rem 0 0.5rem 1.1rem;padding:0;line-height:1.6">'
+            +'<li>Cancel anytime</li>'
+            +'<li>Update payment method</li>'
+            +'<li>Change or pause your plan</li>'
+            +'<li>Access purchase history</li>'
+            +'</ul>'
+            +'<span style="color:var(--muted)">Takes 30 seconds.</span>';
           btn.textContent='Create account →';
           // Visually emphasize for subscriptions
           var box=document.getElementById('account-box');
