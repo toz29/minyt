@@ -120,22 +120,34 @@ export async function onRequestPost(context) {
               }
             } catch (e) {}
 
-            // Fire-and-forget; don't await response, don't fail webhook on email errors
-            fetch('https://getminyt.com/send-email', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                type: 'purchase',
-                to: buyerEmail,
-                title: listingTitle,
-                isSubscription: !!session.subscription,
-                hasAccount,
-                buyerEmail
-              })
-            }).catch(() => {});
+            // Wait for the email send to actually complete (Cloudflare Workers will kill
+            // background fetches when the parent returns, so fire-and-forget would never deliver).
+            // We catch errors so a Resend failure doesn't break the webhook.
+            try {
+              const emailRes = await fetch('https://getminyt.com/send-email', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  type: 'purchase',
+                  to: buyerEmail,
+                  title: listingTitle,
+                  isSubscription: !!session.subscription,
+                  hasAccount,
+                  buyerEmail
+                })
+              });
+              if (!emailRes.ok) {
+                const errText = await emailRes.text();
+                console.log('[EMAIL-FAIL]', emailRes.status, errText);
+              } else {
+                console.log('[EMAIL-OK]', buyerEmail, 'isSubscription:', !!session.subscription, 'hasAccount:', hasAccount);
+              }
+            } catch (e) {
+              console.log('[EMAIL-ERR]', e.message);
+            }
           }
         } catch (e) {
-          // Never let email failures break the webhook
+          console.log('[EMAIL-OUTER-ERR]', e.message);
         }
         break;
       }
