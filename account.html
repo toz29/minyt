@@ -754,8 +754,12 @@ async function showDashboard(){
   var profileRes=await sb.from('sellers').select('*').eq('id',currentUser.id).single();
   var profile=profileRes.data;
   if(!profile){
-    await sb.from('sellers').insert({id:currentUser.id,email:currentUser.email,name,commission_rate:0.10});
-    profile={commission_rate:0.10,stripe_connected:false,total_revenue:0};
+    await sb.from('sellers').insert({id:currentUser.id,email:currentUser.email,name,display_name:name,commission_rate:0.10});
+    profile={display_name:name,commission_rate:0.10,stripe_connected:false,total_revenue:0};
+  } else if(!profile.display_name && name){
+    // Backfill display_name for older accounts where it was never populated at signup
+    await sb.from('sellers').update({display_name:name}).eq('id',currentUser.id);
+    profile.display_name=name;
   }
   if(profile.stripe_connected) document.getElementById('stripe-status').innerHTML='<div class="stripe-connected">✓ Bank account connected</div>';
 
@@ -1061,7 +1065,8 @@ function iniA(name){
 
 function renderProfilePreview(profile){
   if(!profile) profile={};
-  var displayName=(profile.display_name && profile.display_name.trim()) || (currentUser&&currentUser.email ? currentUser.email.split('@')[0] : 'Creator');
+  var metaName=(currentUser && currentUser.user_metadata && currentUser.user_metadata.name) ? currentUser.user_metadata.name.trim() : '';
+  var displayName=(profile.display_name && profile.display_name.trim()) || metaName || (currentUser&&currentUser.email ? currentUser.email.split('@')[0] : 'Creator');
   
   // Banner
   var bn=document.getElementById('pf-prev-banner');
@@ -1108,8 +1113,10 @@ function enterProfileEdit(){
   PFS.bannerFile=null; PFS.avatarFile=null;
   PFS.bannerToRemove=false; PFS.avatarToRemove=false;
   
-  // Populate form fields from current profile
-  document.getElementById('pf-displayname').value=profile.display_name||'';
+  // Populate form fields from current profile.
+  // If display_name is empty (older accounts), fall back to the name they typed at signup.
+  var metaName=(currentUser && currentUser.user_metadata && currentUser.user_metadata.name) ? currentUser.user_metadata.name.trim() : '';
+  document.getElementById('pf-displayname').value=profile.display_name || metaName || '';
   document.getElementById('pf-handle').value=profile.handle||'';
   document.getElementById('pf-bio').value=profile.bio||'';
   updProfileBioCounter();
