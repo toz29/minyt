@@ -68,7 +68,7 @@ export async function onRequestPost(context) {
           : 'Your Minyt subscription + manage it anytime';
         const subBody = hasAccount
           ? `You're subscribed to "${title}". Manage billing, update payment, or cancel anytime from your dashboard.`
-          : `You're subscribed to "${title}". <strong>Create a free Minyt account to manage your subscription</strong> — update payment, change plans, or cancel anytime. Without an account you'll need this email to make changes later.`;
+          : `You're subscribed to "${title}".<br><br><strong>Create a free Minyt account</strong> so you can:<ul style="margin:0.5rem 0;padding-left:1.25rem;line-height:1.7"><li>Cancel anytime</li><li>Update your payment method</li><li>Change or pause your plan</li><li>Access your purchase history</li></ul>Takes 30 seconds.`;
         html = `
           <div style="font-family:sans-serif;max-width:500px;margin:0 auto;padding:2rem">
             <div style="font-size:1.25rem;font-weight:600;color:#6366F1;margin-bottom:1.5rem">minyt</div>
