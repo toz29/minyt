@@ -167,6 +167,14 @@ a.pc-title:hover{color:var(--brand) !important}
 .review-btn{padding:8px 16px;background:transparent;color:var(--brand);border:1px solid var(--brand);border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif}
 .review-btn:hover{background:var(--brand-light)}
 .reviewed-badge{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--brand-dark);background:var(--brand-light);padding:5px 10px;border-radius:50px}
+.manage-sub-btn{padding:8px 16px;background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;display:inline-flex;align-items:center;gap:5px}
+.manage-sub-btn:hover{border-color:var(--text);color:var(--text)}
+.sub-status{font-size:11px;font-weight:500;padding:3px 9px;border-radius:50px;white-space:nowrap}
+.sub-status-active{background:#DCFCE7;color:#166534}
+.sub-status-canceled{background:var(--danger-light,#FEE2E2);color:var(--danger,#B91C1C)}
+.sub-status-past_due{background:#FEF3C7;color:#78350F}
+.pc-sub-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:0.6rem 1.1rem;border-top:1px solid var(--border);background:#fafafa}
+.pc-sub-label{font-size:12px;color:var(--muted)}
 .empty-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:2rem;text-align:center;color:var(--muted);font-size:13px;margin-bottom:0.75rem}
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);z-index:200;display:none;align-items:center;justify-content:center;padding:1.5rem}
 .overlay.show{display:flex}
@@ -511,6 +519,19 @@ function initSB(cb){
 }
 
 initSB(function(){
+  // Handle ?prefill_email=... — used by post-purchase emails to pre-populate signup
+  var qp=new URLSearchParams(window.location.search);
+  var prefillEmail=qp.get('prefill_email');
+  if(prefillEmail){
+    var emailField=document.getElementById('su-email');
+    if(emailField) emailField.value=prefillEmail;
+    // Also prefill the signin form's email since the user might already have an account
+    var siEmail=document.getElementById('si-email');
+    if(siEmail) siEmail.value=prefillEmail;
+    // Auto-switch to the signup form (the common case from a purchase email)
+    showSignUp();
+  }
+
   sb.auth.getSession().then(function(res){
     if(res.data.session){
       currentUser=res.data.session.user;
@@ -845,17 +866,44 @@ async function showDashboard(){
       var bn=l.banner_url?'<img class="pc-banner" src="'+l.banner_url+'" alt="">'
         :'<div class="pc-banner-ph"></div>';
       var date=new Date(o.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
-      var deliveryBtn=l.delivery_link
-        ?'<a class="access-btn" href="'+l.delivery_link+'" target="_blank">Access purchase →</a>'
-        :'<span class="no-access">Access link coming soon</span>';
+      // Access link logic. For canceled subscriptions, access has lapsed.
+      var subCanceled = o.subscription_id && o.subscription_status && o.subscription_status!=='active' && o.subscription_status!=='trialing';
+      var deliveryBtn;
+      if(subCanceled){
+        deliveryBtn='<span class="no-access">Access ended — renew to regain</span>';
+      } else if(l.delivery_link){
+        deliveryBtn='<a class="access-btn" href="'+l.delivery_link+'" target="_blank">Access purchase →</a>';
+      } else {
+        deliveryBtn='<span class="no-access">Access link coming soon</span>';
+      }
       var reviewSection=reviewed.has(o.listing_id)
         ?'<span class="reviewed-badge">✓ Reviewed</span>'
         :'<button class="review-btn" onclick="openReview(\''+o.listing_id+'\',\''+encodeURIComponent(l.title||'')+'\',\''+o.stripe_payment_id+'\')">Leave a review</button>';
+
+      // Subscription management row — only for orders that are subscriptions
+      var subRow='';
+      if(o.subscription_id){
+        var st=o.subscription_status||'active';
+        var statusLabels={active:'Active',canceled:'Canceled',past_due:'Past due',trialing:'Trialing'};
+        var statusClass='sub-status-'+(st==='trialing'?'active':st);
+        var statusLabel=statusLabels[st]||st;
+        var manageBtn=o.stripe_customer_id
+          ? '<a class="manage-sub-btn" href="https://getminyt.com/manage-subscription?customer='+encodeURIComponent(o.stripe_customer_id)+'">Manage subscription</a>'
+          : '';
+        subRow='<div class="pc-sub-row">'
+          +'<span class="pc-sub-label">Subscription</span>'
+          +'<span class="sub-status '+statusClass+'">'+statusLabel+'</span>'
+          +'<span style="flex:1"></span>'
+          +manageBtn
+          +'</div>';
+      }
+
       return '<div class="purchase-card">'
         +'<div class="pc-top">'+bn
         +'<div><a class="pc-title" href="https://getminyt.com/offer.html?id='+o.listing_id+'" style="text-decoration:none;color:inherit;display:block">'+(l.title||'Purchase')+'</a><div class="pc-meta">'+(l.offer_type||'')+' · '+date+'</div></div>'
         +'<div class="pc-price">$'+o.amount.toFixed(2)+'</div>'
         +'</div>'
+        +subRow
         +'<div class="pc-actions">'+deliveryBtn+reviewSection+'</div>'
         +'</div>';
     }).join('');
