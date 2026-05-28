@@ -121,10 +121,10 @@ h1{font-family:'Space Grotesk',sans-serif;font-size:2rem;font-weight:400;margin-
 </div>
 
 <!-- CREATE ACCOUNT PROMPT -->
-<div class="account-box">
-  <div class="account-label">Save your purchase history</div>
-  <div class="account-sub">Create a free account to view your purchases, leave a verified review, and access your links anytime.</div>
-  <a class="account-btn" href="https://getminyt.com/account.html">Create account →</a>
+<div class="account-box" id="account-box">
+  <div class="account-label" id="account-label">Save your purchase history</div>
+  <div class="account-sub" id="account-sub">Create a free account to view your purchases, leave a verified review, and access your links anytime.</div>
+  <a class="account-btn" id="account-btn" href="https://getminyt.com/account.html">Create account →</a>
 </div>
 
 <a class="browse-btn" href="https://getminyt.com">Browse more offers</a>
@@ -156,7 +156,7 @@ if(listingId){
       return new Promise(function(resolve){
         function tryOnce(){
           attempt++;
-          sb.from('orders').select('subscription_id,subscription_status,stripe_customer_id').eq('stripe_payment_id',sessionId).maybeSingle().then(function(res){
+          sb.from('orders').select('subscription_id,subscription_status,stripe_customer_id,buyer_email').eq('stripe_payment_id',sessionId).maybeSingle().then(function(res){
             if(res.data){resolve(res);return;}
             if(attempt>=maxAttempts){resolve({data:null});return;}
             setTimeout(tryOnce,700);
@@ -174,6 +174,26 @@ if(listingId){
       var listing=results[0].data;
       var order=results[1].data;
       document.getElementById('access-loading').classList.add('hidden');
+
+      // Personalize the create-account CTA — prefill email, nudgier copy for subs
+      if(order && order.buyer_email){
+        var isSub=!!order.subscription_id;
+        var btn=document.getElementById('account-btn');
+        var label=document.getElementById('account-label');
+        var sub=document.getElementById('account-sub');
+        btn.href='https://getminyt.com/account.html?prefill_email='+encodeURIComponent(order.buyer_email)+'&from=purchase';
+        if(isSub){
+          label.textContent='Create your account to manage this subscription';
+          sub.textContent="Without an account you'll need to find this email to cancel, update payment, or change plans. Takes 30 seconds.";
+          btn.textContent='Create account →';
+          // Visually emphasize for subscriptions
+          var box=document.getElementById('account-box');
+          if(box){
+            box.style.background='var(--brand-light)';
+            box.style.borderColor='#C7D2FE';
+          }
+        }
+      }
 
       // Decide which state to show
       var isExpired=false;
