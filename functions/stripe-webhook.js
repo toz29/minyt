@@ -83,6 +83,60 @@ export async function onRequestPost(context) {
           headers,
           body: JSON.stringify({ revenue: newRevenue, commission_rate: commissionRate })
         });
+
+        // Send purchase confirmation email (fire-and-forget, don't block webhook response).
+        // Branches on subscription vs one-time AND whether buyer already has a Minyt account.
+        try {
+          const buyerEmail = session.customer_details?.email;
+          if (buyerEmail) {
+            // Check if a Minyt account already exists with this email (uses Supabase Admin API)
+            let hasAccount = false;
+            try {
+              const userCheck = await fetch(
+                `${supabaseUrl}/auth/v1/admin/users?email=${encodeURIComponent(buyerEmail)}`,
+                { headers: { 'apikey': supabaseKey, 'Authorization': `Bearer ${supabaseKey}` } }
+              );
+              if (userCheck.ok) {
+                const userData = await userCheck.json();
+                hasAccount = !!(userData && userData.users && userData.users.length > 0);
+              }
+            } catch (e) {
+              // If the lookup fails, fall back to assuming no account (worst case: send the nudge to an existing user, which is fine)
+              hasAccount = false;
+            }
+
+            // Get the listing title for the email body
+            let listingTitle = 'your offer';
+            try {
+              const titleRes = await fetch(
+                `${supabaseUrl}/rest/v1/listings?id=eq.${listing_id}&select=title`,
+                { headers: { 'apikey': supabaseKey, 'Authorization': `Bearer ${supabaseKey}` } }
+              );
+              if (titleRes.ok) {
+                const titleData = await titleRes.json();
+                if (titleData && titleData.length > 0 && titleData[0].title) {
+                  listingTitle = titleData[0].title;
+                }
+              }
+            } catch (e) {}
+
+            // Fire-and-forget; don't await response, don't fail webhook on email errors
+            fetch('https://getminyt.com/send-email', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                type: 'purchase',
+                to: buyerEmail,
+                title: listingTitle,
+                isSubscription: !!session.subscription,
+                hasAccount,
+                buyerEmail
+              })
+            }).catch(() => {});
+          }
+        } catch (e) {
+          // Never let email failures break the webhook
+        }
         break;
       }
 
