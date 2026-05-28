@@ -175,31 +175,51 @@ if(listingId){
       var order=results[1].data;
       document.getElementById('access-loading').classList.add('hidden');
 
-      // Personalize the create-account CTA — prefill email, nudgier copy for subs
+      // Personalize the create-account CTA — prefill email, nudgier copy for subs.
+      // Also: if the buyer is already logged in (their email matches the purchase email),
+      // hide the create-account prompt entirely — they don't need it.
       if(order && order.buyer_email){
-        var isSub=!!order.subscription_id;
-        var btn=document.getElementById('account-btn');
-        var label=document.getElementById('account-label');
-        var sub=document.getElementById('account-sub');
-        btn.href='https://getminyt.com/account.html?prefill_email='+encodeURIComponent(order.buyer_email)+'&from=purchase';
-        if(isSub){
-          label.textContent='Create your account to manage this subscription';
-          sub.innerHTML="Without an account, you won't be able to:"
-            +'<ul style="margin:0.5rem 0 0.5rem 1.1rem;padding:0;line-height:1.6">'
-            +'<li>Cancel anytime</li>'
-            +'<li>Update payment method</li>'
-            +'<li>Change or pause your plan</li>'
-            +'<li>Access purchase history</li>'
-            +'</ul>'
-            +'<span style="color:var(--muted)">Takes 30 seconds.</span>';
-          btn.textContent='Create account →';
-          // Visually emphasize for subscriptions
-          var box=document.getElementById('account-box');
-          if(box){
-            box.style.background='var(--brand-light)';
-            box.style.borderColor='#C7D2FE';
+        var box=document.getElementById('account-box');
+        sb.auth.getSession().then(function(sessRes){
+          var loggedInEmail=sessRes && sessRes.data && sessRes.data.session ? sessRes.data.session.user.email : null;
+          var alreadyHasAccount=loggedInEmail && loggedInEmail.toLowerCase()===order.buyer_email.toLowerCase();
+          if(alreadyHasAccount){
+            // Existing logged-in user — replace prompt with a dashboard link
+            var lbl=document.getElementById('account-label');
+            var sb2=document.getElementById('account-sub');
+            var bt=document.getElementById('account-btn');
+            if(lbl) lbl.textContent='Saved to your account';
+            if(sb2) sb2.textContent='This purchase is now in your dashboard. You can revisit it anytime.';
+            if(bt){
+              bt.href='https://getminyt.com/account.html';
+              bt.textContent='Go to dashboard →';
+            }
+            return;
           }
-        }
+          // Otherwise show the personalized prompt
+          var isSub=!!order.subscription_id;
+          var btn=document.getElementById('account-btn');
+          var label=document.getElementById('account-label');
+          var sub=document.getElementById('account-sub');
+          btn.href='https://getminyt.com/account.html?prefill_email='+encodeURIComponent(order.buyer_email)+'&from=purchase';
+          if(isSub){
+            label.textContent='Create your account to manage this subscription';
+            sub.innerHTML="Without an account, you won't be able to:"
+              +'<ul style="margin:0.5rem 0 0.5rem 1.1rem;padding:0;line-height:1.6">'
+              +'<li>Cancel anytime</li>'
+              +'<li>Update payment method</li>'
+              +'<li>Change or pause your plan</li>'
+              +'<li>Access purchase history</li>'
+              +'</ul>'
+              +'<span style="color:var(--muted)">Takes 30 seconds.</span>';
+            btn.textContent='Create account →';
+            // Visually emphasize for subscriptions
+            if(box){
+              box.style.background='var(--brand-light)';
+              box.style.borderColor='#C7D2FE';
+            }
+          }
+        });
       }
 
       // Decide which state to show
