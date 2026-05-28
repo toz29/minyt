@@ -401,7 +401,8 @@ async function startCheckout(listingId){
         title:l.title,
         price:l.price,
         billing_unit:l.billing_unit||'one-time',
-        seller_stripe_id:l.seller_stripe_id||null
+        seller_stripe_id:l.seller_stripe_id||null,
+        buyer_email:window.LOGGED_IN_EMAIL||null
       })
     });
     var data=await res.json();
@@ -496,6 +497,7 @@ document.addEventListener('click',function(e){
     sba.auth.getSession().then(function(res){
       if(res.data.session){
         var user=res.data.session.user;
+        window.LOGGED_IN_EMAIL=user.email;
         document.getElementById('nav-login-btn').style.display='none';
         document.getElementById('nav-account').style.display='block';
         document.getElementById('dropdown-email').textContent=user.email;
