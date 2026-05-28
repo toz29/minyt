@@ -7,7 +7,7 @@ export async function onRequestPost(context) {
   };
 
   try {
-    const { listing_id, title, price, billing_unit, seller_stripe_id } = await context.request.json();
+    const { listing_id, title, price, billing_unit, seller_stripe_id, buyer_email } = await context.request.json();
 
     if (!listing_id || !title || !price) {
       return new Response(JSON.stringify({ error: 'Missing required fields' }), { status: 400, headers: corsHeaders });
@@ -33,6 +33,11 @@ export async function onRequestPost(context) {
     params.append('cancel_url', 'https://getminyt.com');
     params.append('metadata[listing_id]', listing_id);
     params.append('metadata[minyt_commission]', applicationFeeAmount.toString());
+
+    // Pre-fill buyer's email on the Stripe Checkout page if they're logged in
+    if (buyer_email) {
+      params.append('customer_email', buyer_email);
+    }
 
     if (isRecurring) {
       params.append('line_items[0][price_data][recurring][interval]', billing_unit === '/ week' ? 'week' : 'month');
