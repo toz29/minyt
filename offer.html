@@ -364,7 +364,7 @@ if(!offerId){
           +'<div class="offer-price">'+(l.price==0?'Free':'$'+Number(l.price).toLocaleString())+'</div>'
           +'<div class="offer-billing">'+(l.billing_unit||'One-time payment')+'</div>'
           +(reviews.length?'<div class="offer-rating"><span class="offer-rating-stars">'+starsHtml+'</span><span class="offer-rating-text">'+avgRating.toFixed(1)+' ('+reviews.length+' review'+(reviews.length!==1?'s':'')+')</span></div>':'')
-          +'<button class="offer-buy-btn" id="buy-btn" onclick="'+buyBtnAction+'"'+buyBtnStyle+'>'+buyBtnText+'</button>'
+          +'<div id="buy-area"><button class="offer-buy-btn" id="buy-btn" onclick="'+buyBtnAction+'"'+buyBtnStyle+'>'+buyBtnText+'</button></div>'
           +'<div class="offer-meta">'
           +'<div>Category: '+escapeHtml(l.category||'General')+'</div>'
           +'<div>Type: '+escapeHtml(l.offer_type||'')+'</div>'
@@ -373,10 +373,68 @@ if(!offerId){
           +'</div>';
         
         document.getElementById('offer-content').style.display='block';
+
+        // Async ownership check — patches the buy button if the logged-in user already owns this.
+        // Doesn't block render. Skipped when paused/sample (those have their own UI).
+        if(!isPaused && !isSample){
+          maybePatchBuyButtonForOwnership(sb, l);
+        }
       });
     });
   };
   document.head.appendChild(s);
+}
+
+async function maybePatchBuyButtonForOwnership(sbClient, l){
+  // Guest: no email to check against
+  var email = window.LOGGED_IN_EMAIL;
+  if(!email) return;
+  
+  // 1-on-1 sessions and per-call services always allow repeat purchases
+  var offerType = (l.offer_type||'').toLowerCase();
+  if(offerType.indexOf('1-on-1')!==-1 || offerType.indexOf('session')!==-1) return;
+  
+  var isRecurring = (l.billing_unit==='/ month' || l.billing_unit==='/ week');
+  
+  try {
+    var res = await sbClient
+      .from('orders')
+      .select('id, subscription_id, subscription_status, status, stripe_customer_id, stripe_payment_id')
+      .eq('listing_id', l.id)
+      .eq('buyer_email', email)
+      .eq('status', 'completed')
+      .order('created_at', { ascending: false })
+      .limit(1);
+    
+    if(!res.data || res.data.length===0) return;
+    var order = res.data[0];
+    
+    var buyArea = document.getElementById('buy-area');
+    if(!buyArea) return;
+    
+    if(isRecurring){
+      // Subscription: only treat as "owned" if currently active
+      var st = order.subscription_status;
+      if(st!=='active' && st!=='trialing') return; // canceled — let them re-subscribe normally
+      
+      // Active subscription — show Manage button, no rebuy option
+      var manageHref = order.stripe_customer_id
+        ? 'https://getminyt.com/manage-subscription?customer='+encodeURIComponent(order.stripe_customer_id)
+        : 'https://getminyt.com/account.html';
+      buyArea.innerHTML =
+        '<a class="offer-buy-btn" href="'+manageHref+'" style="text-decoration:none;display:block;text-align:center;box-sizing:border-box">Manage your subscription</a>'
+        +'<a href="https://getminyt.com/account.html" style="display:block;text-align:center;font-size:12px;color:var(--muted);text-decoration:none;margin-top:0.5rem">View your purchase →</a>';
+    } else {
+      // One-time owned: primary = Access, secondary = Buy again
+      var accessHref = l.delivery_link || 'https://getminyt.com/account.html';
+      var existingAction = buyArea.querySelector('button')?.getAttribute('onclick') || '';
+      buyArea.innerHTML =
+        '<a class="offer-buy-btn" href="'+accessHref+'" target="_blank" style="text-decoration:none;display:block;text-align:center;box-sizing:border-box">Access your purchase →</a>'
+        +'<button onclick="'+existingAction+'" style="display:block;width:100%;text-align:center;font-size:12px;color:var(--muted);background:none;border:none;cursor:pointer;font-family:inherit;margin-top:0.5rem;text-decoration:underline">Buy again</button>';
+    }
+  } catch(e){
+    // If the ownership check fails, leave the normal buy button in place
+  }
 }
 
 // Checkout function
@@ -409,8 +467,15 @@ async function startCheckout(listingId){
       })
     });
     var data=await res.json();
-    if(data.url) window.location.href=data.url;
-    else throw new Error(data.error||'Checkout failed');
+    if(data.url){
+      window.location.href=data.url;
+    } else if(data.already_subscribed){
+      // Friendly redirect: they already have this; send them to their dashboard
+      alert(data.error||'You already have an active subscription to this offer.');
+      window.location.href='https://getminyt.com/account.html';
+    } else {
+      throw new Error(data.error||'Checkout failed');
+    }
   }catch(e){
     alert('Something went wrong. Please try again.');
     if(btn){btn.disabled=false;btn.textContent='Get access — $'+listings[0].price;}
