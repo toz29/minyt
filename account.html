@@ -120,28 +120,39 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 .tier-bar{height:100%;background:var(--brand);border-radius:3px;transition:width 0.5s ease}
 .tier-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
 
-/* New tier progression card (sits in the 4th stat-card slot) */
-.tier-progress-card{display:flex;flex-direction:column;justify-content:space-between;padding:1.1rem 1.25rem}
-.tier-progress-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:0.5rem;gap:0.5rem;flex-wrap:wrap}
-.tier-progress-tier-name{font-size:13px;font-weight:500;color:var(--text)}
-.tier-progress-rate{font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:500;color:var(--brand);line-height:1}
-.tier-progress-bar-wrap{height:6px;background:var(--surface);border:1px solid var(--border);border-radius:3px;overflow:hidden;margin-bottom:0.5rem}
-.tier-progress-bar{height:100%;background:var(--brand);border-radius:3px;transition:width 0.5s ease}
-.tier-progress-meta{display:flex;flex-direction:column;gap:2px;font-size:11px;color:var(--muted);line-height:1.4}
-.tier-progress-gap{color:var(--text);font-weight:500}
+/* Stats grid: 3 columns when not showing 4-card layout */
+.stats-grid-3{grid-template-columns:repeat(3,1fr)}
 
-/* Tier journey card — full width below the stats grid */
-.tier-journey{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;margin-bottom:1.5rem}
-.tier-journey-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:0.75rem}
-.tier-journey-list{display:flex;flex-direction:column;gap:0.4rem}
-.tier-journey-item{display:flex;align-items:center;gap:0.6rem;font-size:13px;color:var(--text);line-height:1.4}
-.tier-journey-item.done{color:var(--muted)}
-.tier-journey-item.current{color:var(--text);font-weight:500}
-.tier-journey-item.future{color:var(--muted)}
-.tier-journey-mark{width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;border:1.5px solid var(--border);background:#fff}
-.tier-journey-item.done .tier-journey-mark{background:var(--brand);border-color:var(--brand);color:#fff}
-.tier-journey-item.current .tier-journey-mark{background:var(--brand);border-color:var(--brand);color:#fff}
-.tier-journey-current-label{font-size:11px;color:var(--brand);background:var(--brand-light);padding:2px 8px;border-radius:50px;margin-left:auto}
+/* Tier hero — the dynamic, prominent progress card */
+.tier-hero{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem 1.75rem;margin-bottom:1.5rem}
+.tier-hero-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.1rem;gap:1rem}
+.tier-hero-left{display:flex;flex-direction:column;gap:2px}
+.tier-hero-eyebrow{font-size:11px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:0.5px}
+.tier-hero-name{font-family:'Space Grotesk',sans-serif;font-size:1.6rem;font-weight:400;color:var(--text);line-height:1.1}
+.tier-hero-rate{text-align:right;display:flex;flex-direction:column;align-items:flex-end;line-height:1}
+.tier-hero-rate-num{font-family:'Space Grotesk',sans-serif;font-size:2rem;font-weight:500;color:var(--brand);line-height:1}
+.tier-hero-rate-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-top:4px}
+.tier-hero-bar-wrap{height:8px;background:var(--surface);border:1px solid var(--border);border-radius:4px;overflow:hidden;margin-bottom:0.5rem}
+.tier-hero-bar{height:100%;background:var(--brand);border-radius:4px;transition:width 0.5s ease}
+.tier-hero-meta{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--muted);margin-bottom:1.25rem;flex-wrap:wrap;gap:0.5rem}
+.tier-hero-gap{color:var(--text);font-weight:500}
+
+/* Horizontal stepper showing the full tier ladder */
+.tier-stepper{display:flex;align-items:flex-start;justify-content:space-between;gap:0;padding-top:0.75rem;border-top:1px solid var(--border);position:relative}
+.tier-step{flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;position:relative;padding-top:1.5rem;min-width:0}
+.tier-step-dot{width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--border);position:absolute;top:0;z-index:2;transition:all 0.2s}
+.tier-step.done .tier-step-dot{background:var(--brand);border-color:var(--brand)}
+.tier-step.current .tier-step-dot{background:var(--brand);border-color:var(--brand);box-shadow:0 0 0 4px var(--brand-light)}
+.tier-step-name{font-size:13px;font-weight:500;color:var(--muted);line-height:1.2}
+.tier-step.done .tier-step-name,.tier-step.current .tier-step-name{color:var(--text)}
+.tier-step-rate{font-size:11px;color:var(--muted);margin-top:2px;letter-spacing:0.3px}
+.tier-step.current .tier-step-rate{color:var(--brand);font-weight:500}
+.tier-step-threshold{font-size:11px;color:var(--muted);margin-top:1px}
+/* Connecting line between dots */
+.tier-step::before{content:'';position:absolute;top:7px;left:50%;right:-50%;height:2px;background:var(--border);z-index:1}
+.tier-step:last-child::before{display:none}
+.tier-step.done::before{background:var(--brand)}
+.tier-step.current::before{background:linear-gradient(to right,var(--brand) 0%,var(--brand) 50%,var(--border) 50%,var(--border) 100%)}
 .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;margin-top:2rem}
 .section-title{font-family:'Space Grotesk',sans-serif;font-size:1.2rem;font-weight:400}
 .new-listing-btn{padding:9px 18px;background:var(--brand);color:#fff;border:none;border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;display:inline-block}
@@ -391,26 +402,30 @@ a.pc-title:hover{color:var(--brand) !important}
       <div id="stripe-status"><button class="connect-stripe-btn" id="connect-stripe-btn" onclick="connectStripe()">Connect bank account</button></div>
     </div>
 
-    <div class="stats-grid">
+    <div class="stats-grid stats-grid-3">
       <div class="stat-card"><div class="stat-num" id="d-revenue">$0</div><div class="stat-label">Revenue generated</div></div>
       <div class="stat-card"><div class="stat-num" id="d-sales">0</div><div class="stat-label">Total sales</div></div>
       <div class="stat-card"><div class="stat-num" id="d-purchases">0</div><div class="stat-label">Purchases made</div></div>
-      <div class="stat-card tier-progress-card" id="tier-progress-card">
-        <div class="tier-progress-head">
-          <span class="tier-progress-tier-name" id="tier-name">Rising</span>
-          <span class="tier-progress-rate" id="tier-rate">10%</span>
-        </div>
-        <div class="tier-progress-bar-wrap"><div class="tier-progress-bar" id="tier-bar" style="width:0%"></div></div>
-        <div class="tier-progress-meta">
-          <span id="tier-meta-progress">$0 / $50,000</span>
-          <span class="tier-progress-gap" id="tier-meta-gap"></span>
-        </div>
-      </div>
     </div>
 
-    <div class="tier-journey" id="tier-journey">
-      <div class="tier-journey-title">Tier journey</div>
-      <div class="tier-journey-list" id="tier-journey-list"></div>
+    <div class="tier-hero" id="tier-hero">
+      <div class="tier-hero-row">
+        <div class="tier-hero-left">
+          <div class="tier-hero-eyebrow">Current tier</div>
+          <div class="tier-hero-name" id="tier-name">Rising</div>
+        </div>
+        <div class="tier-hero-rate">
+          <div class="tier-hero-rate-num" id="tier-rate">10%</div>
+          <div class="tier-hero-rate-label">commission</div>
+        </div>
+      </div>
+      <div class="tier-hero-bar-wrap"><div class="tier-hero-bar" id="tier-bar" style="width:0%"></div></div>
+      <div class="tier-hero-meta">
+        <span id="tier-meta-progress">$0 / $50,000</span>
+        <span class="tier-hero-gap" id="tier-meta-gap">$50,000 to drop to 8%</span>
+      </div>
+
+      <div class="tier-stepper" id="tier-stepper"></div>
     </div>
 
     <!-- PROFILE -->
@@ -862,13 +877,11 @@ async function showDashboard(){
   document.getElementById('d-sales').textContent=sales.length;
   document.getElementById('d-purchases').textContent=orders.length;
 
-  // ── TIER PROGRESSION CARD ──
+  // ── TIER HERO + STEPPER ──
   // Only show tier UI if they have at least one listing (sellers)
   if(!allListings.length){
-    var tpc=document.getElementById('tier-progress-card');
-    if(tpc) tpc.style.display='none';
-    var tjEmpty=document.getElementById('tier-journey');
-    if(tjEmpty) tjEmpty.style.display='none';
+    var heroEl=document.getElementById('tier-hero');
+    if(heroEl) heroEl.style.display='none';
   } else {
     document.getElementById('tier-name').textContent=effectiveTier.name;
     document.getElementById('tier-rate').textContent=Math.round(effectiveRate*100)+'%';
@@ -877,7 +890,6 @@ async function showDashboard(){
     var meta=document.getElementById('tier-meta-progress');
     var gap=document.getElementById('tier-meta-gap');
     if(nt){
-      // Progress within current tier band
       var lower=effectiveTier.threshold;
       var upper=nt.threshold;
       var pct=Math.max(0,Math.min(100,((totalRevenue-lower)/(upper-lower))*100));
@@ -890,24 +902,20 @@ async function showDashboard(){
       gap.textContent='Top tier reached';
     }
 
-    // ── TIER JOURNEY LIST ──
-    var journey=document.getElementById('tier-journey-list');
-    journey.innerHTML=TIERS.map(function(t,i){
-      var next=TIERS[i+1];
+    // Horizontal stepper: one step per tier
+    var stepper=document.getElementById('tier-stepper');
+    stepper.innerHTML=TIERS.map(function(t,i){
       var isCurrent=(t.name===effectiveTier.name);
+      var next=TIERS[i+1];
       var isDone=(!isCurrent) && (next && totalRevenue>=next.threshold);
-      var isFuture=(!isCurrent && !isDone);
       var cls=isCurrent?'current':(isDone?'done':'future');
-      var mark=isDone?'✓':(isCurrent?'●':'○');
-      var range=next
-        ? '$'+(t.threshold/1000)+'K – $'+(next.threshold/1000)+'K'
-        : '$'+(t.threshold/1000)+'K+';
       var rateText=Math.round(t.rate*100)+'%';
-      var currentBadge=isCurrent?'<span class="tier-journey-current-label">Current</span>':'';
-      return '<div class="tier-journey-item '+cls+'">'
-        +'<span class="tier-journey-mark">'+mark+'</span>'
-        +'<span><strong>'+t.name+'</strong> ('+range+') — '+rateText+'</span>'
-        +currentBadge
+      var thresholdText=t.threshold===0?'$0+':'$'+(t.threshold/1000)+'K+';
+      return '<div class="tier-step '+cls+'">'
+        +'<span class="tier-step-dot"></span>'
+        +'<div class="tier-step-name">'+t.name+'</div>'
+        +'<div class="tier-step-rate">'+rateText+'</div>'
+        +'<div class="tier-step-threshold">'+thresholdText+'</div>'
         +'</div>';
     }).join('');
   }
