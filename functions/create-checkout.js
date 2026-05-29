@@ -21,6 +21,29 @@ export async function onRequestPost(context) {
       return new Response(JSON.stringify({ error: 'Seller has not connected a payout account' }), { status: 400, headers: corsHeaders });
     }
 
+    // Backstop: prevent duplicate active subscriptions for the same buyer + listing.
+    // Client-side UI already handles the common case (logged-in buyer sees "Manage" button instead of "Buy"),
+    // but this catches edge cases — guest buyer using known email, race conditions, etc.
+    if (isRecurring && buyer_email) {
+      try {
+        const supabaseUrl = 'https://qoigwxwkhpcgisprkozg.supabase.co';
+        const supabaseKey = context.env.SUPABASE_SERVICE_KEY;
+        const dupeCheck = await fetch(
+          `${supabaseUrl}/rest/v1/orders?listing_id=eq.${listing_id}&buyer_email=eq.${encodeURIComponent(buyer_email)}&subscription_status=in.(active,trialing)&select=id`,
+          { headers: { 'apikey': supabaseKey, 'Authorization': `Bearer ${supabaseKey}` } }
+        );
+        const dupes = await dupeCheck.json();
+        if (dupes && dupes.length > 0) {
+          return new Response(JSON.stringify({
+            error: "You already have an active subscription to this offer. Manage it from your account dashboard.",
+            already_subscribed: true
+          }), { status: 400, headers: corsHeaders });
+        }
+      } catch (e) {
+        // Don't block checkout if the dupe-check itself fails — fall through and let Stripe handle it
+      }
+    }
+
     const params = new URLSearchParams();
     params.append('payment_method_types[]', 'card');
     params.append('line_items[0][price_data][currency]', 'usd');
