@@ -869,7 +869,7 @@ async function showDashboard(){
       var l=o.listings||{};
       var bn=l.banner_url?'<img class="pc-banner" src="'+l.banner_url+'" alt="">'
         :'<div class="pc-banner-ph"></div>';
-      var date=new Date(o.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+      var date=relTimeA(o.created_at);
       // Access link logic. For canceled subscriptions, access has lapsed.
       var subCanceled = o.subscription_id && o.subscription_status && o.subscription_status!=='active' && o.subscription_status!=='trialing';
       var deliveryBtn;
@@ -1033,13 +1033,32 @@ async function submitReview(){
     comment:document.getElementById('review-text').value.trim(),
     verified:true
   });
-  if(res.error){showToast('Error submitting review.','error');btn.disabled=false;btn.textContent='Submit review';return;}
+  if(res.error){
+    console.log('[REVIEW-ERR]', res.error);
+    showToast('Error submitting review: '+(res.error.message||'unknown'),'error');
+    btn.disabled=false;btn.textContent='Submit review';return;
+  }
   closeReview();showToast('Review submitted!','success');showDashboard();
 }
 function showToast(msg,type){
   var t=document.getElementById('toast');
   t.textContent=msg;t.className='toast show '+(type||'');
   setTimeout(function(){t.className='toast';},3000);
+}
+function relTimeA(iso){
+  var then=new Date(iso);
+  var now=new Date();
+  var diff=Math.max(0,now-then);
+  var m=Math.floor(diff/60000);
+  var h=Math.floor(diff/3600000);
+  var d=Math.floor(diff/86400000);
+  if(diff<60000) return 'just now';
+  if(m<60) return m+(m===1?' minute ago':' minutes ago');
+  if(h<24) return h+(h===1?' hour ago':' hours ago');
+  if(d<7) return d+(d===1?' day ago':' days ago');
+  if(d<30) {var w=Math.floor(d/7);return w+(w===1?' week ago':' weeks ago');}
+  if(d<365) {var mo=Math.floor(d/30);return mo+(mo===1?' month ago':' months ago');}
+  return then.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
 }
 
 // ── PROFILE EDITOR ──
