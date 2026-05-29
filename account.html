@@ -119,6 +119,29 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 .tier-bar-wrap{height:6px;background:var(--border);border-radius:3px;margin-bottom:0.5rem;overflow:hidden}
 .tier-bar{height:100%;background:var(--brand);border-radius:3px;transition:width 0.5s ease}
 .tier-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
+
+/* New tier progression card (sits in the 4th stat-card slot) */
+.tier-progress-card{display:flex;flex-direction:column;justify-content:space-between;padding:1.1rem 1.25rem}
+.tier-progress-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:0.5rem;gap:0.5rem;flex-wrap:wrap}
+.tier-progress-tier-name{font-size:13px;font-weight:500;color:var(--text)}
+.tier-progress-rate{font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:500;color:var(--brand);line-height:1}
+.tier-progress-bar-wrap{height:6px;background:var(--surface);border:1px solid var(--border);border-radius:3px;overflow:hidden;margin-bottom:0.5rem}
+.tier-progress-bar{height:100%;background:var(--brand);border-radius:3px;transition:width 0.5s ease}
+.tier-progress-meta{display:flex;flex-direction:column;gap:2px;font-size:11px;color:var(--muted);line-height:1.4}
+.tier-progress-gap{color:var(--text);font-weight:500}
+
+/* Tier journey card — full width below the stats grid */
+.tier-journey{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;margin-bottom:1.5rem}
+.tier-journey-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:0.75rem}
+.tier-journey-list{display:flex;flex-direction:column;gap:0.4rem}
+.tier-journey-item{display:flex;align-items:center;gap:0.6rem;font-size:13px;color:var(--text);line-height:1.4}
+.tier-journey-item.done{color:var(--muted)}
+.tier-journey-item.current{color:var(--text);font-weight:500}
+.tier-journey-item.future{color:var(--muted)}
+.tier-journey-mark{width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;border:1.5px solid var(--border);background:#fff}
+.tier-journey-item.done .tier-journey-mark{background:var(--brand);border-color:var(--brand);color:#fff}
+.tier-journey-item.current .tier-journey-mark{background:var(--brand);border-color:var(--brand);color:#fff}
+.tier-journey-current-label{font-size:11px;color:var(--brand);background:var(--brand-light);padding:2px 8px;border-radius:50px;margin-left:auto}
 .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;margin-top:2rem}
 .section-title{font-family:'Space Grotesk',sans-serif;font-size:1.2rem;font-weight:400}
 .new-listing-btn{padding:9px 18px;background:var(--brand);color:#fff;border:none;border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;display:inline-block}
@@ -372,13 +395,22 @@ a.pc-title:hover{color:var(--brand) !important}
       <div class="stat-card"><div class="stat-num" id="d-revenue">$0</div><div class="stat-label">Revenue generated</div></div>
       <div class="stat-card"><div class="stat-num" id="d-sales">0</div><div class="stat-label">Total sales</div></div>
       <div class="stat-card"><div class="stat-num" id="d-purchases">0</div><div class="stat-label">Purchases made</div></div>
-      <div class="stat-card"><div class="stat-num" id="d-commission">10%</div><div class="stat-label">Commission rate</div></div>
+      <div class="stat-card tier-progress-card" id="tier-progress-card">
+        <div class="tier-progress-head">
+          <span class="tier-progress-tier-name" id="tier-name">Rising</span>
+          <span class="tier-progress-rate" id="tier-rate">10%</span>
+        </div>
+        <div class="tier-progress-bar-wrap"><div class="tier-progress-bar" id="tier-bar" style="width:0%"></div></div>
+        <div class="tier-progress-meta">
+          <span id="tier-meta-progress">$0 / $50,000</span>
+          <span class="tier-progress-gap" id="tier-meta-gap"></span>
+        </div>
+      </div>
     </div>
 
-    <div class="tier-card" id="tier-card">
-      <div class="tier-header"><div class="tier-title">Commission tier progress</div><div class="tier-pct" id="tier-pct">10%</div></div>
-      <div class="tier-bar-wrap"><div class="tier-bar" id="tier-bar" style="width:0%"></div></div>
-      <div class="tier-labels"><span>$0</span><span id="tier-next-label">$50,000 to reach 8%</span><span>$50k</span></div>
+    <div class="tier-journey" id="tier-journey">
+      <div class="tier-journey-title">Tier journey</div>
+      <div class="tier-journey-list" id="tier-journey-list"></div>
     </div>
 
     <!-- PROFILE -->
@@ -501,6 +533,28 @@ a.pc-title:hover{color:var(--brand) !important}
 <script>
 var SURL='https://qoigwxwkhpcgisprkozg.supabase.co';
 var SKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFvaWd3eHdraHBjZ2lzcHJrb3pnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3NDAzOTUsImV4cCI6MjA5MjMxNjM5NX0.Si-GOt97FF4Wt49E_Yf7CsgyvU2-5dHbStQu1wwQ6Ik';
+
+// Commission tier ladder. Add more tiers later by appending — the UI scales automatically.
+// "Rates only go down" grandfathering is enforced in the webhook, not here.
+var TIERS=[
+  {name:'Rising',      threshold:0,      rate:0.10},
+  {name:'Established', threshold:50000,  rate:0.08},
+  {name:'Pro',         threshold:100000, rate:0.06},
+  {name:'Elite',       threshold:250000, rate:0.03}
+];
+function currentTier(revenue){
+  var t=TIERS[0];
+  for(var i=0;i<TIERS.length;i++){
+    if(revenue>=TIERS[i].threshold) t=TIERS[i];
+  }
+  return t;
+}
+function nextTier(revenue){
+  for(var i=0;i<TIERS.length;i++){
+    if(TIERS[i].threshold>revenue) return TIERS[i];
+  }
+  return null; // top tier reached
+}
 var sb=null;
 var currentUser=null;
 var currentReviewOrder=null;
@@ -795,24 +849,67 @@ async function showDashboard(){
 
   // Stats — revenue is from SALES, not purchases
   var totalRevenue=sales.reduce(function(sum,o){return sum+(o.amount||0);},0);
-  var commissionRate=profile.commission_rate||0.10;
-  if(totalRevenue>=100000) commissionRate=0.06;
-  else if(totalRevenue>=50000) commissionRate=0.08;
+  // Effective rate: derived from revenue, but stored rate from sellers table acts as the floor
+  // (grandfathering — rates only go down). Webhook enforces; UI just reflects.
+  var derivedTier=currentTier(totalRevenue);
+  var storedRate=(profile && typeof profile.commission_rate==='number') ? profile.commission_rate : derivedTier.rate;
+  var effectiveRate=Math.min(derivedTier.rate, storedRate);
+  // Find the tier object matching the effective rate, in case grandfathered to a lower one
+  var effectiveTier=derivedTier;
+  for(var ti=0;ti<TIERS.length;ti++){ if(TIERS[ti].rate===effectiveRate){ effectiveTier=TIERS[ti]; break; } }
 
   document.getElementById('d-revenue').textContent='$'+totalRevenue.toLocaleString();
   document.getElementById('d-sales').textContent=sales.length;
   document.getElementById('d-purchases').textContent=orders.length;
-  document.getElementById('d-commission').textContent=Math.round(commissionRate*100)+'%';
 
-  // Show tier card only if they have listings
-  if(!allListings.length) document.getElementById('tier-card').style.display='none';
-  else {
-    var tierPct=document.getElementById('tier-pct');
-    var tierBar=document.getElementById('tier-bar');
-    var tierNext=document.getElementById('tier-next-label');
-    if(totalRevenue>=100000){tierPct.textContent='6%';tierBar.style.width='100%';tierNext.textContent='Top performer';}
-    else if(totalRevenue>=50000){tierPct.textContent='8%';tierBar.style.width=((totalRevenue-50000)/50000*100).toFixed(0)+'%';tierNext.textContent='$'+(100000-totalRevenue).toLocaleString()+' to reach 6%';}
-    else{tierPct.textContent='10%';tierBar.style.width=(totalRevenue/50000*100).toFixed(0)+'%';tierNext.textContent='$'+(50000-totalRevenue).toLocaleString()+' to reach 8%';}
+  // ── TIER PROGRESSION CARD ──
+  // Only show tier UI if they have at least one listing (sellers)
+  if(!allListings.length){
+    var tpc=document.getElementById('tier-progress-card');
+    if(tpc) tpc.style.display='none';
+    var tjEmpty=document.getElementById('tier-journey');
+    if(tjEmpty) tjEmpty.style.display='none';
+  } else {
+    document.getElementById('tier-name').textContent=effectiveTier.name;
+    document.getElementById('tier-rate').textContent=Math.round(effectiveRate*100)+'%';
+    var nt=nextTier(totalRevenue);
+    var bar=document.getElementById('tier-bar');
+    var meta=document.getElementById('tier-meta-progress');
+    var gap=document.getElementById('tier-meta-gap');
+    if(nt){
+      // Progress within current tier band
+      var lower=effectiveTier.threshold;
+      var upper=nt.threshold;
+      var pct=Math.max(0,Math.min(100,((totalRevenue-lower)/(upper-lower))*100));
+      bar.style.width=pct.toFixed(0)+'%';
+      meta.textContent='$'+totalRevenue.toLocaleString()+' / $'+upper.toLocaleString();
+      gap.textContent='$'+(upper-totalRevenue).toLocaleString()+' to drop to '+Math.round(nt.rate*100)+'%';
+    } else {
+      bar.style.width='100%';
+      meta.textContent='$'+totalRevenue.toLocaleString()+' lifetime';
+      gap.textContent='Top tier reached';
+    }
+
+    // ── TIER JOURNEY LIST ──
+    var journey=document.getElementById('tier-journey-list');
+    journey.innerHTML=TIERS.map(function(t,i){
+      var next=TIERS[i+1];
+      var isCurrent=(t.name===effectiveTier.name);
+      var isDone=(!isCurrent) && (next && totalRevenue>=next.threshold);
+      var isFuture=(!isCurrent && !isDone);
+      var cls=isCurrent?'current':(isDone?'done':'future');
+      var mark=isDone?'✓':(isCurrent?'●':'○');
+      var range=next
+        ? '$'+(t.threshold/1000)+'K – $'+(next.threshold/1000)+'K'
+        : '$'+(t.threshold/1000)+'K+';
+      var rateText=Math.round(t.rate*100)+'%';
+      var currentBadge=isCurrent?'<span class="tier-journey-current-label">Current</span>':'';
+      return '<div class="tier-journey-item '+cls+'">'
+        +'<span class="tier-journey-mark">'+mark+'</span>'
+        +'<span><strong>'+t.name+'</strong> ('+range+') — '+rateText+'</span>'
+        +currentBadge
+        +'</div>';
+    }).join('');
   }
 
   // Separate listings for notification logic
