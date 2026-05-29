@@ -62,6 +62,12 @@ a.offer-profile:hover{opacity:0.75}
 .offer-desc{font-size:15px;color:var(--muted);line-height:1.7;margin-bottom:2rem;white-space:pre-wrap}
 .offer-reviews-title{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:500;margin-bottom:1rem}
 .review-item{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:1rem 1.25rem;margin-bottom:0.75rem}
+.reviewer-row{display:flex;align-items:center;gap:10px;margin-bottom:0.6rem}
+.reviewer-avatar{width:32px;height:32px;border-radius:50%;background:var(--brand-light);color:var(--brand-dark);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;flex-shrink:0;overflow:hidden}
+.reviewer-avatar img{width:100%;height:100%;object-fit:cover}
+.reviewer-info{display:flex;flex-direction:column;gap:1px;min-width:0}
+.reviewer-name{font-size:13px;font-weight:500;color:var(--text);line-height:1.2}
+.reviewer-handle{font-size:11px;color:var(--muted);line-height:1.2}
 .review-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem}
 .review-stars{color:#BA7517;font-size:14px}
 .review-email{font-size:12px;color:var(--muted)}
@@ -258,54 +264,113 @@ if(!offerId){
       document.querySelector('meta[property="og:title"]').content=l.title+' | Minyt';
       document.querySelector('meta[property="og:description"]').content=l.description||'Courses, coaching calls and communities from real creators.';
       
-      // Load reviews
+      // Load reviews + their reviewer profiles (for name display)
       sb.from('reviews').select('*').eq('listing_id',offerId).order('created_at',{ascending:false}).then(function(revRes){
         var reviews=revRes.data||[];
         var avgRating=reviews.length?reviews.reduce(function(s,r){return s+r.rating;},0)/reviews.length:0;
         
-        // Build full image list (banner is image 0; gallery_urls are 1..N)
-        var images=[];
-        if(l.banner_url) images.push(l.banner_url);
-        if(Array.isArray(l.gallery_urls)) {
-          l.gallery_urls.forEach(function(u){ if(u) images.push(u); });
-        }
+        // Batch-fetch reviewer profiles by email (one query, in clause)
+        var reviewerEmails=[...new Set(reviews.map(function(r){return r.buyer_email;}).filter(Boolean))];
+        var profilesPromise=reviewerEmails.length
+          ? sb.from('sellers').select('email,display_name,handle,avatar_url').in('email',reviewerEmails)
+          : Promise.resolve({data:[]});
         
-        var bannerHtml;
-        if(images.length){
-          bannerHtml='<img class="offer-banner" id="offer-main-img" src="'+images[0]+'" alt="'+escapeAttr(l.title)+'">';
-          if(images.length>1){
-            bannerHtml+='<div class="thumb-strip">'+images.map(function(u,i){
-              return '<div class="thumb '+(i===0?'active':'')+'" data-idx="'+i+'" onclick="setMainImage('+i+')"><img src="'+u+'" alt=""></div>';
-            }).join('')+'</div>';
+        profilesPromise.then(function(profRes){
+          var profilesByEmail={};
+          (profRes.data||[]).forEach(function(p){
+            if(p.email) profilesByEmail[p.email.toLowerCase()]=p;
+          });
+          
+          // Build full image list (banner is image 0; gallery_urls are 1..N)
+          var images=[];
+          if(l.banner_url) images.push(l.banner_url);
+          if(Array.isArray(l.gallery_urls)) {
+            l.gallery_urls.forEach(function(u){ if(u) images.push(u); });
           }
-        } else {
-          bannerHtml='<div class="offer-banner-ph"></div>';
-        }
-        // Expose images for setMainImage to use
-        window.OFFER_IMAGES=images;
-        
-        var avatar=l.avatar_url
-          ?'<div class="offer-avatar"><img src="'+l.avatar_url+'" alt=""></div>'
-          :'<div class="offer-avatar">'+(l.name||'?').substring(0,2).toUpperCase()+'</div>';
-        
-        var starsHtml='';
-        for(var i=0;i<5;i++) starsHtml+=i<Math.round(avgRating)?'★':'☆';
-        
-        var reviewsHtml='';
-        if(reviews.length){
-          reviewsHtml=reviews.map(function(r){
-            var rs='';for(var i=0;i<5;i++) rs+=i<r.rating?'★':'☆';
-            var date=new Date(r.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
-            var email=r.buyer_email||'Buyer';
-            var masked=email.split('@')[0].substring(0,3)+'***';
-            return '<div class="review-item">'
-              +'<div class="review-header"><div><span class="review-stars">'+rs+'</span>'+(r.verified?'<span class="review-verified">Verified purchase</span>':'')+'</div><span class="review-date">'+date+'</span></div>'
-              +(r.comment?'<div class="review-comment">'+escapeHtml(r.comment)+'</div>':'')
-              +'</div>';
-          }).join('');
-        } else {
-          reviewsHtml='<div class="no-reviews">No reviews yet. Be the first to purchase and leave a review.</div>';
-        }
+          
+          var bannerHtml;
+          if(images.length){
+            bannerHtml='<img class="offer-banner" id="offer-main-img" src="'+images[0]+'" alt="'+escapeAttr(l.title)+'">';
+            if(images.length>1){
+              bannerHtml+='<div class="thumb-strip">'+images.map(function(u,i){
+                return '<div class="thumb '+(i===0?'active':'')+'" data-idx="'+i+'" onclick="setMainImage('+i+')"><img src="'+u+'" alt=""></div>';
+              }).join('')+'</div>';
+            }
+          } else {
+            bannerHtml='<div class="offer-banner-ph"></div>';
+          }
+          // Expose images for setMainImage to use
+          window.OFFER_IMAGES=images;
+          
+          var avatar=l.avatar_url
+            ?'<div class="offer-avatar"><img src="'+l.avatar_url+'" alt=""></div>'
+            :'<div class="offer-avatar">'+(l.name||'?').substring(0,2).toUpperCase()+'</div>';
+          
+          var starsHtml='';
+          for(var i=0;i<5;i++) starsHtml+=i<Math.round(avgRating)?'★':'☆';
+          
+          // Helper: relative time for recent, absolute for old
+          function relTime(iso){
+            var then=new Date(iso);
+            var now=new Date();
+            var diff=Math.max(0,now-then);
+            var m=Math.floor(diff/60000);
+            var h=Math.floor(diff/3600000);
+            var d=Math.floor(diff/86400000);
+            if(diff<60000) return 'just now';
+            if(m<60) return m+(m===1?' minute ago':' minutes ago');
+            if(h<24) return h+(h===1?' hour ago':' hours ago');
+            if(d<7) return d+(d===1?' day ago':' days ago');
+            if(d<30) {var w=Math.floor(d/7);return w+(w===1?' week ago':' weeks ago');}
+            if(d<365) {var mo=Math.floor(d/30);return mo+(mo===1?' month ago':' months ago');}
+            return then.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+          }
+          
+          // Helper: format reviewer display name from profile or fallback
+          function formatReviewerName(review){
+            var email=(review.buyer_email||'').toLowerCase();
+            var prof=profilesByEmail[email];
+            if(prof && prof.display_name && prof.display_name.trim()){
+              var parts=prof.display_name.trim().split(/\s+/);
+              if(parts.length===1) return parts[0];
+              // Show "First L." — first word + initial of last word
+              return parts[0]+' '+parts[parts.length-1][0].toUpperCase()+'.';
+            }
+            // Fallback: mask the email username
+            if(email){
+              var prefix=email.split('@')[0];
+              return prefix.substring(0,Math.min(8,prefix.length))+(prefix.length>8?'***':'');
+            }
+            return 'Anonymous';
+          }
+          
+          function reviewerInitial(name){
+            return (name||'?').trim().charAt(0).toUpperCase();
+          }
+          
+          var reviewsHtml='';
+          if(reviews.length){
+            reviewsHtml=reviews.map(function(r){
+              var rs='';for(var i=0;i<5;i++) rs+=i<r.rating?'★':'☆';
+              var date=relTime(r.created_at);
+              var name=formatReviewerName(r);
+              var prof=profilesByEmail[(r.buyer_email||'').toLowerCase()];
+              var handle=prof && prof.handle ? prof.handle : '';
+              var avatarUrl=prof && prof.avatar_url ? prof.avatar_url : '';
+              var avatarHtml=avatarUrl
+                ? '<div class="reviewer-avatar"><img src="'+escapeAttr(avatarUrl)+'" alt=""></div>'
+                : '<div class="reviewer-avatar">'+reviewerInitial(name)+'</div>';
+              var handleLine=handle ? '<div class="reviewer-handle">@'+escapeHtml(handle)+'</div>' : '';
+              return '<div class="review-item">'
+                +'<div class="reviewer-row">'+avatarHtml
+                +'<div class="reviewer-info"><div class="reviewer-name">'+escapeHtml(name)+'</div>'+handleLine+'</div></div>'
+                +'<div class="review-header"><div><span class="review-stars">'+rs+'</span>'+(r.verified?'<span class="review-verified">Verified purchase</span>':'')+'</div><span class="review-date">'+date+'</span></div>'
+                +(r.comment?'<div class="review-comment">'+escapeHtml(r.comment)+'</div>':'')
+                +'</div>';
+            }).join('');
+          } else {
+            reviewsHtml='<div class="no-reviews">No reviews yet. Be the first to purchase and leave a review.</div>';
+          }
         
         var isSample=l.isSample||false;
         var isPaused=(l.visibility==='paused');
@@ -379,6 +444,7 @@ if(!offerId){
         if(!isPaused && !isSample){
           maybePatchBuyButtonForOwnership(sb, l);
         }
+        }); // close profilesPromise.then
       });
     });
   };
