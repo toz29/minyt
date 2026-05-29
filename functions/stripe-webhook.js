@@ -74,15 +74,17 @@ export async function onRequestPost(context) {
         );
         const allOrders = await ordersRes.json();
         const newRevenue = (allOrders || []).reduce((sum, o) => sum + (parseFloat(o.amount) || 0), 0);
-        let commissionRate = 0.10;
-        if (newRevenue >= 100000) commissionRate = 0.06;
-        else if (newRevenue >= 50000) commissionRate = 0.08;
 
+        // Update this listing's revenue first (so the seller-wide recompute below sees it)
         await fetch(`${supabaseUrl}/rest/v1/listings?id=eq.${listing_id}`, {
           method: 'PATCH',
           headers,
-          body: JSON.stringify({ revenue: newRevenue, commission_rate: commissionRate })
+          body: JSON.stringify({ revenue: newRevenue })
         });
+
+        // Apply seller-wide commission tier with grandfathering ("rates only go down").
+        // Sum revenue across all the seller's listings, derive tier, apply min(new, current) to every listing.
+        await applySellerCommissionTier(listing_id, supabaseUrl, supabaseKey, headers);
 
         // Send purchase confirmation email (fire-and-forget, don't block webhook response).
         // Branches on subscription vs one-time AND whether buyer already has a Minyt account.
@@ -208,17 +210,16 @@ export async function onRequestPost(context) {
                 if (listings && listings.length > 0) {
                   const currentRevenue = listings[0].revenue || 0;
                   const newRevenue = currentRevenue + renewalAmount;
-                  let commissionRate = 0.10;
-                  if (newRevenue >= 100000) commissionRate = 0.06;
-                  else if (newRevenue >= 50000) commissionRate = 0.08;
                   await fetch(
                     `${supabaseUrl}/rest/v1/listings?id=eq.${order.listing_id}`,
                     {
                       method: 'PATCH',
                       headers,
-                      body: JSON.stringify({ revenue: newRevenue, commission_rate: commissionRate })
+                      body: JSON.stringify({ revenue: newRevenue })
                     }
                   );
+                  // Seller-wide tier with grandfathering
+                  await applySellerCommissionTier(order.listing_id, supabaseUrl, supabaseKey, headers);
                 }
               }
             }
@@ -335,4 +336,80 @@ async function verifyStripeSignature(payload, sigHeader, secret) {
   const hex = Array.from(new Uint8Array(sigBuf))
     .map(b => b.toString(16).padStart(2, '0')).join('');
   return hex === expected;
+}
+
+// Commission tier ladder (must mirror TIERS in account.html)
+const TIERS = [
+  { name: 'Rising',      threshold: 0,      rate: 0.10 },
+  { name: 'Established', threshold: 50000,  rate: 0.08 },
+  { name: 'Pro',         threshold: 100000, rate: 0.06 },
+  { name: 'Elite',       threshold: 250000, rate: 0.03 }
+];
+
+// Compute commission tier from a seller's TOTAL revenue across all their listings,
+// then apply it to all of their listings — with "rates only go down" grandfathering.
+// We trigger this by passing any one listing_id from the seller; we look up seller_id, then all their listings.
+async function applySellerCommissionTier(triggerListingId, supabaseUrl, supabaseKey, headers) {
+  try {
+    // Find the seller from the listing
+    const triggerRes = await fetch(
+      `${supabaseUrl}/rest/v1/listings?id=eq.${triggerListingId}&select=seller_id`,
+      { headers: { 'apikey': supabaseKey, 'Authorization': `Bearer ${supabaseKey}` } }
+    );
+    const triggerData = await triggerRes.json();
+    if (!triggerData || !triggerData[0] || !triggerData[0].seller_id) return;
+    const sellerId = triggerData[0].seller_id;
+
+    // Fetch ALL listings for this seller (revenue + commission_rate)
+    const sellerListingsRes = await fetch(
+      `${supabaseUrl}/rest/v1/listings?seller_id=eq.${sellerId}&select=id,revenue,commission_rate`,
+      { headers: { 'apikey': supabaseKey, 'Authorization': `Bearer ${supabaseKey}` } }
+    );
+    const sellerListings = await sellerListingsRes.json();
+    if (!sellerListings || sellerListings.length === 0) return;
+
+    // Total revenue across all the seller's listings
+    const sellerTotal = sellerListings.reduce((s, l) => s + (parseFloat(l.revenue) || 0), 0);
+
+    // Derive tier from total
+    let derivedRate = 0.10;
+    for (const t of TIERS) {
+      if (sellerTotal >= t.threshold) derivedRate = t.rate;
+    }
+
+    // Apply to each listing — grandfathering: only update if new rate is LOWER (better for creator).
+    // If a listing is already at a better rate (e.g., manual override or older threshold), keep it.
+    for (const l of sellerListings) {
+      const currentRate = (typeof l.commission_rate === 'number') ? l.commission_rate : 0.10;
+      const newRate = Math.min(derivedRate, currentRate);
+      if (newRate !== currentRate) {
+        await fetch(`${supabaseUrl}/rest/v1/listings?id=eq.${l.id}`, {
+          method: 'PATCH',
+          headers,
+          body: JSON.stringify({ commission_rate: newRate })
+        });
+      }
+    }
+
+    // Also mirror to the sellers row so the dashboard can read it as the source of truth
+    const sellerProfileRes = await fetch(
+      `${supabaseUrl}/rest/v1/sellers?id=eq.${sellerId}&select=commission_rate`,
+      { headers: { 'apikey': supabaseKey, 'Authorization': `Bearer ${supabaseKey}` } }
+    );
+    const sellerProfile = await sellerProfileRes.json();
+    if (sellerProfile && sellerProfile[0]) {
+      const sellerCurrentRate = (typeof sellerProfile[0].commission_rate === 'number') ? sellerProfile[0].commission_rate : 0.10;
+      const sellerNewRate = Math.min(derivedRate, sellerCurrentRate);
+      if (sellerNewRate !== sellerCurrentRate) {
+        await fetch(`${supabaseUrl}/rest/v1/sellers?id=eq.${sellerId}`, {
+          method: 'PATCH',
+          headers,
+          body: JSON.stringify({ commission_rate: sellerNewRate })
+        });
+      }
+    }
+  } catch (e) {
+    // Never let tier computation break the webhook
+    console.log('[TIER-ERR]', e.message);
+  }
 }
