@@ -732,21 +732,61 @@ async function submitEdits(){
   if(!title){alert('Please add an offer title in step 2.');goStep(2);return;}
   if(FS.price===null||FS.price===undefined){alert('Please select or enter a price.');return;}
 
-  // Banned words check
+  // Banned words check (client-side quick filter)
   var contentError=validateListingContent(title,desc,longDesc);
   if(contentError){alert(contentError);return;}
 
   var btn=document.getElementById('sbtn');
-  btn.disabled=true;btn.textContent='Saving...';
+  btn.disabled=true;btn.textContent='Checking content...';
+
+  // Server-side AI text moderation
+  try{
+    var modRes=await fetch('/moderate-listing',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({title,description:desc,long_description:longDesc})
+    });
+    var modData=await modRes.json();
+    if(modData && modData.allowed===false){
+      alert(modData.reason||'Your edits were flagged by our moderation system. Please revise.');
+      btn.disabled=false;btn.textContent='Save changes';
+      return;
+    }
+  } catch(e){ /* soft-fail */ }
+
+  btn.textContent='Saving...';
   initSB(async function(){
     try{
+      // Helper: check an uploaded image for NSFW content. Returns true if safe.
+      async function imageIsSafe(publicUrl){
+        try{
+          var r=await fetch('/moderate-image',{
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({image_url:publicUrl})
+          });
+          var d=await r.json();
+          return !(d && d.allowed===false);
+        } catch(e){ return true; }
+      }
+
       // Banner: use new file if uploaded, otherwise keep existing
       var banner_url=FS.existingBannerUrl;
       if(FS.bannerFile){
         var ext=FS.bannerFile.name.split('.').pop();
         var path='banners/'+Date.now()+'.'+ext;
         var up=await sb.storage.from('listing-images').upload(path,FS.bannerFile);
-        if(!up.error){var pu=sb.storage.from('listing-images').getPublicUrl(path);banner_url=pu.data.publicUrl;}
+        if(!up.error){
+          var pu=sb.storage.from('listing-images').getPublicUrl(path);
+          var safeBanner=await imageIsSafe(pu.data.publicUrl);
+          if(!safeBanner){
+            await sb.storage.from('listing-images').remove([path]);
+            alert('Your new banner image was flagged as inappropriate. Please choose a different one.');
+            btn.disabled=false;btn.textContent='Save changes';
+            return;
+          }
+          banner_url=pu.data.publicUrl;
+        }
       }
       // Avatar: same pattern
       var avatar_url=FS.existingAvatarUrl;
@@ -754,7 +794,17 @@ async function submitEdits(){
         var ext=FS.avatarFile.name.split('.').pop();
         var path='avatars/'+Date.now()+'.'+ext;
         var up=await sb.storage.from('listing-images').upload(path,FS.avatarFile);
-        if(!up.error){var pu=sb.storage.from('listing-images').getPublicUrl(path);avatar_url=pu.data.publicUrl;}
+        if(!up.error){
+          var pu=sb.storage.from('listing-images').getPublicUrl(path);
+          var safeAvatar=await imageIsSafe(pu.data.publicUrl);
+          if(!safeAvatar){
+            await sb.storage.from('listing-images').remove([path]);
+            alert('Your new logo image was flagged as inappropriate. Please choose a different one.');
+            btn.disabled=false;btn.textContent='Save changes';
+            return;
+          }
+          avatar_url=pu.data.publicUrl;
+        }
       }
       // Gallery: build the final array, preserving existing URLs and uploading new files in order
       var gallery_urls=[];
@@ -768,6 +818,13 @@ async function submitEdits(){
           var gup=await sb.storage.from('listing-images').upload(gpath,g.file);
           if(!gup.error){
             var gpu=sb.storage.from('listing-images').getPublicUrl(gpath);
+            var safeGal=await imageIsSafe(gpu.data.publicUrl);
+            if(!safeGal){
+              await sb.storage.from('listing-images').remove([gpath]);
+              alert('New gallery image #'+(i+1)+' was flagged as inappropriate and was not added.');
+              btn.disabled=false;btn.textContent='Save changes';
+              return;
+            }
             gallery_urls.push(gpu.data.publicUrl);
           }
         }
