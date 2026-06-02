@@ -348,6 +348,47 @@ var currentUser=null;
 var FS={bannerFile:null,avatarFile:null,price:null,galleryFiles:[]};
 var MAX_GALLERY=4;
 
+// Banned words filter — applied to title, description, and long description.
+// Word-boundary match, case-insensitive. Edit this list as needed.
+// Note: this is a soft filter, not airtight security. Image moderation and admin
+// review catch what slips through (leetspeak, unicode tricks, etc.)
+var BANNED_WORDS=[
+  // Profanity
+  'fuck','shit','bitch','asshole','cunt','dick','pussy','cock','motherfucker',
+  // Scam / fraud markers
+  'get rich quick','guaranteed profits','double your money','risk free returns',
+  'pyramid scheme','mlm','ponzi',
+  // Adult content
+  'porn','onlyfans','escort','nude','xxx',
+  // Drugs
+  'cocaine','heroin','meth','crack','fentanyl','illegal drugs',
+  // Weapons
+  'firearm sale','gun sale','ammunition'
+];
+
+function checkBannedWords(text){
+  if(!text) return null;
+  var lower=text.toLowerCase();
+  for(var i=0;i<BANNED_WORDS.length;i++){
+    var w=BANNED_WORDS[i].toLowerCase();
+    var isPhrase=w.indexOf(' ')!==-1;
+    if(isPhrase){
+      if(lower.indexOf(w)!==-1) return BANNED_WORDS[i];
+    } else {
+      var re=new RegExp('\\b'+w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b','i');
+      if(re.test(lower)) return BANNED_WORDS[i];
+    }
+  }
+  return null;
+}
+
+function validateListingContent(title, desc, longDesc){
+  var combined=[title||'',desc||'',longDesc||''].join(' ');
+  var match=checkBannedWords(combined);
+  if(match) return 'Your offer contains text that isn\'t allowed: "'+match+'". Please revise and try again.';
+  return null;
+}
+
 function initSB(cb){
   if(sb){cb();return;}
   var s=document.createElement('script');
@@ -609,6 +650,11 @@ async function submitListing(){
   var delivery=(document.getElementById('fdelivery').value||'').trim();
   if(!title){alert('Please add an offer title in step 2.');goStep(2);return;}
   if(FS.price===null||FS.price===undefined){alert('Please select or enter a price.');return;}
+
+  // Banned words check
+  var contentError=validateListingContent(title,desc,longDesc);
+  if(contentError){alert(contentError);return;}
+
   var btn=document.getElementById('sbtn');
   btn.disabled=true;btn.textContent='Submitting...';
   initSB(async function(){
