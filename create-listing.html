@@ -651,26 +651,77 @@ async function submitListing(){
   if(!title){alert('Please add an offer title in step 2.');goStep(2);return;}
   if(FS.price===null||FS.price===undefined){alert('Please select or enter a price.');return;}
 
-  // Banned words check
+  // Banned words check (client-side quick filter)
   var contentError=validateListingContent(title,desc,longDesc);
   if(contentError){alert(contentError);return;}
 
   var btn=document.getElementById('sbtn');
-  btn.disabled=true;btn.textContent='Submitting...';
+  btn.disabled=true;btn.textContent='Checking content...';
+
+  // Server-side AI text moderation
+  try{
+    var modRes=await fetch('/moderate-listing',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({title,description:desc,long_description:longDesc})
+    });
+    var modData=await modRes.json();
+    if(modData && modData.allowed===false){
+      alert(modData.reason||'Your offer was flagged by our moderation system. Please revise it.');
+      btn.disabled=false;btn.textContent='Submit offer';
+      return;
+    }
+  } catch(e){ /* soft-fail; admin review backstops */ }
+
+  btn.textContent='Submitting...';
   initSB(async function(){
     try{
       var banner_url=null,avatar_url=null,gallery_urls=[];
+
+      // Helper: check an uploaded image for NSFW content. Returns true if safe.
+      async function imageIsSafe(publicUrl){
+        try{
+          var r=await fetch('/moderate-image',{
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({image_url:publicUrl})
+          });
+          var d=await r.json();
+          return !(d && d.allowed===false);
+        } catch(e){ return true; /* soft-fail */ }
+      }
+
       if(FS.bannerFile){
         var ext=FS.bannerFile.name.split('.').pop();
         var path='banners/'+Date.now()+'.'+ext;
         var up=await sb.storage.from('listing-images').upload(path,FS.bannerFile);
-        if(!up.error){var pu=sb.storage.from('listing-images').getPublicUrl(path);banner_url=pu.data.publicUrl;}
+        if(!up.error){
+          var pu=sb.storage.from('listing-images').getPublicUrl(path);
+          var safeBanner=await imageIsSafe(pu.data.publicUrl);
+          if(!safeBanner){
+            await sb.storage.from('listing-images').remove([path]);
+            alert('Your banner image was flagged as inappropriate and cannot be used. Please choose a different image.');
+            btn.disabled=false;btn.textContent='Submit offer';
+            return;
+          }
+          banner_url=pu.data.publicUrl;
+        }
       }
       if(FS.avatarFile){
         var ext=FS.avatarFile.name.split('.').pop();
         var path='avatars/'+Date.now()+'.'+ext;
         var up=await sb.storage.from('listing-images').upload(path,FS.avatarFile);
-        if(!up.error){var pu=sb.storage.from('listing-images').getPublicUrl(path);avatar_url=pu.data.publicUrl;}
+        if(!up.error){
+          var pu=sb.storage.from('listing-images').getPublicUrl(path);
+          var safeAvatar=await imageIsSafe(pu.data.publicUrl);
+          if(!safeAvatar){
+            await sb.storage.from('listing-images').remove([path]);
+            alert('Your logo image was flagged as inappropriate and cannot be used. Please choose a different image.');
+            btn.disabled=false;btn.textContent='Submit offer';
+            return;
+          }
+          avatar_url=pu.data.publicUrl;
+        }
       }
       // Upload gallery images sequentially, preserving order
       for(var i=0;i<FS.galleryFiles.length;i++){
@@ -680,6 +731,13 @@ async function submitListing(){
         var gup=await sb.storage.from('listing-images').upload(gpath,gf);
         if(!gup.error){
           var gpu=sb.storage.from('listing-images').getPublicUrl(gpath);
+          var safeGallery=await imageIsSafe(gpu.data.publicUrl);
+          if(!safeGallery){
+            await sb.storage.from('listing-images').remove([gpath]);
+            alert('Gallery image #'+(i+1)+' was flagged as inappropriate and cannot be used. Please remove or replace it.');
+            btn.disabled=false;btn.textContent='Submit offer';
+            return;
+          }
           gallery_urls.push(gpu.data.publicUrl);
         }
       }
