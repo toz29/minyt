@@ -157,9 +157,15 @@ export async function onRequestPost(context) {
       case 'invoice.payment_succeeded': {
         const inv = stripeEvent.data.object;
         if (!inv.subscription) break;
-        const periodEnd = inv.lines && inv.lines.data[0]
-          ? new Date(inv.lines.data[0].period.end * 1000).toISOString()
-          : null;
+        let periodEnd = null;
+        const periodEndSecs =
+          (inv.lines && inv.lines.data && inv.lines.data[0] && inv.lines.data[0].period && inv.lines.data[0].period.end) ||
+          null;
+        if (periodEndSecs && !isNaN(periodEndSecs)) {
+          periodEnd = new Date(periodEndSecs * 1000).toISOString();
+        }
+        const invUpdateBody = { subscription_status: 'active' };
+        if (periodEnd) invUpdateBody.current_period_end = periodEnd;
 
         // Update the order row's status + new period end on every successful invoice payment
         await fetch(
@@ -167,10 +173,7 @@ export async function onRequestPost(context) {
           {
             method: 'PATCH',
             headers,
-            body: JSON.stringify({
-              subscription_status: 'active',
-              current_period_end: periodEnd
-            })
+            body: JSON.stringify(invUpdateBody)
           }
         );
 
@@ -244,15 +247,24 @@ export async function onRequestPost(context) {
 
       case 'customer.subscription.updated': {
         const sub = stripeEvent.data.object;
+        // Basil API moved current_period_end from subscription to subscription.items.data[0].
+        // Try new location first, then legacy, then null.
+        let periodEnd = null;
+        const periodEndSecs =
+          (sub.items && sub.items.data && sub.items.data[0] && sub.items.data[0].current_period_end) ||
+          sub.current_period_end ||
+          null;
+        if (periodEndSecs && !isNaN(periodEndSecs)) {
+          periodEnd = new Date(periodEndSecs * 1000).toISOString();
+        }
+        const updateBody = { subscription_status: sub.status };
+        if (periodEnd) updateBody.current_period_end = periodEnd;
         await fetch(
           `${supabaseUrl}/rest/v1/orders?subscription_id=eq.${sub.id}`,
           {
             method: 'PATCH',
             headers,
-            body: JSON.stringify({
-              subscription_status: sub.status,
-              current_period_end: new Date(sub.current_period_end * 1000).toISOString()
-            })
+            body: JSON.stringify(updateBody)
           }
         );
         break;
