@@ -18,21 +18,26 @@ export async function onRequestPost(context) {
       .filter(s => s.trim().length > 0)
       .join('\n\n');
 
+    console.log('[MOD-LISTING] text length:', text.length, 'title:', (title||'').slice(0,50));
+
     if (!text.trim()) {
+      console.log('[MOD-LISTING] empty text, allowing');
       // Nothing to moderate — let it through; other validation handles empty submissions
       return new Response(JSON.stringify({ allowed: true }), { status: 200, headers: corsHeaders });
     }
 
     // Call Llama Guard — Cloudflare's safety classification model.
-    // It returns a structured response indicating if the content is "safe" or "unsafe"
-    // along with which category (e.g. S1: violence, S2: sexual content, etc.).
     const result = await context.env.AI.run('@cf/meta/llama-guard-3-8b', {
       messages: [{ role: 'user', content: text }]
     });
 
+    console.log('[MOD-LISTING] AI response:', JSON.stringify(result));
+
     // Llama Guard typically returns text like "safe" or "unsafe\nS1,S5" etc.
     const response = (result.response || '').trim().toLowerCase();
     const isUnsafe = response.startsWith('unsafe');
+
+    console.log('[MOD-LISTING] verdict:', isUnsafe ? 'UNSAFE' : 'SAFE', 'raw:', response);
 
     if (!isUnsafe) {
       return new Response(JSON.stringify({ allowed: true }), { status: 200, headers: corsHeaders });
@@ -69,8 +74,8 @@ export async function onRequestPost(context) {
   } catch (err) {
     // If moderation itself fails, allow the submission — admin review is the backstop.
     // Don't block legitimate creators because of an AI service hiccup.
-    console.log('[MODERATE-LISTING-ERR]', err.message);
-    return new Response(JSON.stringify({ allowed: true, soft_error: true }), {
+    console.log('[MOD-LISTING-ERR]', err && err.message, 'stack:', err && err.stack);
+    return new Response(JSON.stringify({ allowed: true, soft_error: true, debug: err && err.message }), {
       status: 200,
       headers: corsHeaders
     });
