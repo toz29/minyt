@@ -26,49 +26,60 @@ export async function onRequestPost(context) {
       return new Response(JSON.stringify({ allowed: true }), { status: 200, headers: corsHeaders });
     }
 
-    // Call Llama Guard — Cloudflare's safety classification model.
-    const result = await context.env.AI.run('@cf/meta/llama-guard-3-8b', {
-      messages: [{ role: 'user', content: text }]
+    // Use a general LLM with a marketplace-specific moderation prompt.
+    // Llama Guard alone is too permissive — it only flags formal harm categories
+    // (violence, CSAM, terrorism) and lets through profanity/slurs that have no place
+    // on a professional marketplace.
+    const systemPrompt = `You are a content moderator for a professional creator marketplace called Minyt where people sell courses, communities, coaching, and digital products.
+
+Evaluate the following listing content. Reply with EXACTLY one word — either "BLOCK" or "ALLOW" — followed by a colon and a brief reason.
+
+BLOCK if the content contains ANY of:
+- Profanity (fuck, shit, damn, etc. used in the listing copy)
+- Slurs of any kind (racial, ethnic, ableist, anti-LGBT, religious)
+- Sexually explicit or pornographic content
+- Drugs (sale, recommendation, or promotion of illegal drugs)
+- Weapons (sale or promotion of firearms, ammunition, explosives)
+- Get-rich-quick or pyramid scheme language
+- Threats, violence, or harassment
+- Content sexualizing minors
+- Hate speech or discriminatory rhetoric
+
+ALLOW if the content is professional, appropriate, and free of the above.
+
+Be strict. A marketplace must maintain a professional standard. When in doubt, BLOCK.
+
+Format your reply as: BLOCK: <reason> or ALLOW: looks fine`;
+
+    const result = await context.env.AI.run('@cf/meta/llama-3.1-8b-instruct', {
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: text }
+      ],
+      max_tokens: 60
     });
 
     console.log('[MOD-LISTING] AI response:', JSON.stringify(result));
 
-    // Llama Guard typically returns text like "safe" or "unsafe\nS1,S5" etc.
-    const response = (result.response || '').trim().toLowerCase();
-    const isUnsafe = response.startsWith('unsafe');
+    const response = (result.response || '').trim();
+    const isUnsafe = /^block\b/i.test(response);
 
-    console.log('[MOD-LISTING] verdict:', isUnsafe ? 'UNSAFE' : 'SAFE', 'raw:', response);
+    console.log('[MOD-LISTING] verdict:', isUnsafe ? 'BLOCK' : 'ALLOW', 'raw:', response);
 
     if (!isUnsafe) {
       return new Response(JSON.stringify({ allowed: true }), { status: 200, headers: corsHeaders });
     }
 
-    // Parse which categories flagged
-    const categoryMap = {
-      's1': 'Violent Crimes',
-      's2': 'Non-Violent Crimes',
-      's3': 'Sex-Related Crimes',
-      's4': 'Child Sexual Exploitation',
-      's5': 'Defamation',
-      's6': 'Specialized Advice',
-      's7': 'Privacy',
-      's8': 'Intellectual Property',
-      's9': 'Indiscriminate Weapons',
-      's10': 'Hate',
-      's11': 'Suicide & Self-Harm',
-      's12': 'Sexual Content',
-      's13': 'Elections',
-      's14': 'Code Interpreter Abuse'
-    };
-    const flaggedCats = (response.match(/s\d+/g) || []).map(c => categoryMap[c] || c).filter(Boolean);
-    const reasonText = flaggedCats.length > 0
-      ? 'Your listing was flagged for: ' + flaggedCats.join(', ') + '. Please revise the title or description.'
-      : 'Your listing was flagged by our moderation system. Please revise the title or description.';
+    // Extract the reason after "BLOCK:" for the user-facing message
+    const reasonMatch = response.match(/^block\s*:\s*(.+)/i);
+    const reason = reasonMatch ? reasonMatch[1].trim() : null;
+    const reasonText = reason
+      ? 'Your listing was flagged: ' + reason + ' — please revise.'
+      : 'Your listing was flagged by our content moderation system. Please revise the title or description.';
 
     return new Response(JSON.stringify({
       allowed: false,
-      reason: reasonText,
-      categories: flaggedCats
+      reason: reasonText
     }), { status: 200, headers: corsHeaders });
 
   } catch (err) {
