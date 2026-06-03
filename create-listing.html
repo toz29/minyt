@@ -348,22 +348,37 @@ var currentUser=null;
 var FS={bannerFile:null,avatarFile:null,price:null,galleryFiles:[]};
 var MAX_GALLERY=4;
 
-// Banned words filter — applied to title, description, and long description.
-// Word-boundary match, case-insensitive. Edit this list as needed.
-// Note: this is a soft filter, not airtight security. Image moderation and admin
-// review catch what slips through (leetspeak, unicode tricks, etc.)
+// Hardcoded slur list — keep in sync with functions/moderate-listing.js
+// Server-side has the canonical version + LLM moderator as Layer 2.
+// This client-side list is for fast feedback (instant block, no server round-trip).
 var BANNED_WORDS=[
-  // Profanity
-  'fuck','shit','bitch','asshole','cunt','dick','pussy','cock','motherfucker',
-  // Scam / fraud markers
-  'get rich quick','guaranteed profits','double your money','risk free returns',
-  'pyramid scheme','mlm','ponzi',
-  // Adult content
-  'porn','onlyfans','escort','nude','xxx',
-  // Drugs
-  'cocaine','heroin','meth','crack','fentanyl','illegal drugs',
-  // Weapons
-  'firearm sale','gun sale','ammunition'
+  // Anti-Black
+  'nigger','niggers','nigga','niggas','coon','jigaboo','porch monkey','spook',
+  // Anti-Hispanic/Latino
+  'beaner','beaners','spic','spics','wetback','wetbacks',
+  // Anti-Asian
+  'chink','chinks','gook','gooks','jap','japs','slant eye','slanteye','slope head',
+  // Anti-Indigenous
+  'redskin','injun','squaw',
+  // Anti-Arab/Middle Eastern/Muslim
+  'sand nigger','towel head','towelhead','raghead','camel jockey','mudslime',
+  // Antisemitic
+  'kike','kikes','hymie','yid','yids',
+  // Anti-LGBT
+  'faggot','faggots','fag','fags','tranny','trannies','shemale','shemales',
+  'dyke','dykes','homo','homos',
+  // Ableist
+  'retard','retards','retarded','retardation','tard','tards',
+  'spaz','spazzes','mongoloid','cripple','cripples',
+  // Misogynistic
+  'whore','whores','slut','sluts','cunt','cunts',
+  // Ethnic
+  'wop','wops','guido','dago','dagos','mick','micks','polack','polacks',
+  'gypsy','gypsies','gyp',
+  // Hate group / dogwhistles
+  'white power','white supremacy','heil hitler','sieg heil','gas the jews',
+  'race war','14 words','jewish question',
+  'kkk member','kkk recruitment','aryan nation','aryan brotherhood'
 ];
 
 function checkBannedWords(text){
