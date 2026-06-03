@@ -19,18 +19,21 @@ export async function onRequestPost(context) {
       return new Response(JSON.stringify({ error: 'Missing image_url' }), { status: 400, headers: corsHeaders });
     }
 
+    console.log('[MOD-IMAGE] fetching:', image_url.slice(0, 100));
+
     // Fetch the image bytes
     const imgRes = await fetch(image_url);
     if (!imgRes.ok) {
+      console.log('[MOD-IMAGE] fetch failed, status:', imgRes.status);
       // Can't reach the image — let it through. Admin review backstop.
       return new Response(JSON.stringify({ allowed: true, soft_error: true }), { status: 200, headers: corsHeaders });
     }
     const imgBuf = await imgRes.arrayBuffer();
     const imgBytes = [...new Uint8Array(imgBuf)];
 
+    console.log('[MOD-IMAGE] image bytes:', imgBytes.length);
+
     // Cloudflare's image classifier returns labels with confidence scores.
-    // We use a general-purpose model and look for NSFW-related labels.
-    // The @cf/microsoft/resnet-50 model returns top labels — useful for object classification.
     // For NSFW specifically, we use a vision-language model to detect explicit content.
     const result = await context.env.AI.run('@cf/llava-hf/llava-1.5-7b-hf', {
       image: imgBytes,
@@ -38,8 +41,12 @@ export async function onRequestPost(context) {
       max_tokens: 10
     });
 
+    console.log('[MOD-IMAGE] AI response:', JSON.stringify(result));
+
     const responseText = ((result.description || result.response || '') + '').toLowerCase().trim();
     const isNSFW = responseText.startsWith('yes') || responseText.includes(' yes') || responseText === 'yes.';
+
+    console.log('[MOD-IMAGE] verdict:', isNSFW ? 'NSFW' : 'SAFE', 'raw:', responseText);
 
     if (isNSFW) {
       return new Response(JSON.stringify({
@@ -52,8 +59,8 @@ export async function onRequestPost(context) {
 
   } catch (err) {
     // Soft-fail: if moderation hiccups, let it through. Admin approval still gates the listing.
-    console.log('[MODERATE-IMAGE-ERR]', err.message);
-    return new Response(JSON.stringify({ allowed: true, soft_error: true }), {
+    console.log('[MOD-IMAGE-ERR]', err && err.message, 'stack:', err && err.stack);
+    return new Response(JSON.stringify({ allowed: true, soft_error: true, debug: err && err.message }), {
       status: 200,
       headers: corsHeaders
     });
