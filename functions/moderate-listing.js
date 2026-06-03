@@ -1,6 +1,60 @@
 // Cloudflare Pages Function: /moderate-listing
-// Uses Cloudflare Workers AI (Llama Guard) to moderate listing text content.
-// Bound to env.AI via the project's Workers AI binding.
+// Two-layer content moderation:
+//   1. Hardcoded slur list (deterministic, zero tolerance)
+//   2. Cloudflare Workers AI Llama-3.1 with marketplace-specific prompt (contextual)
+
+// SLURS — zero tolerance, context-independent block.
+// Word-boundary matched (so "ass" inside "assistant" doesn't trigger).
+// Multi-word entries use substring match.
+// Maintenance: review every 3-6 months. Add new terms as they emerge.
+const SLURS = [
+  // Anti-Black
+  'nigger', 'niggers', 'nigga', 'niggas', 'coon', 'jigaboo', 'porch monkey', 'spook',
+  // Anti-Hispanic/Latino
+  'beaner', 'beaners', 'spic', 'spics', 'wetback', 'wetbacks',
+  // Anti-Asian
+  'chink', 'chinks', 'gook', 'gooks', 'jap', 'japs', 'slant eye', 'slanteye', 'slope head',
+  // Anti-Indigenous
+  'redskin', 'injun', 'squaw',
+  // Anti-Arab/Middle Eastern/Muslim
+  'sand nigger', 'towel head', 'towelhead', 'raghead', 'camel jockey', 'mudslime',
+  // Antisemitic
+  'kike', 'kikes', 'hymie', 'yid', 'yids',
+  // Anti-LGBT
+  'faggot', 'faggots', 'fag', 'fags', 'tranny', 'trannies', 'shemale', 'shemales',
+  'dyke', 'dykes', 'homo', 'homos',
+  // Ableist
+  'retard', 'retards', 'retarded', 'retardation', 'tard', 'tards',
+  'spaz', 'spazzes', 'mongoloid', 'cripple', 'cripples',
+  // Misogynistic
+  'whore', 'whores', 'slut', 'sluts', 'cunt', 'cunts',
+  // Anti-Italian / Irish / Polish / Romani
+  'wop', 'wops', 'guido', 'dago', 'dagos',
+  'mick', 'micks',
+  'polack', 'polacks',
+  'gypsy', 'gypsies', 'gyp',
+  // Hate group / dogwhistles
+  'white power', 'white supremacy', 'heil hitler', 'sieg heil', 'gas the jews',
+  'race war', '14 words', 'jewish question',
+  'kkk member', 'kkk recruitment', 'aryan nation', 'aryan brotherhood'
+];
+
+function findSlur(text) {
+  if (!text) return null;
+  const lower = text.toLowerCase();
+  for (const word of SLURS) {
+    const w = word.toLowerCase();
+    if (w.indexOf(' ') !== -1) {
+      // Multi-word phrase — substring match
+      if (lower.indexOf(w) !== -1) return word;
+    } else {
+      // Single word — word-boundary regex to avoid false positives
+      const re = new RegExp('\\b' + w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i');
+      if (re.test(lower)) return word;
+    }
+  }
+  return null;
+}
 
 export async function onRequestPost(context) {
   const corsHeaders = {
@@ -26,38 +80,54 @@ export async function onRequestPost(context) {
       return new Response(JSON.stringify({ allowed: true }), { status: 200, headers: corsHeaders });
     }
 
-    // Use a general LLM with a marketplace-specific moderation prompt.
-    // Calibrated to catch real violations without being aggressive about creators'
-    // expressive or unconventional copy.
-    const systemPrompt = `You are a content moderator for Minyt, a marketplace where creators sell courses, communities, coaching, services, and digital products. Creators come from many backgrounds — some are formal, some are casual, some write in all caps, some use emojis, some have edgy or motivational copy.
+    // Layer 1: hardcoded slur list (deterministic, zero tolerance).
+    // Catches known slurs that an LLM is too inconsistent to reliably block.
+    const slurMatch = findSlur(text);
+    if (slurMatch) {
+      console.log('[MOD-LISTING] SLUR-BLOCK matched:', slurMatch);
+      return new Response(JSON.stringify({
+        allowed: false,
+        reason: 'Your listing contains language that isn\'t allowed on Minyt. Please remove "' + slurMatch + '" and try again.'
+      }), { status: 200, headers: corsHeaders });
+    }
 
-Your job is to BLOCK only clear violations, NOT to enforce a particular writing style. Many creators are enthusiastic, loud, or unconventional — that's fine and welcome.
+    // Layer 2: LLM moderation for contextual violations
+    // Two-layer moderation: 
+    // 1. Slur word list (deterministic, zero-tolerance) — handled at top of this function
+    // 2. LLM (contextual) — catches scams, threats, illegal content, sexually explicit material
+    //
+    // Profanity itself is NOT blocked. Creator marketplaces (Skool, Whop, Gumroad)
+    // all allow swears in copy. Creators have voice and we respect it.
+    const systemPrompt = `You are a content moderator for Minyt, a marketplace where creators sell courses, communities, coaching, services, and digital products. Creators have a wide range of voices — some are formal, some loud, some edgy, some use profanity, some use emojis. That's all welcome.
+
+Your job is to BLOCK only clear violations, NOT to enforce a particular writing style or tone.
 
 BLOCK ONLY if the content contains:
-- Explicit profanity (fuck, shit, asshole, bitch, dick, cunt, etc. — actual swear words, not just casual emphasis)
-- Slurs (racial, ethnic, ableist like "retard", anti-LGBT like the f-slur, etc.)
-- Sexually explicit content (pornography, escort services, OnlyFans funnels)
-- Hard drug sales (cocaine, heroin, meth, fentanyl)
-- Weapons sales (firearms, ammunition)
-- Obvious scam markers (guaranteed returns, pyramid schemes, ponzi)
-- Threats, harassment, doxxing
-- Content sexualizing minors (always block, zero tolerance)
-- Targeted hate speech
+- Sexually explicit content (pornography, escort services, OnlyFans funnels, "spicy" content, sex work promotion)
+- Hard drug sales or promotion (cocaine, heroin, meth, fentanyl, MDMA, etc.)
+- Weapons sales (firearms, ammunition, explosives, illegal weapon mods)
+- Obvious scams (guaranteed returns/income, pyramid schemes, ponzi schemes, "I'll make you rich" without delivering value)
+- Threats, doxxing, harassment, or calls to harm specific people
+- Content sexualizing minors (zero tolerance, always block)
+- Stolen content, piracy, cracked software, hacking services for hire
+- Counterfeit goods or fake credentials/diplomas
 
 DO NOT BLOCK for any of these reasons:
-- All caps text or enthusiastic energy
-- Emojis, slang, or informal language
-- Bold marketing claims, motivational hype, or "sales-y" copy
-- Mentions of money, income, or earnings (creators often sell business courses)
-- Mentions of YouTube, TikTok, Instagram, or other platforms
+- Profanity used as emphasis (fuck, shit, damn, ass, etc. are fine in copy)
+- All caps text, emojis, or enthusiastic energy
+- Slang, informal language, or "internet" voice
+- Bold marketing claims, hype, motivational language, or sales copy
+- Mentions of money, income, earnings, or making money (creators sell business courses)
+- Mentions of YouTube, TikTok, Instagram, OnlyFans (as a platform name only, not selling NSFW content)
+- Mentions of crypto, trading, investing (legal financial education is fine — only block obvious scams)
 - Edgy humor that isn't a slur or threat
 - Unconventional formatting
 
-Be permissive. When in doubt, ALLOW. A creator's unique voice matters.
+Be permissive. When in doubt, ALLOW. Creator voice matters.
 
 Reply with EXACTLY one of:
 ALLOW: ok
-BLOCK: <specific reason — name the actual word or phrase>`;
+BLOCK: <specific reason — name the actual word or phrase that triggered the block>`;
 
     const result = await context.env.AI.run('@cf/meta/llama-3.1-8b-instruct', {
       messages: [
