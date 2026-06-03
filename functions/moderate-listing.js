@@ -27,36 +27,44 @@ export async function onRequestPost(context) {
     }
 
     // Use a general LLM with a marketplace-specific moderation prompt.
-    // Llama Guard alone is too permissive — it only flags formal harm categories
-    // (violence, CSAM, terrorism) and lets through profanity/slurs that have no place
-    // on a professional marketplace.
-    const systemPrompt = `You are a content moderator for a professional creator marketplace called Minyt where people sell courses, communities, coaching, and digital products.
+    // Calibrated to catch real violations without being aggressive about creators'
+    // expressive or unconventional copy.
+    const systemPrompt = `You are a content moderator for Minyt, a marketplace where creators sell courses, communities, coaching, services, and digital products. Creators come from many backgrounds — some are formal, some are casual, some write in all caps, some use emojis, some have edgy or motivational copy.
 
-Evaluate the following listing content. Reply with EXACTLY one word — either "BLOCK" or "ALLOW" — followed by a colon and a brief reason.
+Your job is to BLOCK only clear violations, NOT to enforce a particular writing style. Many creators are enthusiastic, loud, or unconventional — that's fine and welcome.
 
-BLOCK if the content contains ANY of:
-- Profanity (fuck, shit, damn, etc. used in the listing copy)
-- Slurs of any kind (racial, ethnic, ableist, anti-LGBT, religious)
-- Sexually explicit or pornographic content
-- Drugs (sale, recommendation, or promotion of illegal drugs)
-- Weapons (sale or promotion of firearms, ammunition, explosives)
-- Get-rich-quick or pyramid scheme language
-- Threats, violence, or harassment
-- Content sexualizing minors
-- Hate speech or discriminatory rhetoric
+BLOCK ONLY if the content contains:
+- Explicit profanity (fuck, shit, asshole, bitch, dick, cunt, etc. — actual swear words, not just casual emphasis)
+- Slurs (racial, ethnic, ableist like "retard", anti-LGBT like the f-slur, etc.)
+- Sexually explicit content (pornography, escort services, OnlyFans funnels)
+- Hard drug sales (cocaine, heroin, meth, fentanyl)
+- Weapons sales (firearms, ammunition)
+- Obvious scam markers (guaranteed returns, pyramid schemes, ponzi)
+- Threats, harassment, doxxing
+- Content sexualizing minors (always block, zero tolerance)
+- Targeted hate speech
 
-ALLOW if the content is professional, appropriate, and free of the above.
+DO NOT BLOCK for any of these reasons:
+- All caps text or enthusiastic energy
+- Emojis, slang, or informal language
+- Bold marketing claims, motivational hype, or "sales-y" copy
+- Mentions of money, income, or earnings (creators often sell business courses)
+- Mentions of YouTube, TikTok, Instagram, or other platforms
+- Edgy humor that isn't a slur or threat
+- Unconventional formatting
 
-Be strict. A marketplace must maintain a professional standard. When in doubt, BLOCK.
+Be permissive. When in doubt, ALLOW. A creator's unique voice matters.
 
-Format your reply as: BLOCK: <reason> or ALLOW: looks fine`;
+Reply with EXACTLY one of:
+ALLOW: ok
+BLOCK: <specific reason — name the actual word or phrase>`;
 
     const result = await context.env.AI.run('@cf/meta/llama-3.1-8b-instruct', {
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: text }
       ],
-      max_tokens: 60
+      max_tokens: 80
     });
 
     console.log('[MOD-LISTING] AI response:', JSON.stringify(result));
