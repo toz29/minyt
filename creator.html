@@ -33,8 +33,6 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 .account-dropdown{position:absolute;top:calc(100% + 8px);right:0;background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:0.5rem;min-width:180px;box-shadow:0 8px 24px rgba(0,0,0,0.08);z-index:200;display:none}
 .account-dropdown.open{display:block}
 .dropdown-label{font-size:11px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:0.5px;padding:6px 10px 4px}
-.dropdown-name{font-size:13px;font-weight:500;padding:6px 10px 2px;color:var(--text)}
-.dropdown-email{font-size:11px;color:var(--muted);padding:0 10px 6px}
 .dropdown-item{display:block;width:100%;padding:9px 10px;font-size:13px;color:var(--text);cursor:pointer;border:none;background:none;font-family:'DM Sans',sans-serif;text-align:left;border-radius:var(--radius);text-decoration:none}
 .dropdown-item:hover{background:var(--surface);color:var(--brand)}
 .dropdown-divider{height:1px;background:var(--border);margin:4px 0}
@@ -62,6 +60,35 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 .profile-avatar{width:120px;height:120px;border-radius:50%;border:5px solid var(--surface);background:var(--brand-light);display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-size:2.25rem;font-weight:500;color:var(--brand-dark);overflow:hidden;margin-top:-60px;flex-shrink:0;position:relative;z-index:2}
 .profile-avatar img{width:100%;height:100%;object-fit:cover;display:block}
 .profile-name{font-family:'Space Grotesk',sans-serif;font-size:1.75rem;font-weight:500;margin-top:0.875rem;line-height:1.2;overflow-wrap:anywhere}
+.profile-name-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:0.5rem}
+.profile-name-row .profile-name{margin-top:0}
+.profile-name-row .kebab-wrap{margin-top:0.4rem;flex-shrink:0}
+
+/* Kebab (three-dot) menu — reusable */
+.kebab-wrap{position:relative;display:inline-block}
+.kebab-btn{width:32px;height:32px;border:1px solid var(--border);background:#fff;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--muted);line-height:1;padding:0;transition:all 0.15s}
+.kebab-btn:hover{background:var(--surface);color:var(--text)}
+.kebab-menu{position:absolute;top:38px;right:0;background:#fff;border:1px solid var(--border);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.08);min-width:170px;padding:4px;z-index:50;display:none}
+.kebab-menu.open{display:block}
+.kebab-item{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:6px;font-size:13px;color:var(--text);cursor:pointer;white-space:nowrap}
+.kebab-item:hover{background:var(--surface)}
+.kebab-icon{font-size:12px;color:var(--muted);width:14px;text-align:center}
+
+/* Report modal */
+.report-modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(2px);z-index:1000;display:none;align-items:center;justify-content:center;padding:1rem}
+.report-modal-backdrop.open{display:flex}
+.report-modal{background:#fff;border-radius:var(--radius-lg);padding:1.75rem;max-width:440px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,0.15)}
+.report-modal-title{font-family:'Space Grotesk',sans-serif;font-size:1.25rem;font-weight:500;margin-bottom:0.4rem}
+.report-modal-sub{font-size:13px;color:var(--muted);margin-bottom:1.25rem}
+.report-modal label{display:block;font-size:12px;color:var(--muted);margin-bottom:0.4rem;margin-top:0.85rem;font-weight:500}
+.report-modal select,.report-modal textarea{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius);font-family:inherit;font-size:14px;background:#fff;box-sizing:border-box}
+.report-modal textarea{resize:vertical;min-height:80px;font-family:inherit}
+.report-modal-actions{display:flex;gap:0.5rem;margin-top:1.25rem;justify-content:flex-end}
+.report-modal-cancel{background:#fff;border:1px solid var(--border);color:var(--text);padding:9px 16px;border-radius:var(--radius);font-size:14px;cursor:pointer}
+.report-modal-submit{background:var(--brand);border:1px solid var(--brand);color:#fff;padding:9px 18px;border-radius:var(--radius);font-size:14px;cursor:pointer;font-weight:500}
+.report-modal-submit:disabled{opacity:0.6;cursor:not-allowed}
+.report-modal-done{text-align:center;padding:1rem 0}
+.report-modal-done-icon{width:40px;height:40px;border-radius:50%;background:var(--brand-light);color:var(--brand);display:flex;align-items:center;justify-content:center;margin:0 auto 0.75rem;font-size:18px}
 .profile-handle{font-size:14px;color:var(--muted);margin-top:2px;overflow-wrap:anywhere}
 .profile-stats{display:flex;flex-wrap:wrap;gap:0.5rem 1.25rem;margin-top:0.875rem;font-size:13px;color:var(--muted)}
 .profile-stat{display:inline-flex;align-items:center;gap:5px}
@@ -82,15 +109,13 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 .card:hover{border-color:var(--brand);transform:translateY(-2px);box-shadow:0 8px 24px rgba(99,102,241,0.1)}
 .card-banner-img{width:100%;height:120px;object-fit:cover;display:block}
 .card-banner-ph{width:100%;height:120px}
-.card-banner-wrap{position:relative}
 .card-body{padding:0.875rem 1rem 1rem}
-.card-profile{display:flex;align-items:center;gap:10px;margin-bottom:8px}
-.card-logo{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:500;font-size:11px;flex-shrink:0;overflow:hidden;background:#C7D2FE;color:#312E81;letter-spacing:0.5px}
-.card-logo img{width:100%;height:100%;object-fit:cover}
-.card-identity{padding-top:10px;min-width:0;flex:1}
-.card-name{font-weight:500;font-size:13px;margin-bottom:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3}
-.card-byline{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.card-verified-check{display:inline-flex;align-items:center;color:var(--brand);font-size:13px;line-height:1;cursor:help;flex-shrink:0}
+.card-profile{display:flex;align-items:center;gap:10px;margin-top:-26px;margin-bottom:8px}
+.avatar{width:44px;height:44px;border-radius:50%;border:3px solid #fff;display:flex;align-items:center;justify-content:center;font-weight:500;font-size:12px;flex-shrink:0;overflow:hidden;background:#C7D2FE;color:#312E81}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.card-name{font-weight:500;font-size:13px;margin-bottom:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-handle{font-size:11px;color:var(--muted)}
+.card-identity{padding-top:14px;min-width:0}
 .card-stars{font-size:11px;color:#BA7517;margin-bottom:5px}
 .card-title{font-size:13px;font-weight:500;margin-bottom:3px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .card-desc{font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
@@ -113,7 +138,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
   .listings-section{padding:1.25rem 1rem 2rem}
   .listings-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:0.75rem}
   .card-banner-img,.card-banner-ph{height:96px}
-  .card-logo{width:36px;height:36px;border-width:2px;border-radius:8px}
+  .avatar{width:36px;height:36px;border-width:2px}
   .card-profile{margin-top:-20px}
   .card-identity{padding-top:10px}
 }
@@ -148,8 +173,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
           <svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         </div>
         <div class="account-dropdown" id="account-dropdown">
-          <div class="dropdown-name" id="dropdown-name"></div>
-          <div class="dropdown-email" id="dropdown-email"></div>
+          <div class="dropdown-label" id="dropdown-email" style="color:var(--text);font-size:12px;text-transform:none;letter-spacing:0"></div>
           <div class="dropdown-divider"></div>
           <a class="dropdown-item" href="https://getminyt.com/account.html">My account</a>
           <a class="dropdown-item" href="https://getminyt.com/create-listing.html">Create offer</a>
@@ -168,7 +192,15 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
   <div class="banner" id="profile-banner"></div>
   <div class="profile-header">
     <div class="profile-avatar" id="profile-avatar"></div>
-    <h1 class="profile-name" id="profile-name"></h1>
+    <div class="profile-name-row">
+      <h1 class="profile-name" id="profile-name"></h1>
+      <div class="kebab-wrap" id="profile-kebab-wrap" style="display:none">
+        <button class="kebab-btn" onclick="toggleKebab(this,event)" aria-label="More options">⋯</button>
+        <div class="kebab-menu">
+          <div class="kebab-item" id="profile-report-item"><span class="kebab-icon">⚐</span>Report creator</div>
+        </div>
+      </div>
+    </div>
     <div class="profile-handle hidden" id="profile-handle"></div>
     <div class="profile-stats" id="profile-stats"></div>
     <div class="profile-bio hidden" id="profile-bio"></div>
@@ -214,44 +246,26 @@ function fmtJoined(iso){
   return d.toLocaleDateString('en-US',{month:'short',year:'numeric'});
 }
 
-// When a banner image fails to load, swap it for the color placeholder so the card layout doesn't collapse.
-function cardBannerFallback(img){
-  var cat = img.getAttribute('data-cat') || 'other';
-  var ph = document.createElement('div');
-  ph.className = 'card-banner-ph';
-  ph.style.background = catColor(cat);
-  img.replaceWith(ph);
-}
-
-// Verified badge eligibility
-function isVerified(l){
-  return !!(l.seller_stripe_id) && (l.review_count||0) >= 10 && (l.stars||0) >= 4.0;
-}
-
 // ── BUILD CARD (linked to /offer.html?id=...) ──
 function buildCard(l){
-  var phBanner='<div class="card-banner-ph" style="background:'+catColor(l.category)+'"></div>';
   var bn=l.banner_url
-    ?'<img class="card-banner-img" src="'+escapeHtml(l.banner_url)+'" alt="" loading="lazy" data-cat="'+escapeHtml(l.category||'other')+'" onerror="cardBannerFallback(this)">'
-    :phBanner;
-  var logo=l.avatar_url
-    ?'<div class="card-logo"><img src="'+escapeHtml(l.avatar_url)+'" alt=""></div>'
-    :'<div class="card-logo">'+escapeHtml(ini(l.name||l.title))+'</div>';
+    ?'<img class="card-banner-img" src="'+escapeHtml(l.banner_url)+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">'
+    :'<div class="card-banner-ph" style="background:'+catColor(l.category)+'"></div>';
+  var av=l.avatar_url
+    ?'<div class="avatar"><img src="'+escapeHtml(l.avatar_url)+'" alt=""></div>'
+    :'<div class="avatar">'+escapeHtml(ini(l.name))+'</div>';
   var s=Math.round(l.stars||0);
   var stars='';
   for(var i=0;i<s;i++) stars+='★';
   for(var i=s;i<5;i++) stars+='☆';
   var price=l.price==0?'Free':'$'+Number(l.price).toLocaleString();
   var unit=l.price==0?'':(l.billing_unit||'one-time');
-  // We're already on this creator's profile, so byline name is plain text (no self-link)
-  var verifiedCheck=isVerified(l)
-    ? '<span class="card-verified-check" title="Verified · 10+ satisfied customers on Minyt" aria-label="Verified creator">✓</span>'
-    : '';
   return '<a class="card" href="https://getminyt.com/offer.html?id='+encodeURIComponent(l.id)+'">'
-    +'<div class="card-banner-wrap">'+bn+'</div>'
+    +bn
     +'<div class="card-body">'
-    +'<div class="card-profile">'+logo+'<div class="card-identity"><div class="card-name">'+escapeHtml(l.title||'')+'</div><div class="card-byline">by <span style="color:var(--text)">'+escapeHtml(l.name||'')+'</span>'+verifiedCheck+'</div></div></div>'
+    +'<div class="card-profile">'+av+'<div class="card-identity"><div class="card-name">'+escapeHtml(l.name||'')+'</div><div class="card-handle">'+escapeHtml(l.handle||'')+'</div></div></div>'
     +'<div class="card-stars">'+stars+' '+Number(l.stars||0).toFixed(1)+' <span style="color:var(--muted)">('+(l.review_count||0)+')</span></div>'
+    +'<div class="card-title">'+escapeHtml(l.title||'')+'</div>'
     +'<div class="card-desc">'+escapeHtml(l.description||'')+'</div>'
     +'<div class="card-footer"><span class="card-badge">'+escapeHtml(l.offer_type||'')+'</span><div class="card-price">'+price+' <span>'+escapeHtml(unit)+'</span></div></div>'
     +'</div></a>';
@@ -278,7 +292,7 @@ async function loadCreator(sb, id){
   // Use the public_creators view so we only fetch safe fields
   var creatorPromise=sb.from('public_creators').select('*').eq('id',id).maybeSingle();
   // Their approved (and not denied) listings
-  var listingsPromise=sb.from('listings').select('*').eq('seller_id',id).eq('approved',true).eq('denied',false).eq('visibility','live').order('created_at',{ascending:false});
+  var listingsPromise=sb.from('listings').select('*').eq('seller_id',id).eq('approved',true).eq('denied',false).order('created_at',{ascending:false});
   
   var [creatorRes, listingsRes]=await Promise.all([creatorPromise, listingsPromise]);
   
@@ -306,6 +320,22 @@ function renderProfile(c, listings){
   if(c.bio){
     document.querySelector('meta[name="description"]').setAttribute('content', c.bio.substring(0,160));
     document.querySelector('meta[property="og:description"]').setAttribute('content', c.bio.substring(0,160));
+  }
+
+  // Wire the kebab "Report creator" action with this creator's id.
+  // Hide the kebab entirely if the viewer IS this creator (can't report yourself).
+  var kebabWrap=document.getElementById('profile-kebab-wrap');
+  var reportItem=document.getElementById('profile-report-item');
+  if(kebabWrap && reportItem){
+    reportItem.setAttribute('onclick',"openReportModal('creator','"+c.id+"',event)");
+    sb.auth.getSession().then(function(sess){
+      var viewerId=(sess&&sess.data&&sess.data.session)?sess.data.session.user.id:null;
+      if(viewerId && viewerId===c.id){
+        kebabWrap.style.display='none';
+      } else {
+        kebabWrap.style.display='inline-block';
+      }
+    });
   }
   
   // Banner — fall back to brand gradient (set in CSS default)
@@ -413,8 +443,6 @@ document.addEventListener('click',function(e){
         var user=res.data.session.user;
         document.getElementById('nav-login-btn').style.display='none';
         document.getElementById('nav-account').style.display='block';
-        var dn=(user.user_metadata && user.user_metadata.name) ? user.user_metadata.name : user.email.split('@')[0];
-        document.getElementById('dropdown-name').textContent=dn;
         document.getElementById('dropdown-email').textContent=user.email;
       }
       document.getElementById('nav-auth').classList.add('resolved');
@@ -437,6 +465,104 @@ function signOutAll(){
   };
   document.head.appendChild(s);
 }
+
+// Kebab menu toggle
+function toggleKebab(btn, evt){
+  if(evt) evt.stopPropagation();
+  var menu = btn.nextElementSibling;
+  var wasOpen = menu.classList.contains('open');
+  document.querySelectorAll('.kebab-menu.open').forEach(function(m){m.classList.remove('open');});
+  if(!wasOpen) menu.classList.add('open');
+}
+document.addEventListener('click', function(e){
+  if(!e.target.closest('.kebab-wrap')){
+    document.querySelectorAll('.kebab-menu.open').forEach(function(m){m.classList.remove('open');});
+  }
+});
+
+// Report modal — only used for creator on this page
+var REPORT_TARGET={type:null,id:null};
+function openReportModal(entityType, entityId, evt){
+  if(evt){evt.preventDefault();evt.stopPropagation();}
+  REPORT_TARGET={type:entityType,id:entityId};
+  document.querySelectorAll('.kebab-menu.open').forEach(function(m){m.classList.remove('open');});
+  document.getElementById('report-modal-form').style.display='block';
+  document.getElementById('report-modal-done').style.display='none';
+  document.getElementById('report-reason').value='';
+  document.getElementById('report-comment').value='';
+  document.getElementById('report-submit-btn').disabled=false;
+  document.getElementById('report-submit-btn').textContent='Submit report';
+  document.getElementById('report-modal-backdrop').classList.add('open');
+}
+function closeReportModal(evt){
+  if(evt && evt.target!==evt.currentTarget) return;
+  document.getElementById('report-modal-backdrop').classList.remove('open');
+  REPORT_TARGET={type:null,id:null};
+}
+function submitReport(){
+  var reason=document.getElementById('report-reason').value;
+  var comment=document.getElementById('report-comment').value.trim();
+  if(!reason){alert('Please select a reason.');return;}
+  if(!REPORT_TARGET.id||!REPORT_TARGET.type){alert('Something went wrong.');return;}
+  var btn=document.getElementById('report-submit-btn');
+  btn.disabled=true;btn.textContent='Submitting...';
+  if(!sb){alert('Database connection not ready. Please refresh.');return;}
+  sb.auth.getSession().then(function(sess){
+    var reporterEmail=(sess && sess.data && sess.data.session) ? sess.data.session.user.email : null;
+    var row={reason:reason,comment:comment||null,reporter_email:reporterEmail};
+    if(REPORT_TARGET.type==='listing') row.listing_id=REPORT_TARGET.id;
+    else if(REPORT_TARGET.type==='review') row.review_id=REPORT_TARGET.id;
+    else if(REPORT_TARGET.type==='creator') row.creator_id=REPORT_TARGET.id;
+    sb.from('reports').insert(row).then(function(r){
+      if(r.error){
+        console.log('[REPORT-ERR]',r.error);
+        alert('Couldn\'t submit your report. Please try again.');
+        btn.disabled=false;btn.textContent='Submit report';
+        return;
+      }
+      document.getElementById('report-modal-form').style.display='none';
+      document.getElementById('report-modal-done').style.display='block';
+    });
+  });
+}
 </script>
+
+<!-- Report modal -->
+<div class="report-modal-backdrop" id="report-modal-backdrop" onclick="closeReportModal(event)">
+  <div class="report-modal" onclick="event.stopPropagation()">
+    <div id="report-modal-form">
+      <div class="report-modal-title">Report this creator</div>
+      <div class="report-modal-sub">Let us know what's wrong. We review every report.</div>
+      <label for="report-reason">Reason</label>
+      <select id="report-reason">
+        <option value="">Select a reason...</option>
+        <option value="sexually_explicit">Sexually explicit content</option>
+        <option value="hate_speech">Hate speech or discrimination</option>
+        <option value="harassment">Harassment</option>
+        <option value="scam">Scam</option>
+        <option value="impersonation">Impersonation or stolen content</option>
+        <option value="misleading">Misleading content</option>
+        <option value="spam">Spam</option>
+        <option value="other">Other</option>
+      </select>
+      <label for="report-comment">Details (optional)</label>
+      <textarea id="report-comment" placeholder="Anything else we should know?"></textarea>
+      <div class="report-modal-actions">
+        <button class="report-modal-cancel" onclick="closeReportModal()">Cancel</button>
+        <button class="report-modal-submit" id="report-submit-btn" onclick="submitReport()">Submit report</button>
+      </div>
+    </div>
+    <div id="report-modal-done" style="display:none">
+      <div class="report-modal-done">
+        <div class="report-modal-done-icon">✓</div>
+        <div class="report-modal-title">Report submitted</div>
+        <div class="report-modal-sub" style="margin-bottom:0">Thanks — we'll review this shortly.</div>
+        <div class="report-modal-actions" style="justify-content:center">
+          <button class="report-modal-submit" onclick="closeReportModal()">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 </body>
 </html>
