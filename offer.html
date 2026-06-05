@@ -12,67 +12,50 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--brand:#6366F1;--brand-light:#EEF2FF;--brand-dark:#4338CA;--text:#1a1a1a;--muted:#6b7280;--surface:#f9f9f7;--border:#e5e5e3;--radius:10px;--radius-lg:14px;--danger:#E24B4A}
-body{font-family:'DM Sans',sans-serif;color:var(--text);background:var(--surface);min-height:100vh;overflow-x:hidden}
+body{font-family:'DM Sans',sans-serif;color:var(--text);background:var(--surface);min-height:100vh}
 nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;border-bottom:1px solid var(--border);background:#fff;position:sticky;top:0;z-index:100}
 .nav-logo{font-family:'Space Grotesk',sans-serif;font-size:1.25rem;font-weight:500;color:var(--brand);cursor:pointer;text-decoration:none}
-.nav-create{padding:7px 14px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;font-weight:500;color:var(--text);cursor:pointer;transition:all 0.2s;text-decoration:none}
-.nav-create:hover{border-color:var(--brand);color:var(--brand);box-shadow:0 0 12px rgba(99,102,241,0.25)}
-.nav-right{display:flex;align-items:center;gap:14px}
-.nav-login{padding:7px 14px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;font-weight:500;color:var(--text);cursor:pointer;transition:all 0.2s;text-decoration:none}
-.nav-login:hover{border-color:var(--brand);color:var(--brand);box-shadow:0 0 12px rgba(99,102,241,0.25)}
-.nav-auth{display:none}
-.nav-auth.resolved{display:flex;align-items:center}
-.nav-account{position:relative}
-.nav-account-btn{width:34px;height:34px;border-radius:50%;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s;flex-shrink:0}
-.nav-account-btn:hover{border-color:var(--brand)}
-.nav-account-btn svg{width:16px;height:16px;stroke:var(--muted)}
-.account-dropdown{position:absolute;top:calc(100% + 8px);right:0;background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:0.5rem;min-width:180px;box-shadow:0 8px 24px rgba(0,0,0,0.08);z-index:200;display:none}
-.account-dropdown.open{display:block}
-.dropdown-label{font-size:11px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:0.5px;padding:6px 10px 4px}
-.dropdown-name{font-size:13px;font-weight:500;padding:6px 10px 2px;color:var(--text)}
-.dropdown-email{font-size:11px;color:var(--muted);padding:0 10px 6px}
-.dropdown-item{display:block;width:100%;padding:9px 10px;font-size:13px;color:var(--text);cursor:pointer;border:none;background:none;font-family:'DM Sans',sans-serif;text-align:left;border-radius:var(--radius);text-decoration:none}
-.dropdown-item:hover{background:var(--surface);color:var(--brand)}
-.dropdown-divider{height:1px;background:var(--border);margin:4px 0}
+.nav-back{font-size:13px;color:var(--muted);text-decoration:none}
+.nav-back:hover{color:var(--text)}
 .offer-wrap{max-width:900px;margin:0 auto;padding:2rem}
-.offer-banner{width:100%;height:380px;object-fit:cover;border-radius:var(--radius-lg);background:var(--surface);margin-bottom:0.75rem;cursor:pointer}
-.offer-banner-ph{width:100%;height:380px;border-radius:var(--radius-lg);background:var(--border);margin-bottom:0.75rem}
-.thumb-strip{display:flex;gap:8px;margin-bottom:1.5rem;flex-wrap:wrap}
-.thumb-strip .thumb{width:88px;height:64px;border-radius:8px;overflow:hidden;cursor:pointer;border:2px solid transparent;background:var(--surface);transition:border-color 0.15s;flex-shrink:0}
-.thumb-strip .thumb img{width:100%;height:100%;object-fit:cover;display:block}
-.thumb-strip .thumb:hover{border-color:var(--border)}
-.thumb-strip .thumb.active{border-color:var(--brand)}
-.offer-long-desc{font-size:15px;color:var(--text);line-height:1.7;margin-bottom:2rem;white-space:pre-wrap;word-wrap:break-word;overflow-wrap:anywhere}
-.offer-long-desc a{color:var(--brand);text-decoration:underline;word-break:break-all}
-.offer-long-desc a:hover{color:var(--brand-dark)}
-.offer-section-title{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:500;margin-bottom:0.75rem;margin-top:0.5rem}
+.offer-banner{width:100%;height:280px;object-fit:cover;border-radius:var(--radius-lg);background:var(--surface);margin-bottom:1.5rem}
+.offer-banner-ph{width:100%;height:280px;border-radius:var(--radius-lg);background:var(--border);margin-bottom:1.5rem}
 .offer-top{display:grid;grid-template-columns:1fr 320px;gap:2rem;align-items:start}
 .offer-main{}
 .offer-profile{display:flex;align-items:center;gap:12px;margin-bottom:1.25rem}
-a.offer-profile{text-decoration:none;color:inherit;border-radius:var(--radius);transition:opacity 0.15s}
-a.offer-profile:hover{opacity:0.75}
 .offer-avatar{width:48px;height:48px;border-radius:50%;background:var(--brand-light);display:flex;align-items:center;justify-content:center;font-weight:500;font-size:14px;color:var(--brand-dark);overflow:hidden;flex-shrink:0}
 .offer-avatar img{width:100%;height:100%;object-fit:cover}
 .offer-creator-name{font-weight:500;font-size:15px}
-.offer-verified-check{display:inline-flex;align-items:center;color:var(--brand);font-size:15px;line-height:1;cursor:help;margin-left:2px}
 .offer-creator-handle{font-size:12px;color:var(--muted)}
-.offer-title{font-family:'Space Grotesk',sans-serif;font-size:1.75rem;font-weight:500;margin-bottom:0.5rem;line-height:1.3;overflow-wrap:anywhere}
-.offer-desc{font-size:15px;color:var(--muted);line-height:1.7;margin-bottom:2rem;white-space:pre-wrap;overflow-wrap:anywhere}
+.offer-title{font-family:'Space Grotesk',sans-serif;font-size:1.75rem;font-weight:500;margin-bottom:0.5rem;line-height:1.3}
 .offer-type-badge{display:inline-block;padding:4px 12px;border-radius:50px;font-size:12px;font-weight:500;background:var(--brand-light);color:var(--brand-dark);margin-bottom:1rem}
 .offer-desc{font-size:15px;color:var(--muted);line-height:1.7;margin-bottom:2rem;white-space:pre-wrap}
 .offer-reviews-title{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:500;margin-bottom:1rem}
 .review-item{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:1rem 1.25rem;margin-bottom:0.75rem}
-.reviewer-row{display:flex;align-items:center;gap:10px;margin-bottom:0.6rem}
-.reviewer-avatar{width:32px;height:32px;border-radius:50%;background:var(--brand-light);color:var(--brand-dark);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;flex-shrink:0;overflow:hidden}
-.reviewer-avatar img{width:100%;height:100%;object-fit:cover}
-.reviewer-info{display:flex;flex-direction:column;gap:1px;min-width:0}
-.reviewer-name{font-size:13px;font-weight:500;color:var(--text);line-height:1.2}
-.reviewer-handle{font-size:11px;color:var(--muted);line-height:1.2}
 .review-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem}
 .review-stars{color:#BA7517;font-size:14px}
 .review-email{font-size:12px;color:var(--muted)}
 .review-date{font-size:11px;color:var(--muted)}
 .review-comment{font-size:14px;color:var(--text);line-height:1.5}
+
+/* Report link + modal */
+.offer-report-row{margin-top:1.5rem;text-align:right}
+.offer-report-link{font-size:12px;color:var(--muted);text-decoration:none;transition:color 0.15s}
+.offer-report-link:hover{color:var(--brand)}
+.report-modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(2px);z-index:1000;display:none;align-items:center;justify-content:center;padding:1rem}
+.report-modal-backdrop.open{display:flex}
+.report-modal{background:#fff;border-radius:var(--radius-lg);padding:1.75rem;max-width:440px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,0.15)}
+.report-modal-title{font-family:'Space Grotesk',sans-serif;font-size:1.25rem;font-weight:500;margin-bottom:0.4rem}
+.report-modal-sub{font-size:13px;color:var(--muted);margin-bottom:1.25rem}
+.report-modal label{display:block;font-size:12px;color:var(--muted);margin-bottom:0.4rem;margin-top:0.85rem;font-weight:500}
+.report-modal select,.report-modal textarea{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius);font-family:inherit;font-size:14px;background:#fff;box-sizing:border-box}
+.report-modal textarea{resize:vertical;min-height:80px;font-family:inherit}
+.report-modal-actions{display:flex;gap:0.5rem;margin-top:1.25rem;justify-content:flex-end}
+.report-modal-cancel{background:#fff;border:1px solid var(--border);color:var(--text);padding:9px 16px;border-radius:var(--radius);font-size:14px;cursor:pointer}
+.report-modal-submit{background:var(--brand);border:1px solid var(--brand);color:#fff;padding:9px 18px;border-radius:var(--radius);font-size:14px;cursor:pointer;font-weight:500}
+.report-modal-submit:disabled{opacity:0.6;cursor:not-allowed}
+.report-modal-done{text-align:center;padding:1rem 0}
+.report-modal-done-icon{width:40px;height:40px;border-radius:50%;background:var(--brand-light);color:var(--brand);display:flex;align-items:center;justify-content:center;margin:0 auto 0.75rem;font-size:18px}
 .review-verified{font-size:11px;color:var(--brand-dark);background:var(--brand-light);padding:2px 8px;border-radius:50px;margin-left:8px}
 .no-reviews{font-size:13px;color:var(--muted);padding:1rem 0}
 .offer-sidebar{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;position:sticky;top:80px}
@@ -110,11 +93,8 @@ a.offer-profile:hover{opacity:0.75}
   .offer-top{grid-template-columns:1fr}
   .offer-sidebar{position:static}
   .offer-wrap{padding:1rem}
-  .offer-banner{height:240px}
-  .offer-banner-ph{height:240px}
-  .thumb-strip .thumb{width:72px;height:52px}
+  .offer-banner{height:180px}
   nav{padding:0.875rem 1rem}
-  .nav-right{gap:10px}
 }
 </style>
 </head>
@@ -167,26 +147,7 @@ a.offer-profile:hover{opacity:0.75}
 
 <nav>
   <div style="display:flex;align-items:center;gap:12px"><div class="hamburger" onclick="openSideMenu()"><span></span><span></span><span></span></div><a class="nav-logo" href="https://getminyt.com">minyt<sup style="font-size:9px;color:var(--muted);vertical-align:super;margin-left:1px">™</sup></a></div>
-  <div class="nav-right">
-    <a class="nav-create" href="https://getminyt.com">Browse</a>
-    <div class="nav-auth" id="nav-auth">
-      <a class="nav-login" id="nav-login-btn" href="https://getminyt.com/account.html">Log in</a>
-      <div class="nav-account" id="nav-account" style="display:none">
-        <div class="nav-account-btn" id="nav-acct-btn" onclick="toggleAccountMenu()" title="Account">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        </div>
-        <div class="account-dropdown" id="account-dropdown">
-          <div class="dropdown-name" id="dropdown-name"></div>
-          <div class="dropdown-email" id="dropdown-email"></div>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="https://getminyt.com/account.html">My account</a>
-          <a class="dropdown-item" href="https://getminyt.com/create-listing.html">Create offer</a>
-          <div class="dropdown-divider"></div>
-          <div class="dropdown-item" onclick="signOutAll()" style="color:var(--muted)">Sign out</div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <a class="nav-back" href="https://getminyt.com">← Browse offers</a>
 </nav>
 
 <div class="offer-wrap">
@@ -199,41 +160,46 @@ a.offer-profile:hover{opacity:0.75}
   </div>
 </div>
 
+<!-- Report modal -->
+<div class="report-modal-backdrop" id="report-modal-backdrop" onclick="closeReportModal(event)">
+  <div class="report-modal" onclick="event.stopPropagation()">
+    <div id="report-modal-form">
+      <div class="report-modal-title">Report this offer</div>
+      <div class="report-modal-sub">Let us know what's wrong. We review every report.</div>
+      <label for="report-reason">Reason</label>
+      <select id="report-reason">
+        <option value="">Select a reason...</option>
+        <option value="sexually_explicit">Sexually explicit content</option>
+        <option value="scam">Scam or fraud</option>
+        <option value="harassment">Harassment or threats</option>
+        <option value="hate_speech">Hate speech or discrimination</option>
+        <option value="stolen_content">Stolen content or piracy</option>
+        <option value="spam">Spam or misleading</option>
+        <option value="other">Other</option>
+      </select>
+      <label for="report-comment">Details (optional)</label>
+      <textarea id="report-comment" placeholder="Anything else we should know?"></textarea>
+      <div class="report-modal-actions">
+        <button class="report-modal-cancel" onclick="closeReportModal()">Cancel</button>
+        <button class="report-modal-submit" id="report-submit-btn" onclick="submitReport()">Submit report</button>
+      </div>
+    </div>
+    <div id="report-modal-done" style="display:none">
+      <div class="report-modal-done">
+        <div class="report-modal-done-icon">✓</div>
+        <div class="report-modal-title">Report submitted</div>
+        <div class="report-modal-sub" style="margin-bottom:0">Thanks — we'll review this shortly.</div>
+        <div class="report-modal-actions" style="justify-content:center">
+          <button class="report-modal-submit" onclick="closeReportModal()">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 var SURL='https://qoigwxwkhpcgisprkozg.supabase.co';
 var SKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFvaWd3eHdraHBjZ2lzcHJrb3pnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3NDAzOTUsImV4cCI6MjA5MjMxNjM5NX0.Si-GOt97FF4Wt49E_Yf7CsgyvU2-5dHbStQu1wwQ6Ik';
-
-// Escape user-supplied text before inserting into HTML
-function escapeHtml(s){
-  return String(s==null?'':s)
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-}
-function escapeAttr(s){ return escapeHtml(s); }
-
-// Auto-link URLs in user text. Escapes first, then converts URLs to anchors.
-// Preserves whitespace via CSS white-space:pre-wrap on the container.
-function linkifyHtml(text){
-  if(!text) return '';
-  var escaped=escapeHtml(text);
-  // Match http(s)://... up to whitespace or common terminators
-  var urlRe=/(https?:\/\/[^\s<>"']+[^\s<>"',.;:!?)\]])/g;
-  return escaped.replace(urlRe, function(url){
-    return '<a href="'+url+'" target="_blank" rel="noopener nofollow ugc">'+url+'</a>';
-  });
-}
-
-// Swap the main offer image when a thumbnail is clicked
-function setMainImage(idx){
-  var images=window.OFFER_IMAGES||[];
-  var main=document.getElementById('offer-main-img');
-  if(!main||!images[idx]) return;
-  main.src=images[idx];
-  document.querySelectorAll('.thumb-strip .thumb').forEach(function(t){
-    t.classList.toggle('active', parseInt(t.dataset.idx)===idx);
-  });
-}
-
 
 var params=new URLSearchParams(window.location.search);
 var offerId=params.get('id');
@@ -264,243 +230,73 @@ if(!offerId){
       document.querySelector('meta[property="og:title"]').content=l.title+' | Minyt';
       document.querySelector('meta[property="og:description"]').content=l.description||'Courses, coaching calls and communities from real creators.';
       
-      // Load reviews + their reviewer profiles (for name display)
+      // Load reviews
       sb.from('reviews').select('*').eq('listing_id',offerId).order('created_at',{ascending:false}).then(function(revRes){
         var reviews=revRes.data||[];
         var avgRating=reviews.length?reviews.reduce(function(s,r){return s+r.rating;},0)/reviews.length:0;
         
-        // Batch-fetch reviewer profiles by email (one query, in clause)
-        var reviewerEmails=[...new Set(reviews.map(function(r){return r.buyer_email;}).filter(Boolean))];
-        var profilesPromise=reviewerEmails.length
-          ? sb.from('sellers').select('email,display_name,handle,avatar_url').in('email',reviewerEmails)
-          : Promise.resolve({data:[]});
+        var banner=l.banner_url
+          ?'<img class="offer-banner" src="'+l.banner_url+'" alt="'+l.title+'">'
+          :'<div class="offer-banner-ph"></div>';
         
-        profilesPromise.then(function(profRes){
-          var profilesByEmail={};
-          (profRes.data||[]).forEach(function(p){
-            if(p.email) profilesByEmail[p.email.toLowerCase()]=p;
-          });
-          
-          // Build full image list (banner is image 0; gallery_urls are 1..N)
-          var images=[];
-          if(l.banner_url) images.push(l.banner_url);
-          if(Array.isArray(l.gallery_urls)) {
-            l.gallery_urls.forEach(function(u){ if(u) images.push(u); });
-          }
-          
-          var bannerHtml;
-          if(images.length){
-            bannerHtml='<img class="offer-banner" id="offer-main-img" src="'+images[0]+'" alt="'+escapeAttr(l.title)+'">';
-            if(images.length>1){
-              bannerHtml+='<div class="thumb-strip">'+images.map(function(u,i){
-                return '<div class="thumb '+(i===0?'active':'')+'" data-idx="'+i+'" onclick="setMainImage('+i+')"><img src="'+u+'" alt=""></div>';
-              }).join('')+'</div>';
-            }
-          } else {
-            bannerHtml='<div class="offer-banner-ph"></div>';
-          }
-          // Expose images for setMainImage to use
-          window.OFFER_IMAGES=images;
-          
-          var avatar=l.avatar_url
-            ?'<div class="offer-avatar"><img src="'+l.avatar_url+'" alt=""></div>'
-            :'<div class="offer-avatar">'+(l.name||'?').substring(0,2).toUpperCase()+'</div>';
-          
-          var starsHtml='';
-          for(var i=0;i<5;i++) starsHtml+=i<Math.round(avgRating)?'★':'☆';
-          
-          // Helper: relative time for recent, absolute for old
-          function relTime(iso){
-            var then=new Date(iso);
-            var now=new Date();
-            var diff=Math.max(0,now-then);
-            var m=Math.floor(diff/60000);
-            var h=Math.floor(diff/3600000);
-            var d=Math.floor(diff/86400000);
-            if(diff<60000) return 'just now';
-            if(m<60) return m+(m===1?' minute ago':' minutes ago');
-            if(h<24) return h+(h===1?' hour ago':' hours ago');
-            if(d<7) return d+(d===1?' day ago':' days ago');
-            if(d<30) {var w=Math.floor(d/7);return w+(w===1?' week ago':' weeks ago');}
-            if(d<365) {var mo=Math.floor(d/30);return mo+(mo===1?' month ago':' months ago');}
-            return then.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
-          }
-          
-          // Helper: format reviewer display name from profile or fallback
-          function formatReviewerName(review){
-            var email=(review.buyer_email||'').toLowerCase();
-            var prof=profilesByEmail[email];
-            if(prof && prof.display_name && prof.display_name.trim()){
-              var parts=prof.display_name.trim().split(/\s+/);
-              if(parts.length===1) return parts[0];
-              // Show "First L." — first word + initial of last word
-              return parts[0]+' '+parts[parts.length-1][0].toUpperCase()+'.';
-            }
-            // Fallback: mask the email username
-            if(email){
-              var prefix=email.split('@')[0];
-              return prefix.substring(0,Math.min(8,prefix.length))+(prefix.length>8?'***':'');
-            }
-            return 'Anonymous';
-          }
-          
-          function reviewerInitial(name){
-            return (name||'?').trim().charAt(0).toUpperCase();
-          }
-          
-          var reviewsHtml='';
-          if(reviews.length){
-            reviewsHtml=reviews.map(function(r){
-              var rs='';for(var i=0;i<5;i++) rs+=i<r.rating?'★':'☆';
-              var date=relTime(r.created_at);
-              var name=formatReviewerName(r);
-              var prof=profilesByEmail[(r.buyer_email||'').toLowerCase()];
-              var handle=prof && prof.handle ? prof.handle : '';
-              var avatarUrl=prof && prof.avatar_url ? prof.avatar_url : '';
-              var avatarHtml=avatarUrl
-                ? '<div class="reviewer-avatar"><img src="'+escapeAttr(avatarUrl)+'" alt=""></div>'
-                : '<div class="reviewer-avatar">'+reviewerInitial(name)+'</div>';
-              var handleLine=handle ? '<div class="reviewer-handle">@'+escapeHtml(handle)+'</div>' : '';
-              return '<div class="review-item">'
-                +'<div class="reviewer-row">'+avatarHtml
-                +'<div class="reviewer-info"><div class="reviewer-name">'+escapeHtml(name)+'</div>'+handleLine+'</div></div>'
-                +'<div class="review-header"><div><span class="review-stars">'+rs+'</span>'+(r.verified?'<span class="review-verified">Verified purchase</span>':'')+'</div><span class="review-date">'+date+'</span></div>'
-                +(r.comment?'<div class="review-comment">'+escapeHtml(r.comment)+'</div>':'')
-                +'</div>';
-            }).join('');
-          } else {
-            reviewsHtml='<div class="no-reviews">No reviews yet. Be the first to purchase and leave a review.</div>';
-          }
+        var avatar=l.avatar_url
+          ?'<div class="offer-avatar"><img src="'+l.avatar_url+'" alt=""></div>'
+          :'<div class="offer-avatar">'+(l.name||'?').substring(0,2).toUpperCase()+'</div>';
+        
+        var starsHtml='';
+        for(var i=0;i<5;i++) starsHtml+=i<Math.round(avgRating)?'★':'☆';
+        
+        var reviewsHtml='';
+        if(reviews.length){
+          reviewsHtml=reviews.map(function(r){
+            var rs='';for(var i=0;i<5;i++) rs+=i<r.rating?'★':'☆';
+            var date=new Date(r.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+            var email=r.buyer_email||'Buyer';
+            var masked=email.split('@')[0].substring(0,3)+'***';
+            return '<div class="review-item">'
+              +'<div class="review-header"><div><span class="review-stars">'+rs+'</span>'+(r.verified?'<span class="review-verified">Verified purchase</span>':'')+'</div><span class="review-date">'+date+'</span></div>'
+              +(r.comment?'<div class="review-comment">'+r.comment+'</div>':'')
+              +'</div>';
+          }).join('');
+        } else {
+          reviewsHtml='<div class="no-reviews">No reviews yet. Be the first to purchase and leave a review.</div>';
+        }
         
         var isSample=l.isSample||false;
-        var isPaused=(l.visibility==='paused');
-        var buyBtnText;
-        var buyBtnAction;
-        if(isPaused){
-          buyBtnText='Not accepting new buyers';
-          buyBtnAction='void(0)';
-        } else if(isSample){
-          buyBtnText='Sample offer';
-          buyBtnAction="alert('This is a sample offer.')";
-        } else {
-          buyBtnText=l.price==0?'Get access — Free':'Get access — $'+Number(l.price).toLocaleString();
-          buyBtnAction="startCheckout('"+l.id+"')";
-        }
-        var buyBtnStyle=(isSample||isPaused)?' style="background:var(--muted);cursor:not-allowed" disabled':'';
-        var pausedNotice=isPaused
-          ? '<div style="background:#FEF3C7;border:1px solid #FCD34D;border-radius:var(--radius);padding:12px 14px;font-size:13px;color:#78350F;line-height:1.5;margin-bottom:1.5rem"><strong>This offer is currently paused by the creator.</strong> New purchases aren\'t available right now. Existing customers keep full access.</div>'
-          : '';
+        var buyBtnText=isSample?'Sample offer':l.price==0?'Get access — Free':'Get access — $'+Number(l.price).toLocaleString();
+        var buyBtnAction=isSample
+          ?"alert('This is a sample offer.')"
+          :"startCheckout('"+l.id+"')";
         
-        // Long description with autolinked URLs (rendered as separate section)
-        var longDescHtml='';
-        if(l.long_description && l.long_description.trim()){
-          longDescHtml='<div class="offer-section-title">About this offer</div>'
-            +'<div class="offer-long-desc">'+linkifyHtml(l.long_description)+'</div>';
-        }
-        
-        // Verified badge eligibility (same rule as listing cards)
-        var verifiedCheck=(!!(l.seller_stripe_id) && (l.review_count||0)>=10 && (l.stars||0)>=4.0)
-          ? ' <span class="offer-verified-check" title="Verified · 10+ satisfied customers on Minyt" aria-label="Verified creator">✓</span>'
-          : '';
-        
-        // Build creator block — link to profile if seller_id is set (skip for sample/legacy listings)
-        var creatorInner=avatar
-          +'<div><div class="offer-creator-name">'+escapeHtml(l.name||'Creator')+verifiedCheck+'</div>'
-          +(l.handle?'<div class="offer-creator-handle">@'+escapeHtml(l.handle)+'</div>':'')
-          +'</div>';
-        var creatorBlock=(l.seller_id && !isSample)
-          ? '<a class="offer-profile" href="https://getminyt.com/creator.html?id='+encodeURIComponent(l.seller_id)+'">'+creatorInner+'</a>'
-          : '<div class="offer-profile">'+creatorInner+'</div>';
-        
-        document.getElementById('offer-content').innerHTML=bannerHtml
+        document.getElementById('offer-content').innerHTML=banner
           +'<div class="offer-top">'
           +'<div class="offer-main">'
-          +creatorBlock
+          +'<div class="offer-profile">'+avatar+'<div><div class="offer-creator-name">'+(l.name||'Creator')+'</div>'+(l.handle?'<div class="offer-creator-handle">@'+l.handle+'</div>':'')+'</div></div>'
           +(isSample?'<span class="sample-badge">Sample offer</span>':'')
-          +'<h1 class="offer-title">'+escapeHtml(l.title)+'</h1>'
-          +'<span class="offer-type-badge">'+escapeHtml(l.offer_type||'')+'</span>'
-          +pausedNotice
-          +'<div class="offer-desc">'+escapeHtml(l.description||'No description provided.')+'</div>'
-          +longDescHtml
+          +'<h1 class="offer-title">'+l.title+'</h1>'
+          +'<span class="offer-type-badge">'+l.offer_type+'</span>'
+          +'<div class="offer-desc">'+(l.description||'No description provided.')+'</div>'
           +'<div class="offer-reviews-title">Reviews ('+reviews.length+')</div>'
           +reviewsHtml
+          +(isSample?'':'<div class="offer-report-row"><a href="#" class="offer-report-link" onclick="openReportModal(\''+offerId+'\',event)">Report this offer</a></div>')
           +'</div>'
           +'<div class="offer-sidebar">'
           +'<div class="offer-price">'+(l.price==0?'Free':'$'+Number(l.price).toLocaleString())+'</div>'
           +'<div class="offer-billing">'+(l.billing_unit||'One-time payment')+'</div>'
           +(reviews.length?'<div class="offer-rating"><span class="offer-rating-stars">'+starsHtml+'</span><span class="offer-rating-text">'+avgRating.toFixed(1)+' ('+reviews.length+' review'+(reviews.length!==1?'s':'')+')</span></div>':'')
-          +'<div id="buy-area"><button class="offer-buy-btn" id="buy-btn" onclick="'+buyBtnAction+'"'+buyBtnStyle+'>'+buyBtnText+'</button></div>'
+          +'<button class="offer-buy-btn" id="buy-btn" onclick="'+buyBtnAction+'"'+(isSample?' style="background:var(--muted);cursor:default"':'')+'>'+buyBtnText+'</button>'
           +'<div class="offer-meta">'
-          +'<div>Category: '+escapeHtml(l.category||'General')+'</div>'
-          +'<div>Type: '+escapeHtml(l.offer_type||'')+'</div>'
+          +'<div>Category: '+(l.category||'General')+'</div>'
+          +'<div>Type: '+l.offer_type+'</div>'
           +'</div>'
           +'</div>'
           +'</div>';
         
         document.getElementById('offer-content').style.display='block';
-
-        // Async ownership check — patches the buy button if the logged-in user already owns this.
-        // Doesn't block render. Skipped when paused/sample (those have their own UI).
-        if(!isPaused && !isSample){
-          maybePatchBuyButtonForOwnership(sb, l);
-        }
-        }); // close profilesPromise.then
       });
     });
   };
   document.head.appendChild(s);
-}
-
-async function maybePatchBuyButtonForOwnership(sbClient, l){
-  // Guest: no email to check against
-  var email = window.LOGGED_IN_EMAIL;
-  if(!email) return;
-  
-  // 1-on-1 sessions and per-call services always allow repeat purchases
-  var offerType = (l.offer_type||'').toLowerCase();
-  if(offerType.indexOf('1-on-1')!==-1 || offerType.indexOf('session')!==-1) return;
-  
-  var isRecurring = (l.billing_unit==='/ month' || l.billing_unit==='/ week');
-  
-  try {
-    var res = await sbClient
-      .from('orders')
-      .select('id, subscription_id, subscription_status, status, stripe_customer_id, stripe_payment_id')
-      .eq('listing_id', l.id)
-      .eq('buyer_email', email)
-      .eq('status', 'completed')
-      .order('created_at', { ascending: false })
-      .limit(1);
-    
-    if(!res.data || res.data.length===0) return;
-    var order = res.data[0];
-    
-    var buyArea = document.getElementById('buy-area');
-    if(!buyArea) return;
-    
-    if(isRecurring){
-      // Subscription: only treat as "owned" if currently active
-      var st = order.subscription_status;
-      if(st!=='active' && st!=='trialing') return; // canceled — let them re-subscribe normally
-      
-      // Active subscription — show Manage button, no rebuy option
-      var manageHref = order.stripe_customer_id
-        ? 'https://getminyt.com/manage-subscription?customer='+encodeURIComponent(order.stripe_customer_id)
-        : 'https://getminyt.com/account.html';
-      buyArea.innerHTML =
-        '<a class="offer-buy-btn" href="'+manageHref+'" style="text-decoration:none;display:block;text-align:center;box-sizing:border-box">Manage your subscription</a>'
-        +'<a href="https://getminyt.com/account.html" style="display:block;text-align:center;font-size:12px;color:var(--muted);text-decoration:none;margin-top:0.5rem">View your purchase →</a>';
-    } else {
-      // One-time owned: primary = Access, secondary = Buy again
-      var accessHref = l.delivery_link || 'https://getminyt.com/account.html';
-      var existingAction = buyArea.querySelector('button')?.getAttribute('onclick') || '';
-      buyArea.innerHTML =
-        '<a class="offer-buy-btn" href="'+accessHref+'" target="_blank" style="text-decoration:none;display:block;text-align:center;box-sizing:border-box">Access your purchase →</a>'
-        +'<button onclick="'+existingAction+'" style="display:block;width:100%;text-align:center;font-size:12px;color:var(--muted);background:none;border:none;cursor:pointer;font-family:inherit;margin-top:0.5rem;text-decoration:underline">Buy again</button>';
-    }
-  } catch(e){
-    // If the ownership check fails, leave the normal buy button in place
-  }
 }
 
 // Checkout function
@@ -528,20 +324,12 @@ async function startCheckout(listingId){
         title:l.title,
         price:l.price,
         billing_unit:l.billing_unit||'one-time',
-        seller_stripe_id:l.seller_stripe_id||null,
-        buyer_email:window.LOGGED_IN_EMAIL||null
+        seller_stripe_id:l.seller_stripe_id||null
       })
     });
     var data=await res.json();
-    if(data.url){
-      window.location.href=data.url;
-    } else if(data.already_subscribed){
-      // Friendly redirect: they already have this; send them to their dashboard
-      alert(data.error||'You already have an active subscription to this offer.');
-      window.location.href='https://getminyt.com/account.html';
-    } else {
-      throw new Error(data.error||'Checkout failed');
-    }
+    if(data.url) window.location.href=data.url;
+    else throw new Error(data.error||'Checkout failed');
   }catch(e){
     alert('Something went wrong. Please try again.');
     if(btn){btn.disabled=false;btn.textContent='Get access — $'+listings[0].price;}
@@ -609,54 +397,59 @@ function sendFeedback(){
   });
 }
 
-// Account menu
-function toggleAccountMenu(){
-  var dd=document.getElementById('account-dropdown');
-  dd.classList.toggle('open');
+// Report modal logic
+var REPORT_LISTING_ID=null;
+function openReportModal(listingId,evt){
+  if(evt) evt.preventDefault();
+  REPORT_LISTING_ID=listingId;
+  document.getElementById('report-modal-form').style.display='block';
+  document.getElementById('report-modal-done').style.display='none';
+  document.getElementById('report-reason').value='';
+  document.getElementById('report-comment').value='';
+  document.getElementById('report-submit-btn').disabled=false;
+  document.getElementById('report-submit-btn').textContent='Submit report';
+  document.getElementById('report-modal-backdrop').classList.add('open');
 }
-document.addEventListener('click',function(e){
-  var acct=document.getElementById('nav-acct-btn');
-  var dd=document.getElementById('account-dropdown');
-  if(dd && acct && !dd.contains(e.target) && !acct.contains(e.target)){
-    dd.classList.remove('open');
-  }
-});
-
-// Resolve auth state — show Log in vs account avatar
-(function(){
-  var s=document.createElement('script');
-  s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';
-  s.onload=function(){
-    var sba=window.supabase.createClient(SURL,SKEY);
-    sba.auth.getSession().then(function(res){
-      if(res.data.session){
-        var user=res.data.session.user;
-        window.LOGGED_IN_EMAIL=user.email;
-        document.getElementById('nav-login-btn').style.display='none';
-        document.getElementById('nav-account').style.display='block';
-        var dn=(user.user_metadata && user.user_metadata.name) ? user.user_metadata.name : user.email.split('@')[0];
-        document.getElementById('dropdown-name').textContent=dn;
-        document.getElementById('dropdown-email').textContent=user.email;
-      }
-      document.getElementById('nav-auth').classList.add('resolved');
-    }).catch(function(){
-      document.getElementById('nav-auth').classList.add('resolved');
+function closeReportModal(evt){
+  if(evt && evt.target!==evt.currentTarget) return;
+  document.getElementById('report-modal-backdrop').classList.remove('open');
+  REPORT_LISTING_ID=null;
+}
+function submitReport(){
+  var reason=document.getElementById('report-reason').value;
+  var comment=document.getElementById('report-comment').value.trim();
+  if(!reason){alert('Please select a reason.');return;}
+  if(!REPORT_LISTING_ID){alert('Something went wrong. Please refresh and try again.');return;}
+  var btn=document.getElementById('report-submit-btn');
+  btn.disabled=true;btn.textContent='Submitting...';
+  
+  fbGetSupabase(function(failed){
+    if(failed){
+      alert('Could not submit report. Please try again.');
+      btn.disabled=false;btn.textContent='Submit report';
+      return;
+    }
+    var sbc=window.supabase.createClient(SURL,SKEY);
+    // Try to get the logged-in user's email
+    sbc.auth.getSession().then(function(sess){
+      var reporterEmail=(sess && sess.data && sess.data.session) ? sess.data.session.user.email : null;
+      sbc.from('reports').insert({
+        listing_id:REPORT_LISTING_ID,
+        reason:reason,
+        comment:comment||null,
+        reporter_email:reporterEmail
+      }).then(function(r){
+        if(r.error){
+          console.log('[REPORT-ERR]',r.error);
+          alert('Couldn\'t submit your report. Please try again.');
+          btn.disabled=false;btn.textContent='Submit report';
+          return;
+        }
+        document.getElementById('report-modal-form').style.display='none';
+        document.getElementById('report-modal-done').style.display='block';
+      });
     });
-  };
-  s.onerror=function(){
-    document.getElementById('nav-auth').classList.add('resolved');
-  };
-  document.head.appendChild(s);
-})();
-
-function signOutAll(){
-  var s=document.createElement('script');
-  s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';
-  s.onload=function(){
-    var sba=window.supabase.createClient(SURL,SKEY);
-    sba.auth.signOut().then(function(){window.location.reload();});
-  };
-  document.head.appendChild(s);
+  });
 }
 </script>
 </body>
