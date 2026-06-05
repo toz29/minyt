@@ -81,7 +81,11 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 .tab-count{display:inline-block;background:#dc2626;color:#fff;font-size:10px;font-weight:600;padding:1px 6px;border-radius:10px;margin-left:4px;min-width:14px;text-align:center}
 .report-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);border-left:3px solid #dc2626;padding:1.1rem 1.25rem;margin-bottom:0.75rem}
 .report-card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem}
-.report-card-reason{font-size:14px;font-weight:500;color:var(--text)}
+.report-card-reason{font-size:14px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.entity-badge{font-size:10px;font-weight:600;padding:2px 7px;border-radius:50px;letter-spacing:0.3px;text-transform:uppercase}
+.entity-offer{background:#eeedfe;color:#534ab7}
+.entity-review{background:#fae8d6;color:#854f0b}
+.entity-creator{background:#dcfce7;color:#166534}
 .report-status{font-size:11px;padding:2px 8px;border-radius:50px;font-weight:500}
 .report-status.open{background:#fee2e2;color:#991b1b}
 .report-status.resolved{background:#dcfce7;color:#166534}
@@ -265,24 +269,30 @@ function fmtDateA(iso){
 }
 
 var REASON_LABELS = {
-  sexually_explicit:'Sexually explicit',
-  scam:'Scam or fraud',
-  harassment:'Harassment or threats',
-  hate_speech:'Hate speech',
-  stolen_content:'Stolen content',
-  spam:'Spam or misleading',
+  sexually_explicit:'Sexually explicit content',
+  hate_speech:'Hate speech or discrimination',
+  harassment:'Harassment',
+  scam:'Scam',
+  impersonation:'Impersonation or stolen content',
+  misleading:'Misleading content',
+  spam:'Spam',
   other:'Other'
 };
 
 function loadReports() {
   var grid = document.getElementById('listings-grid');
   grid.innerHTML = '<div class="loading-state">Loading reports...</div>';
-  // Get reports + the listing info for each (title, status, etc.)
-  sb.from('reports').select('*,listings(id,title,name,handle,approved,denied,visibility)').order('created_at', {ascending:false}).then(function(res) {
+  // Get reports with joined entity data for whichever target type each row uses
+  sb.from('reports').select(
+    '*,'+
+    'listings(id,title,name,handle,approved,denied,visibility),'+
+    'reviews(id,listing_id,buyer_email,rating,comment),'+
+    'sellers:creator_id(id,display_name,handle,email)'
+  ).order('created_at', {ascending:false}).then(function(res) {
     if(res.error) {
       console.log('[ADMIN-REPORTS-ERR]', res.error);
       showToast('Error loading reports.', 'error');
-      grid.innerHTML = '<div class="empty-state"><div>Could not load reports</div>Check that the reports table exists in Supabase.</div>';
+      grid.innerHTML = '<div class="empty-state"><div>Could not load reports</div>Check that the reports table exists with review_id and creator_id columns.</div>';
       return;
     }
     var rows = res.data || [];
@@ -295,30 +305,64 @@ function loadReports() {
       return;
     }
     grid.innerHTML = rows.map(function(r) {
-      var listing = r.listings || {};
       var reasonLabel = REASON_LABELS[r.reason] || r.reason;
       var statusBadge = r.status==='open'
         ? '<span class="report-status open">Open</span>'
         : r.status==='resolved'
           ? '<span class="report-status resolved">Resolved</span>'
           : '<span class="report-status dismissed">Dismissed</span>';
-      var listingLink = listing.id
-        ? '<a href="https://getminyt.com/offer.html?id='+listing.id+'" target="_blank" class="report-listing-link">'+escA(listing.title||'Untitled')+'</a>'
-        : '<span class="muted">[deleted listing]</span>';
+
+      // Identify what was reported
+      var entityLabel='', entityLink='', entityTypeBadge='', denyButton='';
+      if(r.listing_id && r.listings){
+        var listing=r.listings;
+        entityTypeBadge='<span class="entity-badge entity-offer">Offer</span>';
+        entityLink=listing.id
+          ? '<a href="https://getminyt.com/offer.html?id='+listing.id+'" target="_blank" class="report-listing-link">'+escA(listing.title||'Untitled')+'</a>'
+          : '<span class="muted">[deleted offer]</span>';
+        entityLabel='Reported offer: ';
+        if(r.status==='open' && listing.id && !listing.denied){
+          denyButton='<button class="btn-deny" onclick="resolveAndDenyListing(\''+r.id+'\',\''+listing.id+'\')">Deny offer</button>';
+        }
+      } else if(r.review_id && r.reviews){
+        var rev=r.reviews;
+        entityTypeBadge='<span class="entity-badge entity-review">Review</span>';
+        var revPreview=(rev.comment||'').slice(0,80);
+        entityLink=rev.listing_id
+          ? '<a href="https://getminyt.com/offer.html?id='+rev.listing_id+'" target="_blank" class="report-listing-link">'+(rev.rating||'?')+'★ "'+escA(revPreview)+(revPreview.length===80?'...':'')+'"</a>'
+          : '<span class="muted">[deleted review]</span>';
+        entityLabel='Reported review: ';
+        if(r.status==='open' && rev.id){
+          denyButton='<button class="btn-deny" onclick="resolveAndDeleteReview(\''+r.id+'\',\''+rev.id+'\')">Delete review</button>';
+        }
+      } else if(r.creator_id && r.sellers){
+        var creator=r.sellers;
+        entityTypeBadge='<span class="entity-badge entity-creator">Creator</span>';
+        var cname=creator.display_name||creator.email||'Unknown';
+        entityLink=creator.handle
+          ? '<a href="https://getminyt.com/creator.html?id='+creator.id+'" target="_blank" class="report-listing-link">'+escA(cname)+' (@'+escA(creator.handle)+')</a>'
+          : '<a href="https://getminyt.com/creator.html?id='+creator.id+'" target="_blank" class="report-listing-link">'+escA(cname)+'</a>';
+        entityLabel='Reported creator: ';
+      } else {
+        entityTypeBadge='<span class="entity-badge">Unknown</span>';
+        entityLink='<span class="muted">[entity not found]</span>';
+        entityLabel='Reported: ';
+      }
+
       var who = r.reporter_email ? escA(r.reporter_email) : 'Anonymous';
       var actions = r.status==='open'
         ? '<div class="report-actions">'
             +'<button class="btn-resolve" onclick="resolveReport(\''+r.id+'\')">Mark resolved</button>'
             +'<button class="btn-dismiss" onclick="dismissReport(\''+r.id+'\')">Dismiss</button>'
-            +(listing.id && !listing.denied ? '<button class="btn-deny" onclick="resolveAndDenyReport(\''+r.id+'\',\''+listing.id+'\')">Deny offer</button>' : '')
+            +denyButton
           +'</div>'
         : '';
       return '<div class="report-card">'
         +'<div class="report-card-head">'
-          +'<div class="report-card-reason">'+escA(reasonLabel)+'</div>'
+          +'<div class="report-card-reason">'+entityTypeBadge+escA(reasonLabel)+'</div>'
           +statusBadge
         +'</div>'
-        +'<div class="report-card-listing">Reported: '+listingLink+'</div>'
+        +'<div class="report-card-listing">'+entityLabel+entityLink+'</div>'
         +(r.comment ? '<div class="report-card-comment">"'+escA(r.comment)+'"</div>' : '')
         +'<div class="report-card-meta">'
           +'<span>By '+who+'</span>'
@@ -344,15 +388,24 @@ function dismissReport(reportId){
     loadReports();
   });
 }
-function resolveAndDenyReport(reportId,listingId){
+function resolveAndDenyListing(reportId,listingId){
   if(!confirm('This will deny the offer and mark the report resolved. Continue?')) return;
-  // Deny the listing
   sb.from('listings').update({denied:true,approved:false}).eq('id',listingId).then(function(r1){
     if(r1.error){showToast('Could not deny offer.','error');return;}
-    // Then resolve the report
     sb.from('reports').update({status:'resolved',resolved_at:new Date().toISOString()}).eq('id',reportId).then(function(r2){
       if(r2.error){showToast('Listing denied, but report update failed.','error');return;}
       showToast('Offer denied and report resolved.','success');
+      loadReports();
+    });
+  });
+}
+function resolveAndDeleteReview(reportId,reviewId){
+  if(!confirm('This will permanently delete the review and mark the report resolved. Continue?')) return;
+  sb.from('reviews').delete().eq('id',reviewId).then(function(r1){
+    if(r1.error){showToast('Could not delete review.','error');return;}
+    sb.from('reports').update({status:'resolved',resolved_at:new Date().toISOString()}).eq('id',reportId).then(function(r2){
+      if(r2.error){showToast('Review deleted, but report update failed.','error');return;}
+      showToast('Review deleted and report resolved.','success');
       loadReports();
     });
   });
