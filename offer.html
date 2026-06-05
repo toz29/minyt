@@ -38,10 +38,23 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 .review-date{font-size:11px;color:var(--muted)}
 .review-comment{font-size:14px;color:var(--text);line-height:1.5}
 
-/* Report link + modal */
-.offer-report-row{margin-top:1.5rem;text-align:right}
-.offer-report-link{font-size:12px;color:var(--muted);text-decoration:none;transition:color 0.15s}
-.offer-report-link:hover{color:var(--brand)}
+/* Kebab (three-dot) menu — reusable across offers, reviews, creators */
+.kebab-wrap{position:relative;display:inline-block}
+.kebab-btn{width:32px;height:32px;border:1px solid var(--border);background:#fff;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--muted);line-height:1;padding:0;transition:all 0.15s}
+.kebab-btn:hover{background:var(--surface);color:var(--text)}
+.kebab-btn-sm{width:24px;height:24px;font-size:14px;border-color:transparent}
+.kebab-btn-sm:hover{border-color:var(--border)}
+.kebab-menu{position:absolute;top:38px;right:0;background:#fff;border:1px solid var(--border);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.08);min-width:170px;padding:4px;z-index:50;display:none}
+.kebab-menu.open{display:block}
+.kebab-btn-sm + .kebab-menu{top:28px}
+.kebab-item{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:6px;font-size:13px;color:var(--text);cursor:pointer;white-space:nowrap}
+.kebab-item:hover{background:var(--surface)}
+.kebab-icon{font-size:12px;color:var(--muted);width:14px;text-align:center}
+
+/* Offer header row — profile on left, kebab on right */
+.offer-header-row{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:0.75rem}
+
+/* Report modal */
 .report-modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(2px);z-index:1000;display:none;align-items:center;justify-content:center;padding:1rem}
 .report-modal-backdrop.open{display:flex}
 .report-modal{background:#fff;border-radius:var(--radius-lg);padding:1.75rem;max-width:440px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,0.15)}
@@ -160,21 +173,22 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
   </div>
 </div>
 
-<!-- Report modal -->
+<!-- Unified report modal — works for listings, reviews, creators -->
 <div class="report-modal-backdrop" id="report-modal-backdrop" onclick="closeReportModal(event)">
   <div class="report-modal" onclick="event.stopPropagation()">
     <div id="report-modal-form">
-      <div class="report-modal-title">Report this offer</div>
+      <div class="report-modal-title" id="report-modal-title">Report this offer</div>
       <div class="report-modal-sub">Let us know what's wrong. We review every report.</div>
       <label for="report-reason">Reason</label>
       <select id="report-reason">
         <option value="">Select a reason...</option>
         <option value="sexually_explicit">Sexually explicit content</option>
-        <option value="scam">Scam or fraud</option>
-        <option value="harassment">Harassment or threats</option>
         <option value="hate_speech">Hate speech or discrimination</option>
-        <option value="stolen_content">Stolen content or piracy</option>
-        <option value="spam">Spam or misleading</option>
+        <option value="harassment">Harassment</option>
+        <option value="scam">Scam</option>
+        <option value="impersonation">Impersonation or stolen content</option>
+        <option value="misleading">Misleading content</option>
+        <option value="spam">Spam</option>
         <option value="other">Other</option>
       </select>
       <label for="report-comment">Details (optional)</label>
@@ -253,8 +267,10 @@ if(!offerId){
             var date=new Date(r.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
             var email=r.buyer_email||'Buyer';
             var masked=email.split('@')[0].substring(0,3)+'***';
+            var reviewMenu='<div class="kebab-wrap"><button class="kebab-btn kebab-btn-sm" onclick="toggleKebab(this,event)" aria-label="More options">⋯</button>'
+              +'<div class="kebab-menu"><div class="kebab-item" onclick="openReportModal(\'review\',\''+r.id+'\',event)"><span class="kebab-icon">⚐</span>Report review</div></div></div>';
             return '<div class="review-item">'
-              +'<div class="review-header"><div><span class="review-stars">'+rs+'</span>'+(r.verified?'<span class="review-verified">Verified purchase</span>':'')+'</div><span class="review-date">'+date+'</span></div>'
+              +'<div class="review-header"><div><span class="review-stars">'+rs+'</span>'+(r.verified?'<span class="review-verified">Verified purchase</span>':'')+'</div><div style="display:flex;align-items:center;gap:8px"><span class="review-date">'+date+'</span>'+reviewMenu+'</div></div>'
               +(r.comment?'<div class="review-comment">'+r.comment+'</div>':'')
               +'</div>';
           }).join('');
@@ -267,18 +283,27 @@ if(!offerId){
         var buyBtnAction=isSample
           ?"alert('This is a sample offer.')"
           :"startCheckout('"+l.id+"')";
+
+        // Kebab menu for the offer itself — only shown on non-sample offers
+        var offerKebab=isSample?'':'<div class="kebab-wrap"><button class="kebab-btn" onclick="toggleKebab(this,event)" aria-label="More options">⋯</button>'
+          +'<div class="kebab-menu">'
+          +'<div class="kebab-item" onclick="openReportModal(\'listing\',\''+l.id+'\',event)"><span class="kebab-icon">⚐</span>Report offer</div>'
+          +(l.seller_id?'<div class="kebab-item" onclick="openReportModal(\'creator\',\''+l.seller_id+'\',event)"><span class="kebab-icon">⚐</span>Report creator</div>':'')
+          +'</div></div>';
         
         document.getElementById('offer-content').innerHTML=banner
           +'<div class="offer-top">'
           +'<div class="offer-main">'
+          +'<div class="offer-header-row">'
           +'<div class="offer-profile">'+avatar+'<div><div class="offer-creator-name">'+(l.name||'Creator')+'</div>'+(l.handle?'<div class="offer-creator-handle">@'+l.handle+'</div>':'')+'</div></div>'
+          +offerKebab
+          +'</div>'
           +(isSample?'<span class="sample-badge">Sample offer</span>':'')
           +'<h1 class="offer-title">'+l.title+'</h1>'
           +'<span class="offer-type-badge">'+l.offer_type+'</span>'
           +'<div class="offer-desc">'+(l.description||'No description provided.')+'</div>'
           +'<div class="offer-reviews-title">Reviews ('+reviews.length+')</div>'
           +reviewsHtml
-          +(isSample?'':'<div class="offer-report-row"><a href="#" class="offer-report-link" onclick="openReportModal(\''+offerId+'\',event)">Report this offer</a></div>')
           +'</div>'
           +'<div class="offer-sidebar">'
           +'<div class="offer-price">'+(l.price==0?'Free':'$'+Number(l.price).toLocaleString())+'</div>'
@@ -397,11 +422,34 @@ function sendFeedback(){
   });
 }
 
-// Report modal logic
-var REPORT_LISTING_ID=null;
-function openReportModal(listingId,evt){
-  if(evt) evt.preventDefault();
-  REPORT_LISTING_ID=listingId;
+// Kebab (three-dot) menu toggle — used on offers, reviews, creators
+function toggleKebab(btn, evt){
+  if(evt) evt.stopPropagation();
+  var menu = btn.nextElementSibling;
+  var wasOpen = menu.classList.contains('open');
+  // Close all open menus
+  document.querySelectorAll('.kebab-menu.open').forEach(function(m){m.classList.remove('open');});
+  if(!wasOpen) menu.classList.add('open');
+}
+// Close kebab menus on outside click
+document.addEventListener('click', function(e){
+  if(!e.target.closest('.kebab-wrap')){
+    document.querySelectorAll('.kebab-menu.open').forEach(function(m){m.classList.remove('open');});
+  }
+});
+
+// Unified report modal — works for listings, reviews, and creators
+var REPORT_TARGET={type:null,id:null};
+var REPORT_TITLES={
+  listing:'Report this offer',
+  review:'Report this review',
+  creator:'Report this creator'
+};
+function openReportModal(entityType, entityId, evt){
+  if(evt){evt.preventDefault();evt.stopPropagation();}
+  REPORT_TARGET={type:entityType,id:entityId};
+  document.querySelectorAll('.kebab-menu.open').forEach(function(m){m.classList.remove('open');});
+  document.getElementById('report-modal-title').textContent=REPORT_TITLES[entityType]||'Report';
   document.getElementById('report-modal-form').style.display='block';
   document.getElementById('report-modal-done').style.display='none';
   document.getElementById('report-reason').value='';
@@ -413,13 +461,13 @@ function openReportModal(listingId,evt){
 function closeReportModal(evt){
   if(evt && evt.target!==evt.currentTarget) return;
   document.getElementById('report-modal-backdrop').classList.remove('open');
-  REPORT_LISTING_ID=null;
+  REPORT_TARGET={type:null,id:null};
 }
 function submitReport(){
   var reason=document.getElementById('report-reason').value;
   var comment=document.getElementById('report-comment').value.trim();
   if(!reason){alert('Please select a reason.');return;}
-  if(!REPORT_LISTING_ID){alert('Something went wrong. Please refresh and try again.');return;}
+  if(!REPORT_TARGET.id||!REPORT_TARGET.type){alert('Something went wrong. Please refresh and try again.');return;}
   var btn=document.getElementById('report-submit-btn');
   btn.disabled=true;btn.textContent='Submitting...';
   
@@ -430,15 +478,13 @@ function submitReport(){
       return;
     }
     var sbc=window.supabase.createClient(SURL,SKEY);
-    // Try to get the logged-in user's email
     sbc.auth.getSession().then(function(sess){
       var reporterEmail=(sess && sess.data && sess.data.session) ? sess.data.session.user.email : null;
-      sbc.from('reports').insert({
-        listing_id:REPORT_LISTING_ID,
-        reason:reason,
-        comment:comment||null,
-        reporter_email:reporterEmail
-      }).then(function(r){
+      var row={reason:reason,comment:comment||null,reporter_email:reporterEmail};
+      if(REPORT_TARGET.type==='listing') row.listing_id=REPORT_TARGET.id;
+      else if(REPORT_TARGET.type==='review') row.review_id=REPORT_TARGET.id;
+      else if(REPORT_TARGET.type==='creator') row.creator_id=REPORT_TARGET.id;
+      sbc.from('reports').insert(row).then(function(r){
         if(r.error){
           console.log('[REPORT-ERR]',r.error);
           alert('Couldn\'t submit your report. Please try again.');
