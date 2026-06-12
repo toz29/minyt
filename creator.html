@@ -217,6 +217,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 <script>
 var SURL='https://qoigwxwkhpcgisprkozg.supabase.co';
 var SKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFvaWd3eHdraHBjZ2lzcHJrb3pnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3NDAzOTUsImV4cCI6MjA5MjMxNjM5NX0.Si-GOt97FF4Wt49E_Yf7CsgyvU2-5dHbStQu1wwQ6Ik';
+var sb;
 
 // ── HELPERS ──
 function escapeHtml(s){
@@ -282,7 +283,7 @@ if(!creatorId){
   var s=document.createElement('script');
   s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';
   s.onload=function(){
-    var sb=window.supabase.createClient(SURL,SKEY);
+    sb=window.supabase.createClient(SURL,SKEY);
     loadCreator(sb, creatorId);
   };
   document.head.appendChild(s);
@@ -434,10 +435,7 @@ document.addEventListener('click',function(e){
 
 // Auth state — show Log in vs account avatar
 (function(){
-  var s=document.createElement('script');
-  s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';
-  s.onload=function(){
-    var sba=window.supabase.createClient(SURL,SKEY);
+  function initNavAuth(sba){
     sba.auth.getSession().then(function(res){
       if(res.data.session){
         var user=res.data.session.user;
@@ -449,19 +447,33 @@ document.addEventListener('click',function(e){
     }).catch(function(){
       document.getElementById('nav-auth').classList.add('resolved');
     });
-  };
-  s.onerror=function(){
-    document.getElementById('nav-auth').classList.add('resolved');
-  };
-  document.head.appendChild(s);
+  }
+  if(sb){
+    initNavAuth(sb);
+  } else {
+    var s=document.createElement('script');
+    s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';
+    s.onload=function(){
+      if(!sb) sb=window.supabase.createClient(SURL,SKEY);
+      initNavAuth(sb);
+    };
+    s.onerror=function(){
+      document.getElementById('nav-auth').classList.add('resolved');
+    };
+    document.head.appendChild(s);
+  }
 })();
 
 function signOutAll(){
+  function doSignOut(sba){
+    sba.auth.signOut().then(function(){window.location.reload();});
+  }
+  if(sb){ doSignOut(sb); return; }
   var s=document.createElement('script');
   s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';
   s.onload=function(){
-    var sba=window.supabase.createClient(SURL,SKEY);
-    sba.auth.signOut().then(function(){window.location.reload();});
+    if(!sb) sb=window.supabase.createClient(SURL,SKEY);
+    doSignOut(sb);
   };
   document.head.appendChild(s);
 }
