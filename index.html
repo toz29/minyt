@@ -357,7 +357,7 @@ footer{padding:1.5rem 2rem;border-top:1px solid var(--border);display:flex;align
 
   <div class="banner">
     <div class="banner-dot"></div>
-    Launch partner offer: First 5 sales are commission-free. Available to the first 5 creators who make a sale on Minyt. <strong>5 spots remaining.</strong>
+    Launch partner offer: First 10 creators to make a sale get that sale commission-free. <strong>10 spots remaining.</strong>
   </div>
 
   <!-- SEARCH RESULTS -->
@@ -722,7 +722,7 @@ renderAll(SAMPLES);
     try {
       var sb = window.supabase.createClient(SURL, SKEY);
       sb.from('listings').select('*').eq('approved', true).eq('visibility', 'live').order('created_at', {ascending:false}).then(function(res) {
-        if(res.data && res.data.length >= 10) renderAll(res.data);
+        if(res.data && res.data.length >= 6) renderAll(res.data);
         else if(res.data && res.data.length > 0) renderAll(res.data.concat(SAMPLES.slice(res.data.length)));
       });
     } catch(e) {}
