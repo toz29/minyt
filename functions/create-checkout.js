@@ -15,19 +15,63 @@ export async function onRequestPost(context) {
 
     const priceInCents = Math.round(parseFloat(price) * 100);
     const isRecurring = billing_unit === '/ month' || billing_unit === '/ week';
-    const applicationFeeAmount = Math.round(priceInCents * 0.10);
 
     if (!seller_stripe_id) {
       return new Response(JSON.stringify({ error: 'Seller has not connected a payout account' }), { status: 400, headers: corsHeaders });
     }
+
+    // ── LAUNCH PROMO: First 10 creators' first sale is commission-free ──
+    // Approach: at checkout creation, check if this seller qualifies for the promo.
+    // (a) Does this seller already have completed orders? If yes → not a first sale, normal commission.
+    // (b) If no prior sales for this seller, how many distinct sellers have completed orders so far?
+    //     If <10 → promo applies, commission = 0. If 10+ → promo exhausted, normal commission.
+    // Race condition note: two checkouts at exactly the 10th spot could both pass. Cost is bounded
+    // (worst case ~11 free sales instead of 10), acceptable for launch-volume traffic.
+    let isPromoSale = false;
+    const supabaseUrl = 'https://qoigwxwkhpcgisprkozg.supabase.co';
+    const supabaseKey = context.env.SUPABASE_SERVICE_KEY;
+    try {
+      // Look up seller_id from the listing being purchased
+      const listingRes = await fetch(
+        `${supabaseUrl}/rest/v1/listings?id=eq.${listing_id}&select=seller_id`,
+        { headers: { 'apikey': supabaseKey, 'Authorization': `Bearer ${supabaseKey}` } }
+      );
+      const listingRows = await listingRes.json();
+      const sellerId = listingRows && listingRows[0] && listingRows[0].seller_id;
+
+      if (sellerId) {
+        // (a) Has this seller had any completed orders yet?
+        const sellerOrdersRes = await fetch(
+          `${supabaseUrl}/rest/v1/orders?seller_id=eq.${sellerId}&status=eq.completed&select=id&limit=1`,
+          { headers: { 'apikey': supabaseKey, 'Authorization': `Bearer ${supabaseKey}` } }
+        );
+        const sellerOrders = await sellerOrdersRes.json();
+
+        if (!sellerOrders || sellerOrders.length === 0) {
+          // (b) Count distinct sellers with at least one completed order
+          const allOrdersRes = await fetch(
+            `${supabaseUrl}/rest/v1/orders?status=eq.completed&select=seller_id`,
+            { headers: { 'apikey': supabaseKey, 'Authorization': `Bearer ${supabaseKey}` } }
+          );
+          const allOrders = await allOrdersRes.json();
+          const distinctSellers = new Set((allOrders || []).map(o => o.seller_id).filter(Boolean));
+          if (distinctSellers.size < 10) {
+            isPromoSale = true;
+          }
+        }
+      }
+    } catch (e) {
+      // If the promo check fails for any reason, fall through to normal commission.
+      // Don't block the sale.
+    }
+
+    const applicationFeeAmount = isPromoSale ? 0 : Math.round(priceInCents * 0.10);
 
     // Backstop: prevent duplicate active subscriptions for the same buyer + listing.
     // Client-side UI already handles the common case (logged-in buyer sees "Manage" button instead of "Buy"),
     // but this catches edge cases — guest buyer using known email, race conditions, etc.
     if (isRecurring && buyer_email) {
       try {
-        const supabaseUrl = 'https://qoigwxwkhpcgisprkozg.supabase.co';
-        const supabaseKey = context.env.SUPABASE_SERVICE_KEY;
         const dupeCheck = await fetch(
           `${supabaseUrl}/rest/v1/orders?listing_id=eq.${listing_id}&buyer_email=eq.${encodeURIComponent(buyer_email)}&subscription_status=in.(active,trialing)&select=id`,
           { headers: { 'apikey': supabaseKey, 'Authorization': `Bearer ${supabaseKey}` } }
@@ -56,6 +100,9 @@ export async function onRequestPost(context) {
     params.append('cancel_url', 'https://getminyt.com');
     params.append('metadata[listing_id]', listing_id);
     params.append('metadata[minyt_commission]', applicationFeeAmount.toString());
+    if (isPromoSale) {
+      params.append('metadata[minyt_promo]', 'launch_partner');
+    }
 
     // Pre-fill buyer's email on the Stripe Checkout page if they're logged in
     if (buyer_email) {
@@ -64,8 +111,8 @@ export async function onRequestPost(context) {
 
     if (isRecurring) {
       params.append('line_items[0][price_data][recurring][interval]', billing_unit === '/ week' ? 'week' : 'month');
-      // Direct charges with subscription: application fee as a percent
-      params.append('subscription_data[application_fee_percent]', '10');
+      // Direct charges with subscription: application fee as a percent (0 for promo, otherwise 10%)
+      params.append('subscription_data[application_fee_percent]', isPromoSale ? '0' : '10');
     } else {
       // Direct charges with one-time payment: application fee as a fixed amount
       params.append('payment_intent_data[application_fee_amount]', applicationFeeAmount.toString());
