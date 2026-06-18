@@ -48,15 +48,30 @@ export async function onRequestPost(context) {
         const commission = parseFloat(
           session.metadata?.minyt_commission || session.metadata?.mentigo_commission || 0
         ) / 100;
+        const isPromoSale = session.metadata?.minyt_promo === 'launch_partner';
+
+        // Look up seller_id for this listing so we can denormalize it onto the order row.
+        // This makes the launch-promo check and future seller-based queries O(1) instead of needing a join.
+        let orderSellerId = null;
+        try {
+          const sellerLookup = await fetch(
+            `${supabaseUrl}/rest/v1/listings?id=eq.${listing_id}&select=seller_id`,
+            { headers: { 'apikey': supabaseKey, 'Authorization': `Bearer ${supabaseKey}` } }
+          );
+          const sellerLookupRows = await sellerLookup.json();
+          orderSellerId = sellerLookupRows && sellerLookupRows[0] && sellerLookupRows[0].seller_id;
+        } catch (e) { /* non-fatal — order still records */ }
 
         await fetch(`${supabaseUrl}/rest/v1/orders`, {
           method: 'POST',
           headers,
           body: JSON.stringify({
             listing_id,
+            seller_id: orderSellerId,
             buyer_email: session.customer_details?.email || 'unknown',
             amount,
             commission,
+            promo_redeemed: isPromoSale,
             stripe_payment_id: session.id,
             stripe_customer_id: session.customer || null,
             stripe_seller_account_id: connectedAccountId,
