@@ -355,9 +355,9 @@ footer{padding:1.5rem 2rem;border-top:1px solid var(--border);display:flex;align
     <div class="stat"><div class="stat-num">10%</div><div class="stat-label">Starting commission</div></div>
   </div>
 
-  <div class="banner">
+  <div class="banner" id="launch-promo-banner">
     <div class="banner-dot"></div>
-    Launch partner offer: First 10 creators to make a sale get that sale commission-free. <strong>10 spots remaining.</strong>
+    Launch partner offer: First 10 creators to make a sale get that sale commission-free. <strong><span id="promo-spots-remaining">10</span> spots remaining.</strong>
   </div>
 
   <!-- SEARCH RESULTS -->
@@ -724,6 +724,28 @@ renderAll(SAMPLES);
       sb.from('listings').select('*').eq('approved', true).eq('visibility', 'live').order('created_at', {ascending:false}).then(function(res) {
         if(res.data && res.data.length >= 6) renderAll(res.data);
         else if(res.data && res.data.length > 0) renderAll(res.data.concat(SAMPLES.slice(res.data.length)));
+      });
+
+      // Launch promo banner: count distinct sellers with at least one completed order.
+      // If <10, show "(10 - count) spots remaining". If >=10, hide the banner.
+      sb.from('orders').select('seller_id').eq('status', 'completed').then(function(res) {
+        try {
+          var banner = document.getElementById('launch-promo-banner');
+          if(!banner) return;
+          var rows = res.data || [];
+          var distinct = {};
+          for(var i = 0; i < rows.length; i++) {
+            if(rows[i].seller_id) distinct[rows[i].seller_id] = true;
+          }
+          var used = Object.keys(distinct).length;
+          var remaining = 10 - used;
+          if(remaining <= 0) {
+            banner.style.display = 'none';
+          } else {
+            var spot = document.getElementById('promo-spots-remaining');
+            if(spot) spot.textContent = remaining;
+          }
+        } catch(e) {}
       });
     } catch(e) {}
   };
