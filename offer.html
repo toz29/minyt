@@ -30,6 +30,8 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 .offer-title{font-family:'Space Grotesk',sans-serif;font-size:1.75rem;font-weight:500;margin-bottom:0.5rem;line-height:1.3}
 .offer-type-badge{display:inline-block;padding:4px 12px;border-radius:50px;font-size:12px;font-weight:500;background:var(--brand-light);color:var(--brand-dark);margin-bottom:1rem}
 .offer-desc{font-size:15px;color:var(--muted);line-height:1.7;margin-bottom:2rem;white-space:pre-wrap}
+.offer-long-desc{font-size:14px;color:var(--text);line-height:1.7;margin-bottom:2rem;white-space:pre-wrap;word-wrap:break-word}
+.offer-long-desc a{color:var(--brand);text-decoration:underline}
 .offer-reviews-title{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:500;margin-bottom:1rem}
 .review-item{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:1rem 1.25rem;margin-bottom:0.75rem}
 .review-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem}
@@ -212,6 +214,20 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 </div>
 
 <script>
+function escapeHtml(s){
+  if(s==null) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+// Escape HTML, then convert URLs to clickable links. Preserves line breaks via white-space CSS.
+function linkifyAndEscape(text){
+  var esc=escapeHtml(text);
+  var urlRe=/(https?:\/\/[^\s<]+)/g;
+  return esc.replace(urlRe,function(url){
+    var clean=url.replace(/[.,;:!?)]+$/,'');
+    var trailing=url.substring(clean.length);
+    return '<a href="'+clean+'" target="_blank" rel="noopener noreferrer">'+clean+'</a>'+trailing;
+  });
+}
 var SURL='https://qoigwxwkhpcgisprkozg.supabase.co';
 var SKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFvaWd3eHdraHBjZ2lzcHJrb3pnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3NDAzOTUsImV4cCI6MjA5MjMxNjM5NX0.Si-GOt97FF4Wt49E_Yf7CsgyvU2-5dHbStQu1wwQ6Ik';
 
@@ -302,6 +318,7 @@ if(!offerId){
           +'<h1 class="offer-title">'+l.title+'</h1>'
           +'<span class="offer-type-badge">'+l.offer_type+'</span>'
           +'<div class="offer-desc">'+(l.description||'No description provided.')+'</div>'
+          +(l.long_description?'<div class="offer-long-desc">'+linkifyAndEscape(l.long_description)+'</div>':'')
           +'<div class="offer-reviews-title">Reviews ('+reviews.length+')</div>'
           +reviewsHtml
           +'</div>'
@@ -336,9 +353,53 @@ async function startCheckout(listingId){
     var l=listings[0];
     if(!l) throw new Error('Offer not found');
     
-    // Handle free offers
+    // Handle free offers — create an order row so intake questions, sales tracking, and recovery emails all work
     if(l.price==0){
-      window.location.href='https://getminyt.com/success.html?listing_id='+listingId+'&free=true';
+      // Get buyer email — prefer logged-in user, fall back to a prompt
+      var buyerEmail=null;
+      try{
+        var sbForAuth=window.supabase.createClient(SURL,SKEY);
+        var sess=await sbForAuth.auth.getSession();
+        if(sess && sess.data && sess.data.session && sess.data.session.user){
+          buyerEmail=sess.data.session.user.email;
+        }
+      }catch(e){}
+      if(!buyerEmail){
+        buyerEmail=prompt('Enter your email to claim this free offer:');
+        if(!buyerEmail || !buyerEmail.includes('@')){
+          if(btn){btn.disabled=false;btn.textContent='Get access — Free';}
+          return;
+        }
+      }
+      // Generate synthetic session id so success.html's existing lookup logic works
+      var freeId='free_'+Math.random().toString(36).substring(2)+Date.now().toString(36);
+      try{
+        var insertRes=await fetch(SURL+'/rest/v1/orders',{
+          method:'POST',
+          headers:{
+            'apikey':SKEY,
+            'Authorization':'Bearer '+SKEY,
+            'Content-Type':'application/json',
+            'Prefer':'return=minimal'
+          },
+          body:JSON.stringify({
+            listing_id:l.id,
+            seller_id:l.seller_id||null,
+            buyer_email:buyerEmail,
+            amount:0,
+            commission:0,
+            stripe_payment_id:freeId,
+            status:'completed'
+          })
+        });
+        if(!insertRes.ok){
+          // Soft fail — still redirect so the buyer gets their content, just without sales tracking
+          console.log('[FREE-ORDER-ERR]', insertRes.status);
+        }
+      }catch(e){
+        console.log('[FREE-ORDER-EXC]', e.message);
+      }
+      window.location.href='https://getminyt.com/success.html?session_id='+encodeURIComponent(freeId)+'&listing_id='+encodeURIComponent(listingId);
       return;
     }
     var res=await fetch('/create-checkout',{
