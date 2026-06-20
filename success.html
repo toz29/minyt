@@ -161,6 +161,7 @@ var SKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6I
 var params=new URLSearchParams(window.location.search);
 var listingId=params.get('listing_id');
 var sessionId=params.get('session_id');
+var skipIntake=params.get('skip_intake')==='1'; // set by server when buyer re-claims a free offer they already filled out
 
 if(listingId){
   var s=document.createElement('script');
@@ -271,7 +272,7 @@ if(listingId){
         // Check intake gating: if this listing has intake questions AND this order doesn't yet have responses,
         // hide the access button until the buyer submits answers.
         var hasIntake=listing.intake_questions && Array.isArray(listing.intake_questions) && listing.intake_questions.length>0;
-        var alreadyAnswered=order && order.intake_responses;
+        var alreadyAnswered=(order && order.intake_responses) || skipIntake;
         if(hasIntake && !alreadyAnswered && order && order.id){
           // Render intake form, gate access button
           window.__intakeSessionId=sessionId;
