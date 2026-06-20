@@ -15,8 +15,23 @@
 body{font-family:'DM Sans',sans-serif;color:var(--text);background:var(--surface);min-height:100vh}
 nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;border-bottom:1px solid var(--border);background:#fff;position:sticky;top:0;z-index:100}
 .nav-logo{font-family:'Space Grotesk',sans-serif;font-size:1.25rem;font-weight:500;color:var(--brand);cursor:pointer;text-decoration:none}
-.nav-back{font-size:13px;color:var(--muted);text-decoration:none}
-.nav-back:hover{color:var(--text)}
+.nav-browse{font-size:13px;font-weight:500;color:var(--brand);text-decoration:none;padding:7px 16px;border:1.5px solid var(--brand);border-radius:var(--radius);transition:box-shadow 0.2s,background 0.2s}
+.nav-browse:hover{background:var(--brand-light);box-shadow:0 0 0 4px rgba(99,102,241,0.15),0 0 16px rgba(99,102,241,0.25)}
+.nav-right{display:flex;align-items:center;gap:14px}
+.nav-login{padding:7px 14px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;font-weight:500;color:var(--text);cursor:pointer;transition:all 0.2s;text-decoration:none}
+.nav-login:hover{border-color:var(--brand);color:var(--brand);box-shadow:0 0 12px rgba(99,102,241,0.25)}
+.nav-auth{display:none}
+.nav-auth.resolved{display:flex;align-items:center}
+.nav-account{position:relative}
+.nav-account-btn{width:34px;height:34px;border-radius:50%;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s;flex-shrink:0}
+.nav-account-btn:hover{border-color:var(--brand)}
+.nav-account-btn svg{width:16px;height:16px;stroke:var(--muted)}
+.account-dropdown{position:absolute;top:calc(100% + 8px);right:0;background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:0.5rem;min-width:180px;box-shadow:0 8px 24px rgba(0,0,0,0.08);z-index:200;display:none}
+.account-dropdown.open{display:block}
+.dropdown-label{font-size:11px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:0.5px;padding:6px 10px 4px}
+.dropdown-item{display:block;width:100%;padding:9px 10px;font-size:13px;color:var(--text);cursor:pointer;border:none;background:none;font-family:'DM Sans',sans-serif;text-align:left;border-radius:var(--radius);text-decoration:none}
+.dropdown-item:hover{background:var(--surface);color:var(--brand)}
+.dropdown-divider{height:1px;background:var(--border);margin:4px 0}
 .offer-wrap{max-width:900px;margin:0 auto;padding:2rem}
 .offer-banner{width:100%;height:280px;object-fit:cover;border-radius:var(--radius-lg);background:var(--surface);margin-bottom:1.5rem}
 .offer-banner-ph{width:100%;height:280px;border-radius:var(--radius-lg);background:var(--border);margin-bottom:1.5rem}
@@ -110,6 +125,8 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
   .offer-wrap{padding:1rem}
   .offer-banner{height:180px}
   nav{padding:0.875rem 1rem}
+  .nav-browse{display:none}
+  .nav-right{gap:10px}
 }
 </style>
 </head>
@@ -162,7 +179,25 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 
 <nav>
   <div style="display:flex;align-items:center;gap:12px"><div class="hamburger" onclick="openSideMenu()"><span></span><span></span><span></span></div><a class="nav-logo" href="https://getminyt.com">minyt<sup style="font-size:9px;color:var(--muted);vertical-align:super;margin-left:1px">™</sup></a></div>
-  <a class="nav-back" href="https://getminyt.com">← Browse offers</a>
+  <div class="nav-right">
+    <a class="nav-browse" href="https://getminyt.com">Browse</a>
+    <div class="nav-auth" id="nav-auth">
+      <a class="nav-login" id="nav-login-btn" href="https://getminyt.com/account.html">Log in</a>
+      <div class="nav-account" id="nav-account" style="display:none">
+        <div class="nav-account-btn" id="nav-acct-btn" onclick="toggleAccountMenu()" title="Account">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <div class="account-dropdown" id="account-dropdown">
+          <div class="dropdown-label" id="dropdown-email" style="color:var(--text);font-size:12px;text-transform:none;letter-spacing:0"></div>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="https://getminyt.com/account.html">My account</a>
+          <a class="dropdown-item" href="https://getminyt.com/create-listing.html">Create offer</a>
+          <div class="dropdown-divider"></div>
+          <div class="dropdown-item" onclick="signOutAll()" style="color:var(--muted)">Sign out</div>
+        </div>
+      </div>
+    </div>
+  </div>
 </nav>
 
 <div class="offer-wrap">
@@ -557,6 +592,52 @@ function submitReport(){
       });
     });
   });
+}
+
+// ── Nav account dropdown + auth state ──
+function toggleAccountMenu(){
+  var dd=document.getElementById('account-dropdown');
+  dd.classList.toggle('open');
+}
+document.addEventListener('click',function(e){
+  var acct=document.getElementById('nav-acct-btn');
+  var dd=document.getElementById('account-dropdown');
+  if(dd && acct && !dd.contains(e.target) && !acct.contains(e.target)){
+    dd.classList.remove('open');
+  }
+});
+(function(){
+  function initNavAuth(sba){
+    sba.auth.getSession().then(function(res){
+      if(res.data.session){
+        var user=res.data.session.user;
+        document.getElementById('nav-login-btn').style.display='none';
+        document.getElementById('nav-account').style.display='block';
+        document.getElementById('dropdown-email').textContent=user.email;
+      }
+      document.getElementById('nav-auth').classList.add('resolved');
+    }).catch(function(){
+      document.getElementById('nav-auth').classList.add('resolved');
+    });
+  }
+  var s=document.createElement('script');
+  s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';
+  s.onload=function(){
+    initNavAuth(window.supabase.createClient(SURL,SKEY));
+  };
+  s.onerror=function(){
+    document.getElementById('nav-auth').classList.add('resolved');
+  };
+  document.head.appendChild(s);
+})();
+function signOutAll(){
+  var s=document.createElement('script');
+  s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';
+  s.onload=function(){
+    var sba=window.supabase.createClient(SURL,SKEY);
+    sba.auth.signOut().then(function(){window.location.reload();});
+  };
+  document.head.appendChild(s);
 }
 </script>
 </body>
