@@ -39,6 +39,9 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 .offer-top{display:grid;grid-template-columns:1fr 320px;gap:2rem;align-items:start}
 .offer-main{}
 .offer-profile{display:flex;align-items:center;gap:12px;margin-bottom:1.25rem}
+.offer-creator-link{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit;transition:opacity 0.15s}
+.offer-creator-link:hover{opacity:0.75}
+.offer-creator-link:hover .offer-creator-name{color:var(--brand)}
 .offer-avatar{width:48px;height:48px;border-radius:50%;background:var(--brand-light);display:flex;align-items:center;justify-content:center;font-weight:500;font-size:14px;color:var(--brand-dark);overflow:hidden;flex-shrink:0}
 .offer-avatar img{width:100%;height:100%;object-fit:cover}
 .offer-creator-name{font-weight:500;font-size:15px}
@@ -347,7 +350,7 @@ if(!offerId){
           +'<div class="offer-top">'
           +'<div class="offer-main">'
           +'<div class="offer-header-row">'
-          +'<div class="offer-profile">'+avatar+'<div><div class="offer-creator-name">'+(l.name||'Creator')+'</div>'+(l.handle?'<div class="offer-creator-handle">@'+l.handle+'</div>':'')+'</div></div>'
+          +'<div class="offer-profile">'+(l.seller_id?'<a class="offer-creator-link" href="https://getminyt.com/creator.html?id='+l.seller_id+'">'+avatar+'<div><div class="offer-creator-name">'+(l.name||'Creator')+'</div>'+(l.handle?'<div class="offer-creator-handle">@'+l.handle+'</div>':'')+'</div></a>':avatar+'<div><div class="offer-creator-name">'+(l.name||'Creator')+'</div>'+(l.handle?'<div class="offer-creator-handle">@'+l.handle+'</div>':'')+'</div>')+'</div>'
           +offerKebab
           +'</div>'
           +(isSample?'<span class="sample-badge">Sample offer</span>':'')
