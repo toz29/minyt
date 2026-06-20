@@ -33,14 +33,18 @@ export async function onRequestPost(context) {
       // This catches both repeat clicks and intentional re-claims that would clutter the creator's dashboard.
       try {
         const dupeCheck = await fetch(
-          `${supabaseUrl}/rest/v1/orders?listing_id=eq.${listing_id}&buyer_email=eq.${encodeURIComponent(buyer_email)}&status=eq.completed&select=id,stripe_payment_id`,
+          `${supabaseUrl}/rest/v1/orders?listing_id=eq.${listing_id}&buyer_email=eq.${encodeURIComponent(buyer_email)}&status=eq.completed&select=id,stripe_payment_id,intake_responses`,
           { headers: { 'apikey': supabaseKey, 'Authorization': `Bearer ${supabaseKey}` } }
         );
         const dupes = await dupeCheck.json();
         if (dupes && dupes.length > 0) {
-          // Return the existing claim's URL so the buyer can re-access their content (intake, link)
+          // Return the existing claim's URL so the buyer can re-access their content.
+          // If intake was already completed, pass skip_intake=1 so success.html doesn't re-prompt
+          // (browser-side RLS may mask intake_responses, so we tell success.html explicitly).
           const existingSessionId = dupes[0].stripe_payment_id;
-          const reuseUrl = `https://getminyt.com/success.html?session_id=${encodeURIComponent(existingSessionId)}&listing_id=${encodeURIComponent(listing_id)}`;
+          const intakeDone = !!dupes[0].intake_responses;
+          const skipParam = intakeDone ? '&skip_intake=1' : '';
+          const reuseUrl = `https://getminyt.com/success.html?session_id=${encodeURIComponent(existingSessionId)}&listing_id=${encodeURIComponent(listing_id)}${skipParam}`;
           return new Response(JSON.stringify({
             url: reuseUrl,
             session_id: existingSessionId,
