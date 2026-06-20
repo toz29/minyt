@@ -389,7 +389,8 @@ async function startCheckout(listingId){
     var l=listings[0];
     if(!l) throw new Error('Offer not found');
     
-    // Handle free offers — create an order row so intake questions, sales tracking, and recovery emails all work
+    // Handle free offers — go through /create-checkout so the order is inserted server-side
+    // with the service key (bypassing RLS). Same endpoint as paid; backend branches on price=0.
     if(l.price==0){
       // Get buyer email — prefer logged-in user, fall back to a prompt
       var buyerEmail=null;
@@ -407,36 +408,24 @@ async function startCheckout(listingId){
           return;
         }
       }
-      // Generate synthetic session id so success.html's existing lookup logic works
-      var freeId='free_'+Math.random().toString(36).substring(2)+Date.now().toString(36);
-      try{
-        var insertRes=await fetch(SURL+'/rest/v1/orders',{
-          method:'POST',
-          headers:{
-            'apikey':SKEY,
-            'Authorization':'Bearer '+SKEY,
-            'Content-Type':'application/json',
-            'Prefer':'return=minimal'
-          },
-          body:JSON.stringify({
-            listing_id:l.id,
-            seller_id:l.seller_id||null,
-            buyer_email:buyerEmail,
-            amount:0,
-            commission:0,
-            stripe_payment_id:freeId,
-            status:'completed'
-          })
-        });
-        if(!insertRes.ok){
-          // Soft fail — still redirect so the buyer gets their content, just without sales tracking
-          console.log('[FREE-ORDER-ERR]', insertRes.status);
-        }
-      }catch(e){
-        console.log('[FREE-ORDER-EXC]', e.message);
+      var freeRes=await fetch('/create-checkout',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          listing_id:l.id,
+          title:l.title,
+          price:0,
+          billing_unit:l.billing_unit||'one-time',
+          seller_stripe_id:l.seller_stripe_id||null,
+          buyer_email:buyerEmail
+        })
+      });
+      var freeData=await freeRes.json();
+      if(freeData.url){
+        window.location.href=freeData.url;
+        return;
       }
-      window.location.href='https://getminyt.com/success.html?session_id='+encodeURIComponent(freeId)+'&listing_id='+encodeURIComponent(listingId);
-      return;
+      throw new Error(freeData.error||'Could not claim free offer');
     }
     var res=await fetch('/create-checkout',{
       method:'POST',
