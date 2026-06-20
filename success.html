@@ -29,6 +29,21 @@ h1{font-family:'Space Grotesk',sans-serif;font-size:2rem;font-weight:400;margin-
 .browse-btn:hover{background:var(--brand-dark)}
 .loading{font-size:13px;color:var(--muted);font-style:italic}
 .hidden{display:none !important}
+.intake-box{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;max-width:460px;width:100%;margin:0 auto 1.5rem;text-align:left}
+.intake-label{font-size:14px;font-weight:500;margin-bottom:0.3rem}
+.intake-sub{font-size:13px;color:var(--muted);margin-bottom:1.25rem;line-height:1.5}
+.intake-q-block{margin-bottom:1.25rem}
+.intake-q-label{display:block;font-size:13px;font-weight:500;margin-bottom:0.4rem;line-height:1.4}
+.intake-q-block input[type=text],.intake-q-block textarea{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius);font-size:14px;font-family:'DM Sans',sans-serif;color:var(--text);background:#fff;box-sizing:border-box}
+.intake-q-block textarea{min-height:90px;resize:vertical}
+.intake-q-block input:focus,.intake-q-block textarea:focus{outline:none;border-color:var(--brand)}
+.intake-q-radio{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:6px;cursor:pointer;font-size:13px}
+.intake-q-radio:hover{border-color:var(--brand);background:var(--brand-light)}
+.intake-q-radio input{margin:0;cursor:pointer}
+.intake-submit{display:block;width:100%;padding:12px;background:var(--brand);color:#fff;border:none;border-radius:var(--radius);font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:0.5rem}
+.intake-submit:hover{background:var(--brand-dark)}
+.intake-submit:disabled{background:var(--muted);cursor:not-allowed}
+.intake-error{font-size:12px;color:#dc2626;margin-top:8px;min-height:16px;text-align:center}
 
 .hamburger{display:flex;flex-direction:column;gap:4px;cursor:pointer;padding:6px;z-index:101}
 .hamburger span{width:18px;height:2px;background:var(--text);border-radius:1px;transition:all 0.2s}
@@ -118,6 +133,16 @@ h1{font-family:'Space Grotesk',sans-serif;font-size:2rem;font-weight:400;margin-
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--brand)"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
     </a>
   </div>
+  <p class="no-access hidden" id="intake-required">Please answer the questions below to unlock your access link.</p>
+</div>
+
+<!-- INTAKE QUESTIONS -->
+<div class="intake-box hidden" id="intake-box">
+  <div class="intake-label">A few quick questions from your creator</div>
+  <div class="intake-sub">Your creator needs this info to deliver your purchase. Answers are sent directly to them.</div>
+  <div id="intake-fields"></div>
+  <button class="intake-submit" id="intake-submit" onclick="submitIntakeAnswers()">Submit & unlock access →</button>
+  <div class="intake-error" id="intake-error"></div>
 </div>
 
 <!-- CREATE ACCOUNT PROMPT -->
@@ -144,7 +169,7 @@ if(listingId){
     var sb=window.supabase.createClient(SURL,SKEY);
 
     // Always fetch the listing for the delivery link
-    var listingPromise=sb.from('listings').select('title,delivery_link').eq('id',listingId).single();
+    var listingPromise=sb.from('listings').select('title,delivery_link,intake_questions').eq('id',listingId).single();
 
     // Order lookup with retry: the Stripe webhook is asynchronous and may not have
     // written the order row yet by the time the buyer's browser hits this page.
@@ -156,7 +181,7 @@ if(listingId){
       return new Promise(function(resolve){
         function tryOnce(){
           attempt++;
-          sb.from('orders').select('subscription_id,subscription_status,stripe_customer_id,buyer_email').eq('stripe_payment_id',sessionId).maybeSingle().then(function(res){
+          sb.from('orders').select('id,subscription_id,subscription_status,stripe_customer_id,buyer_email,intake_responses').eq('stripe_payment_id',sessionId).maybeSingle().then(function(res){
             if(res.data){resolve(res);return;}
             if(attempt>=maxAttempts){resolve({data:null});return;}
             setTimeout(tryOnce,700);
@@ -243,9 +268,23 @@ if(listingId){
           manageBtn.style.display='none';
         }
       } else if(listing && listing.delivery_link){
-        var btn=document.getElementById('access-btn');
-        btn.href=listing.delivery_link;
-        btn.classList.remove('hidden');
+        // Check intake gating: if this listing has intake questions AND this order doesn't yet have responses,
+        // hide the access button until the buyer submits answers.
+        var hasIntake=listing.intake_questions && Array.isArray(listing.intake_questions) && listing.intake_questions.length>0;
+        var alreadyAnswered=order && order.intake_responses;
+        if(hasIntake && !alreadyAnswered && order && order.id){
+          // Render intake form, gate access button
+          window.__intakeOrderId=order.id;
+          window.__intakeDeliveryLink=listing.delivery_link;
+          window.__intakeSupabase=sb;
+          renderIntakeForm(listing.intake_questions);
+          document.getElementById('intake-required').classList.remove('hidden');
+        } else {
+          // No intake required, or already answered — reveal access link
+          var btn=document.getElementById('access-btn');
+          btn.href=listing.delivery_link;
+          btn.classList.remove('hidden');
+        }
       } else {
         document.getElementById('no-access').classList.remove('hidden');
       }
@@ -255,6 +294,96 @@ if(listingId){
 } else {
   document.getElementById('access-loading').classList.add('hidden');
   document.getElementById('no-access').classList.remove('hidden');
+}
+
+// ── Intake question rendering & submission ──
+function renderIntakeForm(questions){
+  var box=document.getElementById('intake-box');
+  var fields=document.getElementById('intake-fields');
+  fields.innerHTML='';
+  for(var i=0;i<questions.length;i++){
+    var q=questions[i];
+    var block=document.createElement('div');
+    block.className='intake-q-block';
+    var label=document.createElement('label');
+    label.className='intake-q-label';
+    label.textContent=q.text;
+    block.appendChild(label);
+    if(q.type==='short'){
+      var inp=document.createElement('input');
+      inp.type='text';
+      inp.maxLength=300;
+      inp.dataset.qidx=i;
+      inp.className='intake-input';
+      block.appendChild(inp);
+    } else if(q.type==='long'){
+      var ta=document.createElement('textarea');
+      ta.maxLength=2000;
+      ta.dataset.qidx=i;
+      ta.className='intake-input';
+      block.appendChild(ta);
+    } else if(q.type==='multiple' && q.options){
+      for(var j=0;j<q.options.length;j++){
+        var opt=q.options[j];
+        var lbl=document.createElement('label');
+        lbl.className='intake-q-radio';
+        var rad=document.createElement('input');
+        rad.type='radio';
+        rad.name='intake-q-'+i;
+        rad.value=opt;
+        rad.dataset.qidx=i;
+        rad.className='intake-input';
+        lbl.appendChild(rad);
+        lbl.appendChild(document.createTextNode(opt));
+        block.appendChild(lbl);
+      }
+    }
+    fields.appendChild(block);
+  }
+  box.classList.remove('hidden');
+}
+
+function submitIntakeAnswers(){
+  var box=document.getElementById('intake-box');
+  var fields=document.getElementById('intake-fields');
+  var err=document.getElementById('intake-error');
+  var btn=document.getElementById('intake-submit');
+  err.textContent='';
+  // Collect responses by question index
+  var blocks=fields.querySelectorAll('.intake-q-block');
+  var responses=[];
+  for(var i=0;i<blocks.length;i++){
+    var label=blocks[i].querySelector('.intake-q-label').textContent;
+    var inputs=blocks[i].querySelectorAll('.intake-input');
+    var answer='';
+    var isRadio=inputs.length && inputs[0].type==='radio';
+    if(isRadio){
+      for(var j=0;j<inputs.length;j++) if(inputs[j].checked){answer=inputs[j].value;break;}
+    } else if(inputs.length){
+      answer=(inputs[0].value||'').trim();
+    }
+    if(!answer){
+      err.textContent='Please answer all questions to continue.';
+      return;
+    }
+    responses.push({question:label, answer:answer});
+  }
+  // Save responses to the order, then reveal the delivery link
+  btn.disabled=true;btn.textContent='Submitting...';
+  var sb=window.__intakeSupabase;
+  sb.from('orders').update({intake_responses:responses}).eq('id',window.__intakeOrderId).then(function(res){
+    if(res.error){
+      btn.disabled=false;btn.textContent='Submit & unlock access →';
+      err.textContent='Could not save your answers. Please try again.';
+      return;
+    }
+    // Reveal delivery link, hide intake form
+    box.classList.add('hidden');
+    document.getElementById('intake-required').classList.add('hidden');
+    var accessBtn=document.getElementById('access-btn');
+    accessBtn.href=window.__intakeDeliveryLink;
+    accessBtn.classList.remove('hidden');
+  });
 }
 function openSideMenu(){
   document.getElementById('side-menu').classList.add('open');
