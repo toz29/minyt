@@ -274,9 +274,8 @@ if(listingId){
         var alreadyAnswered=order && order.intake_responses;
         if(hasIntake && !alreadyAnswered && order && order.id){
           // Render intake form, gate access button
-          window.__intakeOrderId=order.id;
+          window.__intakeSessionId=sessionId;
           window.__intakeDeliveryLink=listing.delivery_link;
-          window.__intakeSupabase=sb;
           renderIntakeForm(listing.intake_questions);
           document.getElementById('intake-required').classList.remove('hidden');
         } else {
@@ -368,11 +367,14 @@ function submitIntakeAnswers(){
     }
     responses.push({question:label, answer:answer});
   }
-  // Save responses to the order, then reveal the delivery link
+  // Save responses via server-side endpoint (service key bypasses RLS); then reveal the delivery link.
   btn.disabled=true;btn.textContent='Submitting...';
-  var sb=window.__intakeSupabase;
-  sb.from('orders').update({intake_responses:responses}).eq('id',window.__intakeOrderId).then(function(res){
-    if(res.error){
+  fetch('/submit-intake',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({session_id:window.__intakeSessionId,responses:responses})
+  }).then(function(r){return r.json().then(function(d){return {ok:r.ok,data:d};});}).then(function(res){
+    if(!res.ok){
       btn.disabled=false;btn.textContent='Submit & unlock access →';
       err.textContent='Could not save your answers. Please try again.';
       return;
@@ -383,6 +385,9 @@ function submitIntakeAnswers(){
     var accessBtn=document.getElementById('access-btn');
     accessBtn.href=window.__intakeDeliveryLink;
     accessBtn.classList.remove('hidden');
+  }).catch(function(){
+    btn.disabled=false;btn.textContent='Submit & unlock access →';
+    err.textContent='Could not save your answers. Please try again.';
   });
 }
 function openSideMenu(){
