@@ -9,13 +9,70 @@ export async function onRequestPost(context) {
   try {
     const { listing_id, title, price, billing_unit, seller_stripe_id, buyer_email } = await context.request.json();
 
-    if (!listing_id || !title || !price) {
+    if (!listing_id || !title || price === undefined || price === null) {
       return new Response(JSON.stringify({ error: 'Missing required fields' }), { status: 400, headers: corsHeaders });
     }
 
-    const priceInCents = Math.round(parseFloat(price) * 100);
+    const priceNum = parseFloat(price);
+    const priceInCents = Math.round(priceNum * 100);
     const isRecurring = billing_unit === '/ month' || billing_unit === '/ week';
+    const isFree = priceNum === 0;
 
+    // ── FREE OFFER PATH ──
+    // No Stripe interaction. Insert an order row directly using the service key (bypasses RLS).
+    // Returns a success URL pointing at success.html with a synthetic session_id so the intake
+    // flow and dashboard tracking all work the same as for paid orders.
+    if (isFree) {
+      if (!buyer_email) {
+        return new Response(JSON.stringify({ error: 'Email required to claim a free offer' }), { status: 400, headers: corsHeaders });
+      }
+      const supabaseUrl = 'https://qoigwxwkhpcgisprkozg.supabase.co';
+      const supabaseKey = context.env.SUPABASE_SERVICE_KEY;
+
+      // Look up seller_id from the listing so the order is properly attributed
+      let freeSellerId = null;
+      try {
+        const sellerLookup = await fetch(
+          `${supabaseUrl}/rest/v1/listings?id=eq.${listing_id}&select=seller_id`,
+          { headers: { 'apikey': supabaseKey, 'Authorization': `Bearer ${supabaseKey}` } }
+        );
+        const rows = await sellerLookup.json();
+        freeSellerId = rows && rows[0] && rows[0].seller_id;
+      } catch (e) { /* non-fatal */ }
+
+      const freeId = 'free_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+      try {
+        const insertRes = await fetch(`${supabaseUrl}/rest/v1/orders`, {
+          method: 'POST',
+          headers: {
+            'apikey': supabaseKey,
+            'Authorization': `Bearer ${supabaseKey}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=minimal'
+          },
+          body: JSON.stringify({
+            listing_id,
+            seller_id: freeSellerId,
+            buyer_email,
+            amount: 0,
+            commission: 0,
+            stripe_payment_id: freeId,
+            status: 'completed'
+          })
+        });
+        if (!insertRes.ok) {
+          const errText = await insertRes.text();
+          return new Response(JSON.stringify({ error: 'Could not record free offer claim', details: errText }), { status: 500, headers: corsHeaders });
+        }
+      } catch (e) {
+        return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: corsHeaders });
+      }
+
+      const successUrl = `https://getminyt.com/success.html?session_id=${encodeURIComponent(freeId)}&listing_id=${encodeURIComponent(listing_id)}`;
+      return new Response(JSON.stringify({ url: successUrl, session_id: freeId, free: true }), { status: 200, headers: corsHeaders });
+    }
+
+    // ── PAID OFFER PATH (existing logic continues below) ──
     if (!seller_stripe_id) {
       return new Response(JSON.stringify({ error: 'Seller has not connected a payout account' }), { status: 400, headers: corsHeaders });
     }
