@@ -210,6 +210,16 @@ a.pc-title:hover{color:var(--brand) !important}
 .pc-sub-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:0.6rem 1.1rem;border-top:1px solid var(--border);background:#fafafa}
 .pc-sub-label{font-size:12px;color:var(--muted)}
 .empty-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:2rem;text-align:center;color:var(--muted);font-size:13px;margin-bottom:0.75rem}
+.sale-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:1rem 1.25rem;margin-bottom:0.75rem}
+.sale-header{display:flex;align-items:start;justify-content:space-between;gap:1rem;margin-bottom:0.5rem}
+.sale-title{font-size:14px;font-weight:500;color:var(--text);margin-bottom:0.15rem}
+.sale-meta{font-size:12px;color:var(--muted)}
+.sale-responses{background:var(--surface);border-radius:var(--radius);padding:0.75rem 1rem;margin-top:0.5rem}
+.sale-response{margin-bottom:0.6rem}
+.sale-response:last-child{margin-bottom:0}
+.sale-response-q{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:0.3px;margin-bottom:0.15rem}
+.sale-response-a{font-size:13px;color:var(--text);line-height:1.5;white-space:pre-wrap;word-wrap:break-word}
+.sale-no-responses{font-size:12px;color:var(--muted);font-style:italic;margin-top:0.4rem}
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);z-index:200;display:none;align-items:center;justify-content:center;padding:1.5rem}
 .overlay.show{display:flex}
 .review-modal{background:#fff;border-radius:var(--radius-lg);max-width:480px;width:100%;padding:2rem;animation:slideUp 0.2s ease}
@@ -514,6 +524,12 @@ a.pc-title:hover{color:var(--brand) !important}
       <a class="new-listing-btn" href="https://getminyt.com/create-listing.html">+ New offer</a>
     </div>
     <div id="listings-list"></div>
+
+    <!-- RECENT SALES -->
+    <div class="section-header hidden" id="sales-section-header" style="margin-top:2.5rem">
+      <div class="section-title">Recent sales</div>
+    </div>
+    <div id="sales-list"></div>
 
     <!-- PURCHASES -->
     <div class="section-header" style="margin-top:2.5rem">
@@ -854,7 +870,7 @@ async function showDashboard(){
   var listingIds=allListings.map(function(l){return l.id;});
   var sales=[];
   if(listingIds.length){
-    var salesRes=await sb.from('orders').select('amount,status').in('listing_id',listingIds).eq('status','completed');
+    var salesRes=await sb.from('orders').select('id,amount,status,buyer_email,intake_responses,created_at,listing_id,listings(title)').in('listing_id',listingIds).eq('status','completed').order('created_at',{ascending:false});
     sales=salesRes.data||[];
   }
 
@@ -963,6 +979,43 @@ async function showDashboard(){
         +'</div>'
         +'</div>';
     }).join('');
+  }
+
+  // Render sales (creator's view of who bought what + intake responses)
+  var sl=document.getElementById('sales-list');
+  var salesHeader=document.getElementById('sales-section-header');
+  if(sales.length){
+    salesHeader.classList.remove('hidden');
+    // Cap at 20 most recent for now; can paginate later
+    var recent=sales.slice(0,20);
+    sl.innerHTML=recent.map(function(s){
+      var listing=s.listings||{};
+      var listingTitle=listing.title||'Unknown listing';
+      var date=relTimeA(s.created_at);
+      var responses='';
+      if(s.intake_responses && Array.isArray(s.intake_responses) && s.intake_responses.length){
+        responses='<div class="sale-responses">'
+          +s.intake_responses.map(function(r){
+            return '<div class="sale-response"><div class="sale-response-q">'+escapeHtmlA(r.question||'')+'</div>'
+              +'<div class="sale-response-a">'+escapeHtmlA(r.answer||'')+'</div></div>';
+          }).join('')
+          +'</div>';
+      } else {
+        responses='<div class="sale-no-responses">No intake responses for this sale.</div>';
+      }
+      return '<div class="sale-card">'
+        +'<div class="sale-header">'
+          +'<div>'
+            +'<div class="sale-title">'+escapeHtmlA(listingTitle)+'</div>'
+            +'<div class="sale-meta">'+escapeHtmlA(s.buyer_email||'—')+' • '+date+' • $'+(s.amount||0).toLocaleString()+'</div>'
+          +'</div>'
+        +'</div>'
+        +responses
+        +'</div>';
+    }).join('');
+  } else {
+    salesHeader.classList.add('hidden');
+    sl.innerHTML='';
   }
 
   // Render purchases
