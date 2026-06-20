@@ -29,6 +29,29 @@ export async function onRequestPost(context) {
       const supabaseUrl = 'https://qoigwxwkhpcgisprkozg.supabase.co';
       const supabaseKey = context.env.SUPABASE_SERVICE_KEY;
 
+      // Dupe check: same buyer can't claim the same free offer twice.
+      // This catches both repeat clicks and intentional re-claims that would clutter the creator's dashboard.
+      try {
+        const dupeCheck = await fetch(
+          `${supabaseUrl}/rest/v1/orders?listing_id=eq.${listing_id}&buyer_email=eq.${encodeURIComponent(buyer_email)}&status=eq.completed&select=id,stripe_payment_id`,
+          { headers: { 'apikey': supabaseKey, 'Authorization': `Bearer ${supabaseKey}` } }
+        );
+        const dupes = await dupeCheck.json();
+        if (dupes && dupes.length > 0) {
+          // Return the existing claim's URL so the buyer can re-access their content (intake, link)
+          const existingSessionId = dupes[0].stripe_payment_id;
+          const reuseUrl = `https://getminyt.com/success.html?session_id=${encodeURIComponent(existingSessionId)}&listing_id=${encodeURIComponent(listing_id)}`;
+          return new Response(JSON.stringify({
+            url: reuseUrl,
+            session_id: existingSessionId,
+            free: true,
+            already_claimed: true
+          }), { status: 200, headers: corsHeaders });
+        }
+      } catch (e) {
+        // Non-fatal — fall through and create the claim
+      }
+
       // Look up seller_id from the listing so the order is properly attributed
       let freeSellerId = null;
       try {
