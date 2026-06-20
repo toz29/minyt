@@ -7,7 +7,7 @@ export async function onRequestPost(context) {
   };
 
   try {
-    const { type, to, title, isSubscription, hasAccount, buyerEmail } = await context.request.json();
+    const { type, to, title, isSubscription, hasAccount, buyerEmail, sessionId, listingId } = await context.request.json();
 
     if (!type || !to) {
       return new Response(JSON.stringify({ error: 'Missing type or to' }), { status: 400, headers: corsHeaders });
@@ -51,7 +51,7 @@ export async function onRequestPost(context) {
         </div>
       `;
     } else if (type === 'purchase') {
-      // Inputs from request body: isSubscription, hasAccount, buyerEmail
+      // Inputs from request body: isSubscription, hasAccount, buyerEmail, sessionId, listingId
       // Build the CTA based on account state
       const safeEmail = buyerEmail ? encodeURIComponent(buyerEmail) : '';
       const ctaUrl = hasAccount
@@ -60,6 +60,20 @@ export async function onRequestPost(context) {
       const ctaText = hasAccount
         ? 'View your dashboard →'
         : 'Create your free account →';
+
+      // Build a recovery link to the success page so the buyer can always get back to their access link
+      // (also handles intake questions if any).
+      let accessBlock = '';
+      if (sessionId && listingId) {
+        const successUrl = `https://getminyt.com/success.html?session_id=${encodeURIComponent(sessionId)}&listing_id=${encodeURIComponent(listingId)}`;
+        accessBlock = `
+          <div style="background:#EEF2FF;border:1px solid #C7D2FE;border-radius:10px;padding:1rem 1.25rem;margin-bottom:1.25rem">
+            <div style="font-size:11px;font-weight:500;color:#4338CA;text-transform:uppercase;letter-spacing:1px;margin-bottom:0.5rem">Your access</div>
+            <a href="${successUrl}" style="display:inline-block;padding:10px 18px;background:#6366F1;color:#fff;text-decoration:none;border-radius:8px;font-size:14px;font-weight:500">Access your purchase →</a>
+            <p style="color:#4338CA;font-size:12px;margin:0.75rem 0 0">Save this email — you can access your purchase anytime from here.</p>
+          </div>
+        `;
+      }
 
       // Subject + body adapts to subscription vs one-time
       if (isSubscription) {
@@ -74,6 +88,7 @@ export async function onRequestPost(context) {
             <div style="font-size:1.25rem;font-weight:600;color:#6366F1;margin-bottom:1.5rem">minyt</div>
             <h2 style="font-size:1.25rem;font-weight:500;margin-bottom:0.75rem">Subscription confirmed</h2>
             <p style="color:#6b7280;line-height:1.6;margin-bottom:1rem">${subBody}</p>
+            ${accessBlock}
             <a href="${ctaUrl}" style="display:inline-block;padding:10px 22px;background:#6366F1;color:#fff;text-decoration:none;border-radius:8px;font-size:14px;font-weight:500">${ctaText}</a>
             <p style="color:#9ca3af;font-size:12px;margin-top:2rem">— The Minyt team</p>
           </div>
@@ -83,13 +98,14 @@ export async function onRequestPost(context) {
           ? 'Your Minyt purchase is confirmed'
           : 'Your Minyt purchase + save it to your account';
         const oneTimeBody = hasAccount
-          ? `You purchased "${title}". Your access link was on the confirmation page — you can also find it anytime in your dashboard.`
-          : `You purchased "${title}". Your access link was on the confirmation page. Want to keep it safe? <strong>Create a free Minyt account</strong> to view this purchase anytime, leave a verified review, and access your link from any device.`;
+          ? `You purchased "${title}". Use the button below to access your purchase anytime.`
+          : `You purchased "${title}". Use the button below to access your purchase. Want to save it to an account? <strong>Create a free Minyt account</strong> to view this purchase anytime, leave a verified review, and access your link from any device.`;
         html = `
           <div style="font-family:sans-serif;max-width:500px;margin:0 auto;padding:2rem">
             <div style="font-size:1.25rem;font-weight:600;color:#6366F1;margin-bottom:1.5rem">minyt</div>
             <h2 style="font-size:1.25rem;font-weight:500;margin-bottom:0.75rem">Purchase confirmed</h2>
             <p style="color:#6b7280;line-height:1.6;margin-bottom:1rem">${oneTimeBody}</p>
+            ${accessBlock}
             <a href="${ctaUrl}" style="display:inline-block;padding:10px 22px;background:#6366F1;color:#fff;text-decoration:none;border-radius:8px;font-size:14px;font-weight:500">${ctaText}</a>
             <p style="color:#9ca3af;font-size:12px;margin-top:2rem">— The Minyt team</p>
           </div>
