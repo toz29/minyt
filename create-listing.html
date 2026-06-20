@@ -162,6 +162,15 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 .fb-submit:disabled{background:var(--muted);cursor:not-allowed}
 .fb-done{display:none;margin-top:0.85rem;font-size:13px;color:#0F7B3E;text-align:center}
 .fb-done.show{display:block}
+.intake-q{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px;margin-bottom:8px}
+.intake-q-row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.intake-q-row select{padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;font-family:inherit;background:#fff;width:140px;flex-shrink:0}
+.intake-q-row input.iq-text{flex:1;padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;font-family:inherit}
+.intake-q-row button.iq-remove{background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;padding:4px 8px;line-height:1}
+.intake-q-row button.iq-remove:hover{color:#dc2626}
+.iq-options{margin-top:4px}
+.iq-options input{display:block;width:100%;padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;font-family:inherit;margin-bottom:4px}
+.iq-options-hint{font-size:11px;color:var(--muted);margin-top:2px}
 </style>
 
 
@@ -274,6 +283,12 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
           <label>Delivery link</label>
           <input type="text" id="fdelivery" placeholder="e.g. Discord invite, Calendly, Notion, YouTube..."/>
           <div class="field-note">Buyers receive this link after purchase. Can be updated anytime.</div>
+        </div>
+        <div class="field">
+          <label>Intake questions <span style="color:var(--muted);font-weight:400">(optional, max 5)</span></label>
+          <div class="field-note" style="margin-bottom:8px">Buyers must answer these before they see your delivery link. Use them to gather info you need to deliver your offering — name, goals, time zone, etc.</div>
+          <div id="intake-questions-list"></div>
+          <button type="button" id="add-question-btn" onclick="addIntakeQuestion()" style="background:#fff;color:var(--brand);border:1.5px solid var(--brand);border-radius:var(--radius);padding:8px 14px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;margin-top:6px">+ Add question</button>
         </div>
         <div class="step-nav"><button class="btn-back-s" onclick="goStep(1)">← Back</button><button class="btn-next" onclick="goStep(3)">Continue →</button></div>
       </div>
@@ -397,11 +412,109 @@ function checkBannedWords(text){
   return null;
 }
 
-function validateListingContent(title, desc, longDesc){
-  var combined=[title||'',desc||'',longDesc||''].join(' ');
+function validateListingContent(title, desc, longDesc, intakeQuestions){
+  var parts=[title||'',desc||'',longDesc||''];
+  if(intakeQuestions && intakeQuestions.length){
+    for(var i=0;i<intakeQuestions.length;i++){
+      var q=intakeQuestions[i];
+      parts.push(q.text||'');
+      if(q.options && q.options.length){
+        for(var j=0;j<q.options.length;j++) parts.push(q.options[j]||'');
+      }
+    }
+  }
+  var combined=parts.join(' ');
   var match=checkBannedWords(combined);
   if(match) return 'Your offer contains text that isn\'t allowed: "'+match+'". Please revise and try again.';
   return null;
+}
+
+// ── Intake question builder ──
+// Each question = {type: 'short'|'long'|'multiple', text: '...', options: [...] (multiple only)}
+function addIntakeQuestion(prefill){
+  var list=document.getElementById('intake-questions-list');
+  if(list.children.length>=5){
+    alert('You can add up to 5 intake questions per listing.');
+    return;
+  }
+  var row=document.createElement('div');
+  row.className='intake-q';
+  row.innerHTML='<div class="intake-q-row">'
+    +'<select class="iq-type" onchange="onIntakeTypeChange(this)">'
+    +'<option value="short">Short answer</option>'
+    +'<option value="long">Long answer</option>'
+    +'<option value="multiple">Multiple choice</option>'
+    +'</select>'
+    +'<input class="iq-text" type="text" placeholder="e.g. What\'s your main goal?" maxlength="200"/>'
+    +'<button type="button" class="iq-remove" title="Remove" onclick="removeIntakeQuestion(this)">✕</button>'
+    +'</div>'
+    +'<div class="iq-options" style="display:none">'
+    +'<input class="iq-opt" type="text" placeholder="Option 1" maxlength="80"/>'
+    +'<input class="iq-opt" type="text" placeholder="Option 2" maxlength="80"/>'
+    +'<button type="button" class="iq-add-opt" onclick="addIntakeOption(this)" style="background:none;border:none;color:var(--brand);font-size:12px;cursor:pointer;padding:2px 0;font-family:inherit">+ Add option</button>'
+    +'<div class="iq-options-hint">At least 2 options required.</div>'
+    +'</div>';
+  list.appendChild(row);
+  if(prefill){
+    row.querySelector('.iq-type').value=prefill.type||'short';
+    row.querySelector('.iq-text').value=prefill.text||'';
+    if(prefill.type==='multiple' && prefill.options && prefill.options.length){
+      var optsDiv=row.querySelector('.iq-options');
+      optsDiv.style.display='block';
+      var existing=optsDiv.querySelectorAll('.iq-opt');
+      // Ensure enough option inputs
+      while(existing.length<prefill.options.length){
+        addIntakeOption(optsDiv.querySelector('.iq-add-opt'));
+        existing=optsDiv.querySelectorAll('.iq-opt');
+      }
+      for(var k=0;k<prefill.options.length;k++){
+        existing[k].value=prefill.options[k];
+      }
+    }
+  }
+}
+function onIntakeTypeChange(sel){
+  var row=sel.closest('.intake-q');
+  var opts=row.querySelector('.iq-options');
+  opts.style.display=(sel.value==='multiple')?'block':'none';
+}
+function removeIntakeQuestion(btn){
+  var row=btn.closest('.intake-q');
+  row.parentNode.removeChild(row);
+}
+function addIntakeOption(btn){
+  var opts=btn.parentNode;
+  var existing=opts.querySelectorAll('.iq-opt').length;
+  if(existing>=6){alert('Max 6 options per question.');return;}
+  var inp=document.createElement('input');
+  inp.className='iq-opt';
+  inp.type='text';
+  inp.placeholder='Option '+(existing+1);
+  inp.maxLength=80;
+  opts.insertBefore(inp,btn);
+}
+function collectIntakeQuestions(){
+  var rows=document.querySelectorAll('#intake-questions-list .intake-q');
+  var out=[];
+  for(var i=0;i<rows.length;i++){
+    var row=rows[i];
+    var type=row.querySelector('.iq-type').value;
+    var text=(row.querySelector('.iq-text').value||'').trim();
+    if(!text) continue; // skip empty questions silently
+    var q={type:type,text:text};
+    if(type==='multiple'){
+      var opts=[];
+      var optInputs=row.querySelectorAll('.iq-opt');
+      for(var j=0;j<optInputs.length;j++){
+        var v=(optInputs[j].value||'').trim();
+        if(v) opts.push(v);
+      }
+      if(opts.length<2) return {error:'Multiple choice question "'+text+'" needs at least 2 options.'};
+      q.options=opts;
+    }
+    out.push(q);
+  }
+  return {questions:out};
 }
 
 function initSB(cb){
@@ -666,8 +779,13 @@ async function submitListing(){
   if(!title){alert('Please add an offer title in step 2.');goStep(2);return;}
   if(FS.price===null||FS.price===undefined){alert('Please select or enter a price.');return;}
 
+  // Collect intake questions (returns {questions:[...]} or {error:'...'})
+  var intakeResult=collectIntakeQuestions();
+  if(intakeResult.error){alert(intakeResult.error);return;}
+  var intakeQuestions=intakeResult.questions;
+
   // Banned words check (client-side quick filter)
-  var contentError=validateListingContent(title,desc,longDesc);
+  var contentError=validateListingContent(title,desc,longDesc,intakeQuestions);
   if(contentError){alert(contentError);return;}
 
   var btn=document.getElementById('sbtn');
@@ -675,10 +793,20 @@ async function submitListing(){
 
   // Server-side AI text moderation
   try{
+    // Bundle intake question text into long_description so it gets moderated too
+    var modLongDesc=longDesc||'';
+    if(intakeQuestions && intakeQuestions.length){
+      var intakeText=intakeQuestions.map(function(q){
+        var s=q.text;
+        if(q.options) s+=' '+q.options.join(' ');
+        return s;
+      }).join(' ');
+      modLongDesc=(modLongDesc?modLongDesc+' ':'')+intakeText;
+    }
     var modRes=await fetch('/moderate-listing',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({title,description:desc,long_description:longDesc})
+      body:JSON.stringify({title,description:desc,long_description:modLongDesc})
     });
     var modData=await modRes.json();
     if(modData && modData.allowed===false){
@@ -763,6 +891,7 @@ async function submitListing(){
         gallery_urls,
         long_description:longDesc||null,
         delivery_link:delivery||null,
+        intake_questions:(intakeQuestions && intakeQuestions.length)?intakeQuestions:null,
         approved:false,
         name:currentUser?currentUser.user_metadata?.name||currentUser.email.split('@')[0]:'Pending review',
         handle:'',
