@@ -146,7 +146,7 @@ h1{font-family:'Space Grotesk',sans-serif;font-size:2rem;font-weight:400;margin-
 </div>
 
 <!-- CREATE ACCOUNT PROMPT -->
-<div class="account-box" id="account-box">
+<div class="account-box hidden" id="account-box">
   <div class="account-label" id="account-label">Save your purchase history</div>
   <div class="account-sub" id="account-sub">Create a free account to view your purchases, leave a verified review, and access your links anytime.</div>
   <a class="account-btn" id="account-btn" href="https://getminyt.com/account.html">Create account →</a>
@@ -262,6 +262,7 @@ if(listingId){
         document.getElementById('page-title').textContent='Subscription inactive.';
         document.getElementById('page-sub').textContent='Your subscription is no longer active. You can renew below to regain access.';
         document.getElementById('expired-box').classList.remove('hidden');
+        document.getElementById('account-box').classList.remove('hidden');
         var manageBtn=document.getElementById('manage-btn');
         if(order && order.stripe_customer_id){
           manageBtn.href='https://getminyt.com/manage-subscription?customer='+encodeURIComponent(order.stripe_customer_id);
@@ -274,19 +275,21 @@ if(listingId){
         var hasIntake=listing.intake_questions && Array.isArray(listing.intake_questions) && listing.intake_questions.length>0;
         var alreadyAnswered=(order && order.intake_responses) || skipIntake;
         if(hasIntake && !alreadyAnswered && order && order.id){
-          // Render intake form, gate access button
+          // Render intake form, gate access button. Account box stays hidden until intake submitted.
           window.__intakeSessionId=sessionId;
           window.__intakeDeliveryLink=listing.delivery_link;
           renderIntakeForm(listing.intake_questions);
           document.getElementById('intake-required').classList.remove('hidden');
         } else {
-          // No intake required, or already answered — reveal access link
+          // No intake required, or already answered — reveal access link AND the account box
           var btn=document.getElementById('access-btn');
           btn.href=listing.delivery_link;
           btn.classList.remove('hidden');
+          document.getElementById('account-box').classList.remove('hidden');
         }
       } else {
         document.getElementById('no-access').classList.remove('hidden');
+        document.getElementById('account-box').classList.remove('hidden');
       }
     });
   };
@@ -294,6 +297,7 @@ if(listingId){
 } else {
   document.getElementById('access-loading').classList.add('hidden');
   document.getElementById('no-access').classList.remove('hidden');
+  document.getElementById('account-box').classList.remove('hidden');
 }
 
 // ── Intake question rendering & submission ──
@@ -380,12 +384,13 @@ function submitIntakeAnswers(){
       err.textContent='Could not save your answers. Please try again.';
       return;
     }
-    // Reveal delivery link, hide intake form
+    // Reveal delivery link, hide intake form, reveal account box
     box.classList.add('hidden');
     document.getElementById('intake-required').classList.add('hidden');
     var accessBtn=document.getElementById('access-btn');
     accessBtn.href=window.__intakeDeliveryLink;
     accessBtn.classList.remove('hidden');
+    document.getElementById('account-box').classList.remove('hidden');
   }).catch(function(){
     btn.disabled=false;btn.textContent='Submit & unlock access →';
     err.textContent='Could not save your answers. Please try again.';
