@@ -150,7 +150,9 @@ export async function onRequestPost(context) {
                   title: listingTitle,
                   isSubscription: !!session.subscription,
                   hasAccount,
-                  buyerEmail
+                  buyerEmail,
+                  sessionId: session.id,
+                  listingId: listing_id
                 })
               });
               if (!emailRes.ok) {
