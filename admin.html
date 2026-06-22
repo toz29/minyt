@@ -129,9 +129,10 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
   <div class="login-box">
     <div class="login-logo">minyt</div>
     <div class="login-sub">Admin panel</div>
-    <input type="password" id="pw-input" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()"/>
-    <button class="login-btn" onclick="doLogin()">Sign in</button>
-    <div class="login-error" id="login-error">Incorrect password. Try again.</div>
+    <input type="email" id="email-input" placeholder="Email" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()"/>
+    <input type="password" id="pw-input" placeholder="Password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/>
+    <button class="login-btn" id="login-btn" onclick="doLogin()">Sign in</button>
+    <div class="login-error" id="login-error">Incorrect email or password.</div>
   </div>
 </div>
 
@@ -176,59 +177,103 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 <div class="toast" id="toast"></div>
 
 <script>
-var PASS = 'minytadmin123';
 var SURL = 'https://qoigwxwkhpcgisprkozg.supabase.co';
 var SKEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFvaWd3eHdraHBjZ2lzcHJrb3pnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3NDAzOTUsImV4cCI6MjA5MjMxNjM5NX0.Si-GOt97FF4Wt49E_Yf7CsgyvU2-5dHbStQu1wwQ6Ik';
 var sb = null;
 var allListings = [];
 var currentTab = 'pending';
 
-// ── AUTH ──
-function doLogin() {
-  var pw = document.getElementById('pw-input').value;
-  if(pw === PASS) {
-    sessionStorage.setItem('minyt_admin', '1');
+// ── AUTH (Supabase Auth + is_admin flag) ──
+// Replaces the old hardcoded sessionStorage gate. To get admin access, your seller row
+// must have is_admin=true; otherwise sign-in succeeds with Supabase Auth but the panel
+// stays locked.
+
+function showLoginError(msg){
+  var el = document.getElementById('login-error');
+  el.textContent = msg || 'Incorrect email or password.';
+  el.style.display = 'block';
+}
+
+function ensureSupabase(cb){
+  if(sb){cb();return;}
+  var s = document.createElement('script');
+  s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';
+  s.onload = function(){ sb = window.supabase.createClient(SURL, SKEY); cb(); };
+  s.onerror = function(){ showLoginError('Could not load auth library. Refresh and try again.'); };
+  document.head.appendChild(s);
+}
+
+function verifyAdminAndEnter(userEmail){
+  // Check is_admin flag on the sellers row for this email
+  sb.from('sellers').select('is_admin').eq('email', userEmail).maybeSingle().then(function(res){
+    if(res.error || !res.data || !res.data.is_admin){
+      // Auth succeeded but user isn't an admin. Sign them out and show error.
+      sb.auth.signOut().then(function(){
+        showLoginError('This account does not have admin access.');
+        var btn = document.getElementById('login-btn');
+        if(btn){btn.disabled = false; btn.textContent = 'Sign in';}
+      });
+      return;
+    }
     document.getElementById('login-wrap').style.display = 'none';
     document.getElementById('admin-wrap').style.display = 'block';
     initAdmin();
-  } else {
-    document.getElementById('login-error').style.display = 'block';
-    document.getElementById('pw-input').value = '';
-  }
+  });
 }
 
-function doLogout() {
-  sessionStorage.removeItem('minyt_admin');
-  document.getElementById('login-wrap').style.display = 'flex';
-  document.getElementById('admin-wrap').style.display = 'none';
+function doLogin(){
+  var email = (document.getElementById('email-input').value || '').trim();
+  var pw = document.getElementById('pw-input').value || '';
+  if(!email || !pw){ showLoginError('Please enter both email and password.'); return; }
+
+  document.getElementById('login-error').style.display = 'none';
+  var btn = document.getElementById('login-btn');
+  btn.disabled = true; btn.textContent = 'Signing in...';
+
+  ensureSupabase(function(){
+    sb.auth.signInWithPassword({email:email, password:pw}).then(function(res){
+      if(res.error || !res.data || !res.data.user){
+        showLoginError('Incorrect email or password.');
+        btn.disabled = false; btn.textContent = 'Sign in';
+        document.getElementById('pw-input').value = '';
+        return;
+      }
+      verifyAdminAndEnter(res.data.user.email);
+    });
+  });
 }
 
-// Check if already logged in
-if(sessionStorage.getItem('minyt_admin') === '1') {
-  document.getElementById('login-wrap').style.display = 'none';
-  document.getElementById('admin-wrap').style.display = 'block';
-  initAdmin();
+function doLogout(){
+  ensureSupabase(function(){
+    sb.auth.signOut().then(function(){
+      document.getElementById('login-wrap').style.display = 'flex';
+      document.getElementById('admin-wrap').style.display = 'none';
+      document.getElementById('email-input').value = '';
+      document.getElementById('pw-input').value = '';
+    });
+  });
 }
+
+// On page load: if there's an existing session, re-verify is_admin before showing the panel
+ensureSupabase(function(){
+  sb.auth.getSession().then(function(res){
+    if(res.data && res.data.session && res.data.session.user){
+      verifyAdminAndEnter(res.data.session.user.email);
+    }
+  });
+});
 
 // ── INIT ──
 function initAdmin() {
-  var s = document.createElement('script');
-  s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';
-  s.onload = function() {
-    sb = window.supabase.createClient(SURL, SKEY);
-    loadListings();
-    // Fetch open-report count for the tab badge without switching tabs
-    sb.from('reports').select('id',{count:'exact',head:true}).eq('status','open').then(function(r){
-      if(r.error) return;
-      var n = r.count || 0;
-      var badge = document.getElementById('reports-count');
-      if(n > 0){ badge.textContent = n; badge.style.display='inline-block'; }
-    });
-  };
-  s.onerror = function() {
-    showToast('Failed to connect to database.', 'error');
-  };
-  document.head.appendChild(s);
+  // sb client is already initialized by ensureSupabase() during auth flow
+  loadListings();
+  // Fetch open-report count for the tab badge without switching tabs
+  sb.from('reports').select('id',{count:'exact',head:true}).eq('status','open').then(function(r){
+    if(r.error) return;
+    var n = r.count || 0;
+    var badge = document.getElementById('reports-count');
+    if(n > 0){ badge.textContent = n; badge.style.display='inline-block'; }
+  });
 }
 
 // ── LOAD ──
