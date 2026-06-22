@@ -124,17 +124,18 @@ export async function onRequestPost(context) {
       const sellerId = listingRows && listingRows[0] && listingRows[0].seller_id;
 
       if (sellerId) {
-        // (a) Has this seller had any completed orders yet?
+        // (a) Has this seller had any PAID completed orders yet? Free claims (amount=0) don't count —
+        // a creator's first PAID sale is the moment the promo applies.
         const sellerOrdersRes = await fetch(
-          `${supabaseUrl}/rest/v1/orders?seller_id=eq.${sellerId}&status=eq.completed&select=id&limit=1`,
+          `${supabaseUrl}/rest/v1/orders?seller_id=eq.${sellerId}&status=eq.completed&amount=gt.0&select=id&limit=1`,
           { headers: { 'apikey': supabaseKey, 'Authorization': `Bearer ${supabaseKey}` } }
         );
         const sellerOrders = await sellerOrdersRes.json();
 
         if (!sellerOrders || sellerOrders.length === 0) {
-          // (b) Count distinct sellers with at least one completed order
+          // (b) Count distinct sellers with at least one PAID completed order
           const allOrdersRes = await fetch(
-            `${supabaseUrl}/rest/v1/orders?status=eq.completed&select=seller_id`,
+            `${supabaseUrl}/rest/v1/orders?status=eq.completed&amount=gt.0&select=seller_id`,
             { headers: { 'apikey': supabaseKey, 'Authorization': `Bearer ${supabaseKey}` } }
           );
           const allOrders = await allOrdersRes.json();
