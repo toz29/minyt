@@ -726,9 +726,9 @@ renderAll(SAMPLES);
         else if(res.data && res.data.length > 0) renderAll(res.data.concat(SAMPLES.slice(res.data.length)));
       });
 
-      // Launch promo banner: count distinct sellers with at least one completed order.
-      // If <10, show "(10 - count) spots remaining". If >=10, hide the banner.
-      sb.from('orders').select('seller_id').eq('status', 'completed').then(function(res) {
+      // Launch promo banner: count distinct sellers with at least one PAID completed order.
+      // Free claims (amount=0) don't count — the promo waives commission, and free already has no commission.
+      sb.from('orders').select('seller_id,amount').eq('status', 'completed').gt('amount', 0).then(function(res) {
         try {
           var banner = document.getElementById('launch-promo-banner');
           if(!banner) return;
