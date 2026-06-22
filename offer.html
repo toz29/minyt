@@ -87,6 +87,9 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
 .report-modal-actions{display:flex;gap:0.5rem;margin-top:1.25rem;justify-content:flex-end}
 .report-modal-cancel{background:#fff;border:1px solid var(--border);color:var(--text);padding:9px 16px;border-radius:var(--radius);font-size:14px;cursor:pointer}
 .report-modal-submit{background:var(--brand);border:1px solid var(--brand);color:#fff;padding:9px 18px;border-radius:var(--radius);font-size:14px;cursor:pointer;font-weight:500}
+.email-modal-input{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius);font-family:inherit;font-size:14px;background:#fff;box-sizing:border-box;color:var(--text)}
+.email-modal-input:focus{outline:none;border-color:var(--brand)}
+.email-modal-err{font-size:12px;color:#dc2626;margin-top:0.4rem;min-height:16px}
 .report-modal-submit:disabled{opacity:0.6;cursor:not-allowed}
 .report-modal-done{text-align:center;padding:1rem 0}
 .report-modal-done-icon{width:40px;height:40px;border-radius:50%;background:var(--brand-light);color:var(--brand);display:flex;align-items:center;justify-content:center;margin:0 auto 0.75rem;font-size:18px}
@@ -248,6 +251,21 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2
           <button class="report-modal-submit" onclick="closeReportModal()">Close</button>
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- EMAIL PROMPT MODAL — replaces native prompt() for free offer claims -->
+<div class="report-modal-backdrop" id="email-modal-backdrop" onclick="closeEmailModalIfBackdrop(event)">
+  <div class="report-modal" onclick="event.stopPropagation()">
+    <div class="report-modal-title">Claim this free offer</div>
+    <div class="report-modal-sub">Enter your email so the creator can deliver your access.</div>
+    <label for="email-modal-input">Email</label>
+    <input class="email-modal-input" id="email-modal-input" type="email" autocomplete="email" placeholder="you@example.com" onkeydown="if(event.key==='Enter')submitEmailModal()"/>
+    <div class="email-modal-err" id="email-modal-err"></div>
+    <div class="report-modal-actions">
+      <button class="report-modal-cancel" onclick="cancelEmailModal()">Cancel</button>
+      <button class="report-modal-submit" id="email-modal-submit" onclick="submitEmailModal()">Continue</button>
     </div>
   </div>
 </div>
@@ -456,8 +474,9 @@ async function startCheckout(listingId){
         }
       }catch(e){}
       if(!buyerEmail){
-        buyerEmail=prompt('Enter your email to claim this free offer:');
-        if(!buyerEmail || !buyerEmail.includes('@')){
+        buyerEmail = await promptForEmail();
+        if(!buyerEmail){
+          // User canceled
           if(btn){btn.disabled=false;btn.textContent='Get access — Free';}
           return;
         }
@@ -585,6 +604,51 @@ var REPORT_TITLES={
   review:'Report this review',
   creator:'Report this creator'
 };
+// ── Email prompt modal (replaces native prompt() for free offer claims) ──
+// Returns a Promise that resolves to a valid email string, or null if the user cancels.
+var __emailModalResolver = null;
+function promptForEmail(){
+  return new Promise(function(resolve){
+    __emailModalResolver = resolve;
+    var inp = document.getElementById('email-modal-input');
+    var err = document.getElementById('email-modal-err');
+    inp.value = '';
+    err.textContent = '';
+    document.getElementById('email-modal-backdrop').classList.add('open');
+    setTimeout(function(){inp.focus();}, 50);
+  });
+}
+function submitEmailModal(){
+  var inp = document.getElementById('email-modal-input');
+  var err = document.getElementById('email-modal-err');
+  var val = (inp.value || '').trim();
+  // Basic email shape check — server validates more strictly
+  var emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if(!val || !emailRe.test(val)){
+    err.textContent = 'Please enter a valid email address.';
+    inp.focus();
+    return;
+  }
+  document.getElementById('email-modal-backdrop').classList.remove('open');
+  if(__emailModalResolver){
+    __emailModalResolver(val);
+    __emailModalResolver = null;
+  }
+}
+function cancelEmailModal(){
+  document.getElementById('email-modal-backdrop').classList.remove('open');
+  if(__emailModalResolver){
+    __emailModalResolver(null);
+    __emailModalResolver = null;
+  }
+}
+function closeEmailModalIfBackdrop(evt){
+  // Only close if the backdrop itself was clicked (not the modal content)
+  if(evt.target.id === 'email-modal-backdrop'){
+    cancelEmailModal();
+  }
+}
+
 function openReportModal(entityType, entityId, evt){
   if(evt){evt.preventDefault();evt.stopPropagation();}
   REPORT_TARGET={type:entityType,id:entityId};
